@@ -1,0 +1,336 @@
+\documentclass{beamer}
+\title{Guarded recursion in the topos of trees}
+\author{Bálint Kocsis}
+\institute{Radboud University}
+\date{\today}
+
+\usetheme{Boadilla}
+\input{preamble}
+\newcommand{\lamb}[2]{\lambda #1. #2}
+\newcommand{\recu}[2]{\mu #1. #2}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Step-indexing}
+\begin{itemize}
+    \item<1-> Problem: non-well-founded definitions, e.g.
+    \[ X = X \To A \]
+    \item<2-> Solution: stratify recursion using sequences of successive approximations
+    \begin{align*}
+        X_{-1} &= V \\
+        X_{n+1} &= X_n \cap (X_n \To A) \\
+        X &= \bigcap{X_n} \\
+    \end{align*}
+    \item<3-> \vspace{-20pt}
+    Syntactically: introduce modality $\Later$ to talk about the next step
+    \[ T = \mu X. \Later{X} \to A \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Applications}
+\begin{itemize}
+    \item Solve recursive domain equations
+    \item Model general recursive types
+    \item Model general references
+    \item Define recursive functions, including negative self-references
+    \item Concrete projects
+    \begin{itemize}
+        \item Typed intermediate/assembly languages: FPCC
+        \item Program logics: VST, Iris
+        \item Guarded type theory
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Focus of my work}
+\begin{itemize}
+    \item Logic of step-indexing/guarded recursion
+    \item Particular model: topos of trees
+    \item Formalization in Coq
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Guarded type theory}
+\begin{itemize}
+    \item<1-> New type former $\Later$
+    \begin{itemize}
+        \item Allows us to talk about data we will only have access to in the next computation step
+        \item Guards self-references in type/term definitions:
+        \[ T = \mu X. \Later{X} \to A \]
+    \end{itemize}
+    % The type $\Later{A}$ expresses that we will only have access to the underlying value of type $A$ one step later
+    \item<2-> Applicative structure
+    \begin{itemize}
+        \item $\name{next} : A \to \Later{A}$
+        \item $- \ap - : \Later{(A \to B)} \to \Later{A} \to \Later{B}$
+    \end{itemize}
+    \item<3-> Guarded fixed point combinator: $\name{fix} : (\Later{A} \to A) \to A$
+    \begin{itemize}
+        \item Self-reference delayed in time by $\nxt$:
+        \[ \app{\name{fix}}{f} = \app{f}{(\nxt{(\app{\name{fix}}{f})})} \]
+        \item We write $\rec{x}{\Later{A}}{t}$ for
+        $\app{\name{fix}}{\lam{x}{\Later{A}}{t}}$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Motivating example: streams}
+\begin{itemize}
+    \item<1-> $\Str = \mu X. \N \times \Later{X}$, hence $\Str = \N \times \Later{\Str}$
+    \item<2-> Constructors and destructors: \vspace{-6pt}
+    \begin{align*}
+        - \cons - &: \N \to \Later{\Str} \to \Str \\
+        \name{hd} &: \Str \to \N \\
+        \name{tl} &: \Str \to \Later{\Str} \\
+    \end{align*}
+    \item<3-> Recursive operations: \vspace{-6pt}
+    \begin{align*}
+        \name{zeros} &= \recu{s}{0 \cons s} : \Str \\
+        \name{add} &= \lamb{n}{\recu{r}{\lamb{s}{
+            (\app{\hd}{s} + n) \cons (r \ap \app{\tl}{s})}}} : \N \to \Str \to \Str \\
+    \end{align*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Step-indexed logic}
+Under the Curry-Howard correspondence, guarded recursive operations correspond to logical connectives and rules.
+\begin{itemize}
+    \item<2-> $\Later$ type former $\To$ $\later$ modality
+    \begin{itemize}
+        \item $\later{P}$ holds if $P$ holds at the next step
+    \end{itemize}
+    \item<3-> Applicative structure $\To$ modal axioms:
+        \begin{mathpar}
+            \inferrule{}{P \vdash \later{P}}
+            \and
+            \inferrule{}{\later{(P \impl Q)} \wedge \later{P} \vdash \later{Q}}
+        \end{mathpar}
+    \item<4-> Fixed point combinator $\To$ Löb rule:
+    \begin{mathpar}
+        \inferrule{}{\later{P} \impl P \vdash P}
+    \end{mathpar}
+    In short: to prove $P$, we can assume that $P$ already holds after one computation step
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Some important rules}
+\begin{mathpar}
+    \inferrule{}{P \vdash \later{P}}
+    \and
+    \inferrule{P \vdash Q}{\later{P} \vdash \later{Q}}
+    \and
+    \inferrule{\later{P} \vdash P}{\vdash P}
+    \and
+    \inferrule{}{\later{P} \impl P \vdash P}
+    \\
+    \inferrule{}{\later{(P \ast Q)} \dashvdash \later{P} \ast \later{Q}}
+        \quad (\ast \in \{\wedge, \vee, \impl\})
+    \and
+    \inferrule{}{\later{(t =_A u)} \dashvdash \nxt{t} =_{\Later{A}} \nxt{u}}
+\end{mathpar}
+\end{frame}
+
+\begin{frame}{Semantics}
+\begin{itemize}
+    \item Intuitively: sequences of approximations
+    \begin{itemize}
+         \item The $n$-th element describes what the object looks like if one has only $n$ steps to reason about it
+        \item $n$: step-index
+         \item $\Later$ and $\later$ shift step-indices
+    \end{itemize}
+    \item Two main formalisms:
+    \begin{itemize}
+        \item Ordered families of equivalences (used by Iris): a set equipped with more and more refined equivalence relations
+        \item Topos of trees: sequence of sets with restriction maps
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Topos of trees}
+\begin{itemize}
+    \item $\TOT$: presheaves on the ordinal $\omega$
+    \item Objects $X$:
+    % https://q.uiver.app/#q=WzAsNCxbMCwwLCJYXzAiXSxbMSwwLCJYXzEiXSxbMiwwLCJYXzIiXSxbMywwLCJcXGNkb3RzIl0sWzEsMCwicl5YXzAiLDJdLFsyLDEsInJeWF8xIiwyXSxbMywyLCJyXlhfMiIsMl1d
+    \[\begin{tikzcd}
+    	{X_0} & {X_1} & {X_2} & \cdots
+    	\arrow["{r^X_0}"', from=1-2, to=1-1]
+    	\arrow["{r^X_1}"', from=1-3, to=1-2]
+    	\arrow["{r^X_2}"', from=1-4, to=1-3]
+    \end{tikzcd}\]
+    \item Morphisms $f : X \to Y$:
+    % https://q.uiver.app/#q=WzAsOCxbMCwwLCJYXzAiXSxbMSwwLCJYXzEiXSxbMiwwLCJYXzIiXSxbMywwLCJcXGNkb3RzIl0sWzAsMSwiWV8wIl0sWzEsMSwiWV8xIl0sWzIsMSwiWV8yIl0sWzMsMSwiXFxjZG90cyJdLFsxLDAsInJeWF8wIiwyXSxbMiwxLCJyXlhfMSIsMl0sWzMsMiwicl5YXzIiLDJdLFs1LDQsInJeWV8wIiwyXSxbNiw1LCJyXllfMSIsMl0sWzcsNiwicl5ZXzIiLDJdLFswLDQsImZfMCIsMl0sWzEsNSwiZl8xIiwyXSxbMiw2LCJmXzIiLDJdXQ==
+    \[\begin{tikzcd}
+    	{X_0} & {X_1} & {X_2} & \cdots \\
+    	{Y_0} & {Y_1} & {Y_2} & \cdots
+    	\arrow["{r^X_0}"', from=1-2, to=1-1]
+    	\arrow["{r^X_1}"', from=1-3, to=1-2]
+    	\arrow["{r^X_2}"', from=1-4, to=1-3]
+    	\arrow["{r^Y_0}"', from=2-2, to=2-1]
+    	\arrow["{r^Y_1}"', from=2-3, to=2-2]
+    	\arrow["{r^Y_2}"', from=2-4, to=2-3]
+    	\arrow["{f_0}"', from=1-1, to=2-1]
+    	\arrow["{f_1}"', from=1-2, to=2-2]
+    	\arrow["{f_2}"', from=1-3, to=2-3]
+    \end{tikzcd}\]
+    %\item intuition?
+    %\item necessary constructions (e.g. products, exponentials)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Guarded recursion}
+\begin{itemize}
+    \item $\Later : \TOT \to \TOT$ sends $X$ to
+    % https://q.uiver.app/#q=WzAsNCxbMCwwLCJcXHsqXFx9Il0sWzEsMCwiWF8wIl0sWzIsMCwiWF8xIl0sWzMsMCwiXFxjZG90cyJdLFsxLDAsIiEiLDJdLFsyLDEsInJfMCIsMl0sWzMsMiwicl8xIiwyXV0=
+    \[\begin{tikzcd}
+    	{\{*\}} & {X_0} & {X_1} & \cdots
+    	\arrow["{!}"', from=1-2, to=1-1]
+    	\arrow["{r_0}"', from=1-3, to=1-2]
+    	\arrow["{r_1}"', from=1-4, to=1-3]
+    \end{tikzcd}\]
+    \item $\mnxt_X : X \to \Later{X}$, $(\mnxt_X)_n = r^{\Later{X}}_n$
+    % https://q.uiver.app/#q=WzAsOCxbMCwwLCJYXzAiXSxbMSwwLCJYXzEiXSxbMiwwLCJYXzIiXSxbMCwxLCJcXHsqXFx9Il0sWzEsMSwiWF8wIl0sWzIsMSwiWF8xIl0sWzMsMCwiXFxjZG90cyJdLFszLDEsIlxcY2RvdHMiXSxbMSwwLCJyXlhfMCIsMl0sWzIsMSwicl5YXzEiLDJdLFs2LDIsInJeWF8yIiwyXSxbNSw0LCJyXlhfMCJdLFs3LDUsInJeWF8xIl0sWzAsMywiISIsMl0sWzQsMywiISJdLFsxLDQsInJeWF8wIiwyXSxbMiw1LCJyXlhfMSIsMl1d
+    \[\begin{tikzcd}
+    	{X_0} & {X_1} & {X_2} & \cdots \\
+    	{\{*\}} & {X_0} & {X_1} & \cdots
+    	\arrow["{r^X_0}"', from=1-2, to=1-1]
+    	\arrow["{r^X_1}"', from=1-3, to=1-2]
+    	\arrow["{r^X_2}"', from=1-4, to=1-3]
+    	\arrow["{r^X_0}", from=2-3, to=2-2]
+    	\arrow["{r^X_1}", from=2-4, to=2-3]
+    	\arrow["{!}"', from=1-1, to=2-1]
+    	\arrow["{!}", from=2-2, to=2-1]
+    	\arrow["{r^X_0}"', from=1-2, to=2-2]
+    	\arrow["{r^X_1}"', from=1-3, to=2-3]
+    \end{tikzcd}\]
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Examples}
+\begin{itemize}
+    \item Streams:
+    % https://q.uiver.app/#q=WzAsNCxbMCwwLCJcXE4iXSxbMSwwLCJcXE4gXFx0aW1lcyBcXE4iXSxbMiwwLCJcXE4gXFx0aW1lcyBcXE4gXFx0aW1lcyBcXE4iXSxbMywwLCJcXGNkb3RzIl0sWzEsMCwiXFxwaV8xIiwyXSxbMiwxXSxbMiwxLCJcXHBpXzEiLDJdLFszLDIsIlxccGlfMSIsMl1d
+    \[\begin{tikzcd}
+    	\N & {\N \times \N} & {\N \times \N \times \N} & \cdots
+    	\arrow["{\pi_1}"', from=1-2, to=1-1]
+    	\arrow[from=1-3, to=1-2]
+    	\arrow["{\pi_1}"', from=1-3, to=1-2]
+    	\arrow["{\pi_1}"', from=1-4, to=1-3]
+    \end{tikzcd}\]
+    \item $\mhd_n(s_0, \ldots, s_n) = s_0$
+    \item $\name{inc}_n(s_0, \ldots, s_n) = (s_0 + 1, \ldots, s_n + 1)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Guarded fixed points}
+\begin{prop}
+Let $f : \Later{X} \to X$ be a morphism of $\TOT$. Then there exists a unique
+$x : \1 \to X$ such that $f \circ \mnxt_X \circ x = x$.
+\end{prop}
+\begin{proof}
+We have $f_0 : \{*\} \to X_0$ and $f_{n+1} : X_n \to X_{n+1}$.
+Define $x : \1 \to X$ by recursion: $x_0 = f_0$ and $x_{n+1} = f_{n+1} \circ x_n$.
+\end{proof}
+\end{frame}
+
+\begin{frame}{Logic}
+\begin{itemize}
+    \item Essentially Kripke semantics over the natural numbers
+    \item Intuition: the truth of a proposition depends on the step-index $n$, i.e. the amount of computation steps left
+    \item If $P$ is true for $n$ steps, then it is also true for less than $n$ steps
+    \item Hence: a truth value is a downward closed subset of step indices
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Kripke-Joyal semantics}
+Forcing relation: $\force{n}{P}$ iff $P$ holds at step $n$
+\begin{prop} \label{prop:kripke-joyal}
+    The forcing relation satisfies the following clauses:
+    \begin{align*}
+        \force{n}{P \impl Q} &\iff
+          \forall m \le n: \force{m}{P} \To \force{m}{Q} \\
+        \force{n}{\exi{x}{A}{P}} &\iff
+          \exists a \in \sem{A}_n: \force{n}{P(a)} \\
+        \force{n}{\all{x}{A}{P}} &\iff
+          \forall m \le n, a \in \sem{A}_m: \force{m}{P(a)} \\
+        \force{n}{\later{P}} &\iff
+          n = 0 \vee \force{n-1}{P}
+    \end{align*}
+\end{prop}
+\end{frame}
+
+\begin{frame}{$\later$ and quantifiers}
+\begin{itemize}
+    \item We have
+    \begin{mathpar}
+        \inferrule{}{\exi{x}{A}{\later{P}} \vdash \later{(\exi{x}{A}{P})}}
+        \and
+        \inferrule{}{\later{(\all{x}{A}{P})} \vdash \all{x}{A}{\later{P}}}
+    \end{mathpar}
+    \item However, the other directions are not valid, e.g.
+    \begin{align*}
+        \force{n+1}{\later{(\exi{x}{A}{P})}} &\iff
+            \exists a \in \sem{A}_n: \force{n}{P(a)} \\
+        \force{n+1}{\exi{x}{A}{\later{P}}} &\iff
+            \exists a \in \sem{A}_{n+1}: \force{n}{P(\restr{a}{n})} \\
+    \end{align*}
+    \item There does not seem to be a general rule for commuting $\later$ with a quantifier
+\end{itemize}
+\end{frame}
+
+\begin{frame}{$\mlift$}
+\begin{itemize}
+    \item We can decompose $\later = \mlift \circ \mnxt$ \cite{clouston:2017:lmcs}
+    \item Hence, we could investigate the properties of $\mlift$
+    \item Novel rule:
+    \begin{mathpar}
+        \inferrule{}
+            {\lift{(\nxt{\mex} \ap Q)} \dashvdash
+             \exi{y}{\Later{A}}{\lift{(Q \ap y)}}}
+    \end{mathpar}
+    where
+    \[ Q : \Later{(A \to \Prop)} \]
+    \[ \mex = \lam{P}{A \to \Prop}{\exi{x}{A}{\app{P}{x}}} \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Coq formalization}
+\begin{itemize}
+    \item Need finite types for the definition of propositions
+    \item Usual representation:
+\begin{coqc}
+Inductive fin : nat → Type :=
+  | FZ {n} : fin (S n)
+  | FS {n} : fin n → fin (S n).
+\end{coqc}
+    \item Alternatively:
+\begin{coqc}
+Definition fin (n : nat) := {m : nat | m ≺ n}.
+\end{coqc}
+    \item The latter definition works much better in practice
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusion}
+\begin{itemize}
+    \item Exposition of the topos of trees
+    \item Emphasis on $\mlift$, which seems to be more fundamental
+    \item Coq formalization: case study in using proof-irrelevant propositions for the representation of finite types
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Future work}
+\begin{itemize}
+    \item Find appropriate rules for $\mlift$
+    \item Investigate step-indexed logic from the perspective of modal type theory
+    \item Formalize a model of Iris in guarded type theory
+\end{itemize}
+\end{frame}
+
+\begin{frame}{References}
+\bibliographystyle{abbrv}
+\bibliography{refs}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,262 @@
+\begin{figure}[ht]
+\begin{mathpar}
+\inferrule[var]
+    {(x : A) \in \Gamma}
+    {\typed{\Gamma}{x}{A}}
+\and
+\inferrule[mor]
+    {f : A \to B \text{ in } \TOT}
+    {\typed{\Gamma}{f}{A \to B}}
+\and
+\inferrule[unit]{}{\typed{\Gamma}{\unit}{\unitt}}
+\\
+\inferrule[pair]
+    {\typed{\Gamma}{t}{A} \and \typed{\Gamma}{u}{A}}
+    {\typed{\Gamma}{\pair{t}{u}}{A \times B}}
+\and
+\inferrule[proj1]
+    {\typed{\Gamma}{t}{A \times B}}
+    {\typed{\Gamma}{\projl{t}}{A}}
+\and
+\inferrule[proj2]
+    {\typed{\Gamma}{t}{A \times B}}
+    {\typed{\Gamma}{\projr{t}}{B}}
+\\
+\inferrule[abort]
+    {\typed{\Gamma}{t}{\emptyt}}
+    {\typed{\Gamma}{\abort{t}}{A}}
+\and
+\inferrule[inj1]
+    {\typed{\Gamma}{t}{A}}
+    {\typed{\Gamma}{\inl{t}}{A + B}}
+\and
+\inferrule[inj2]
+    {\typed{\Gamma}{t}{B}}
+    {\typed{\Gamma}{\inr{t}}{A + B}}
+\and
+\inferrule[case]
+    {\typed{\Gamma}{s}{A + B} \and \typed{\Gamma, x : A}{t}{C} \and \typed{\Gamma, y : B}{u}{C}}
+    {\typed{\Gamma}{\case{s}{x}{t}{y}{u}}{C}}
+\\
+\inferrule[lam]
+    {\typed{\Gamma, x : A}{t}{B}}
+    {\typed{\Gamma}{\lam{x}{A}{t}}{A \to B}}
+\and
+\inferrule[app]
+    {\typed{\Gamma}{t}{A \to B} \and \typed{\Gamma}{u}{A}}
+    {\typed{\Gamma}{\app{t}{u}}{B}}
+\\
+\inferrule[next]
+    {\typed{\Gamma}{t}{A}}
+    {\typed{\Gamma}{\nxt{t}}{\Later{A}}}
+\and
+\inferrule[ap]
+    {\typed{\Gamma}{t}{\Later{(A \to B)}} \and \typed{\Gamma}{u}{\Later{A}}}
+    {\typed{\Gamma}{t \ap u}{\Later{B}}}
+\and
+\inferrule[rec]
+    {\typed{\Gamma, x : \Later{A}}{t}{A}}
+    {\typed{\Gamma}{\rec{x}{\Later{A}}{t}}{A}}
+\\
+\inferrule[true]{}{\typed{\Gamma}{\true}{\Prop}}
+\and
+\inferrule[false]{}{\typed{\Gamma}{\false}{\Prop}}
+\and
+\inferrule[eq]
+    {\typed{\Gamma}{t}{A} \and \typed{\Gamma}{u}{A}}
+    {\typed{\Gamma}{t =_A u}{\Prop}}
+\and
+\inferrule[later]
+    {\typed{\Gamma}{P}{\Prop}}
+    {\typed{\Gamma}{\later{P}}{\Prop}}
+\\
+\inferrule[conj]
+    {\typed{\Gamma}{P}{\Prop} \and \typed{\Gamma}{Q}{\Prop}}
+    {\typed{\Gamma}{P \wedge Q}{\Prop}}
+\and
+\inferrule[disj]
+    {\typed{\Gamma}{P}{\Prop} \and \typed{\Gamma}{Q}{\Prop}}
+    {\typed{\Gamma}{P \vee Q}{\Prop}}
+\and
+\inferrule[impl]
+    {\typed{\Gamma}{P}{\Prop} \and \typed{\Gamma}{Q}{\Prop}}
+    {\typed{\Gamma}{P \impl Q}{\Prop}}
+\and
+\inferrule[forall]
+    {\typed{\Gamma, x : A}{P}{\Prop}}
+    {\typed{\Gamma}{\all{x}{A}{P}}{\Prop}}
+\and
+\inferrule[exists]
+    {\typed{\Gamma, x : A}{P}{\Prop}}
+    {\typed{\Gamma}{\exi{x}{A}{P}}{\Prop}}
+\end{mathpar}
+\caption{Typing rules for $\lang$}
+\label{fig:logic-typing-rules}
+\end{figure}
+
+\begin{figure}
+\begin{mathpar}
+\inferrule[refl]{}{\entails{\Gamma}{P}{P}}
+\and
+\inferrule[trans]
+    {\entails{\Gamma}{P}{Q} \and \entails{\Gamma}{Q}{R}}
+    {\entails{\Gamma}{P}{R}}
+\and
+\inferrule[wk]
+    {\entails{\Gamma}{P}{Q}}
+    {\entails{\Gamma, x : A}{P}{Q}}
+\and
+\inferrule[subst]
+    {\entails{\Gamma, x : A}{P}{Q} \and \typed{\Gamma}{t}{A}}
+    {\entails{\Gamma}{\subst{P}{x}{t}}{\subst{Q}{x}{t}}}
+\\
+\inferrule[$\true$-intro]{}{\entails{\Gamma}{P}{\true}}
+\and
+\inferrule[$\false$-elim]{}{\entails{\Gamma}{\false}{P}}
+\and
+\inferrule[$\wedge$-intro]
+    {\entails{\Gamma}{R}{P} \and \entails{\Gamma}{R}{Q}}
+    {\entails{\Gamma}{R}{P \wedge Q}}
+\and
+\inferrule[$\wedge$-elim-l]{}{\entails{\Gamma}{P \wedge Q}{P}}
+\and
+\inferrule[$\wedge$-elim-r]{}{\entails{\Gamma}{P \wedge Q}{Q}}
+\\
+\inferrule[$\vee$-intro-l]{}{\entails{\Gamma}{P}{P \vee Q}}
+\and
+\inferrule[$\vee$-intro-r]{}{\entails{\Gamma}{Q}{P \vee Q}}
+\and
+\inferrule[$\vee$-elim]
+    {\entails{\Gamma}{P}{R} \and \entails{\Gamma}{Q}{R}}
+    {\entails{\Gamma}{P \vee Q}{R}}
+\and
+\inferrule[$\impl$-intro]
+    {\entails{\Gamma}{R \wedge P}{Q}}
+    {\entails{\Gamma}{R}{P \impl Q}}
+\and
+\inferrule[$\impl$-elim]{}{\entails{\Gamma}{(P \impl Q) \wedge P}{Q}}
+\and
+\inferrule[$\forall$-intro]
+    {\entails{\Gamma, x : A}{R}{P}}
+    {\entails{\Gamma}{R}{\all{x}{A}{P}}}
+\and
+\inferrule[$\forall$-elim]
+    {\typed{\Gamma}{t}{A}}
+    {\entails{\Gamma}{\all{x}{A}{P}}{\subst{P}{x}{t}}}
+\and
+\inferrule[$\exists$-intro]
+    {\typed{\Gamma}{t}{A}}
+    {\entails{\Gamma}{\subst{P}{x}{t}}{\exi{x}{A}{P}}}
+\and
+\inferrule[$\exists$-elim]
+    {\entails{\Gamma, x : A}{P}{Q}}
+    {\entails{\Gamma}{\exi{x}{A}{P}}{Q}}
+\and
+\inferrule[$\later$-intro]{}{\entails{\Gamma}{P}{\later{P}}}
+\and
+\inferrule[$\later$-mono]
+    {\entails{\Gamma}{P}{Q}}
+    {\entails{\Gamma}{\later{P}}{\later{Q}}}
+\and
+\inferrule[löb]
+    {\entails{\Gamma}{\later{P}}{P}}
+    {\valid{\Gamma}{P}}
+\and
+\inferrule[$\wedge$-$\later$]{}
+    {\entails{\Gamma}{\later{P} \wedge \later{Q}}{\later{(P \wedge Q)}}}
+\and
+\inferrule[$\later$-$\vee$]{}
+    {\entails{\Gamma}{\later{(P \vee Q)}}{\later{P} \vee \later{Q}}}
+\and
+\inferrule[$\impl$-$\later$]{}
+    {\entails{\Gamma}{\later{P} \impl \later{Q}}{\later{(P \impl Q)}}}
+\and
+\inferrule[$\later$-eq]{}
+    {\equiv{\Gamma}{\later{(t =_A u)}}{\nxt{t} =_{\Later{A}} \nxt{u}}}
+\end{mathpar}
+\caption{Structural and logical rules for $\lang$}
+\label{fig:structural-logical-rules}
+\end{figure}
+
+\begin{figure}
+\begin{mathpar}
+\inferrule[eq-refl]
+    {\typed{\Gamma}{t}{A}}
+    {\equals[A]{\Gamma}{t}{t}}
+\and
+\inferrule[eq-trans]
+    {\equals[A]{\Gamma}{t}{u} \and \equals[A]{\Gamma}{u}{v}}
+    {\equals[A]{\Gamma}{t}{v}}
+\and
+\inferrule[eq-sym]
+    {\equals[A]{\Gamma}{t}{u}}
+    {\equals[A]{\Gamma}{u}{t}}
+\\
+\inferrule[eq-subst]
+    {\typed{\Gamma, x : A}{t}{B} \and \equals[A]{\Gamma}{u}{v}}
+    {\equals[B]{\Gamma}{\subst{t}{x}{u}}{\subst{t}{x}{v}}}
+\and
+\inferrule[eq-prop]
+    {\equals[\Prop]{\Gamma}{P}{Q}}
+    {\entails{\Gamma}{P}{Q}}
+\and
+\inferrule[propext]
+    {\entails{\Gamma}{P}{Q} \and \entails{\Gamma}{Q}{P}}
+    {\equals[\Prop]{\Gamma}{P}{Q}}
+\\
+\inferrule[$\unitt$-$\eta$]
+    {\typed{\Gamma}{t}{\unitt}}
+    {\equals[\unitt]{\Gamma}{t}{\unit}}
+\and
+\inferrule[$\times$-$\beta$-1]
+    {\typed{\Gamma}{t}{A} \and \typed{\Gamma}{u}{B}}
+    {\equals[A]{\Gamma}{\projl{\pair{t}{u}}}{t}}
+\and
+\inferrule[$\times$-$\beta$-2]
+    {\typed{\Gamma}{t}{A} \and \typed{\Gamma}{u}{B}}
+    {\equals[B]{\Gamma}{\projr{\pair{t}{u}}}{u}}
+\and
+\inferrule[$\times$-$\eta$]
+    {\typed{\Gamma}{t}{A \times B}}
+    {\equals[A \times B]{\Gamma}{\pair{\projl{t}}{\projr{t}}}{t}}
+\\
+\inferrule[$+$-$\beta$-1]
+    {\typed{\Gamma}{t}{A} \and \typed{\Gamma, x : A}{u}{C}
+        \and \typed{\Gamma, y : B}{v}{C}}
+    {\equals[C]{\Gamma}{\case{\inl{t}}{x}{u}{y}{v}}{\subst{u}{x}{t}}}
+\and
+\inferrule[$+$-$\beta$-2]
+    {\typed{\Gamma}{t}{B} \and \typed{\Gamma, x : A}{u}{C}
+        \and \typed{\Gamma, y : B}{v}{C}}
+    {\equals[C]{\Gamma}{\case{\inr{t}}{x}{u}{y}{v}}{\subst{v}{y}{t}}}
+\\
+\inferrule[$\to$-$\beta$]
+    {\typed{\Gamma, x : A}{t}{B} \and \typed{\Gamma}{u}{A}}
+    {\equals[B]{\Gamma}{\app{(\lam{x}{A}{t})}{u}}{\subst{t}{x}{u}}}
+\and
+\inferrule[$\to$-$\eta$]
+    {\typed{\Gamma}{t}{A \to B} \and (x : A) \notin \Gamma}
+    {\equals[A \to B]{\Gamma}{\lam{x}{A}{\app{t}{x}}}{t}}
+\and
+\inferrule[$\ap$-next]
+    {\typed{\Gamma}{t}{A \to B} \and \typed{\Gamma}{u}{A}}
+    {\equals[\Later{B}]{\Gamma}{\nxt{t} \ap \nxt{u}}{\nxt{(\app{t}{u})}}}
+\and
+\inferrule[$\ap$-comp]
+    {\typed{\Gamma}{f}{\Later{(B \to C)}} \and \typed{\Gamma}{g}{\Later{(A \to B)}} 
+        \and \typed{\Gamma}{t}{\Later{A}}}
+    {\equals[\Later{C}]{\Gamma}{f \ap (g \ap t)}{\nxt{\name{comp}} \ap f \ap g \ap t}}
+\and
+\inferrule[fix-$\beta$]
+    {\typed{\Gamma, x : \Later{A}}{t}{A}}
+    {\equals[A]{\Gamma}{\rec{x}{\Later{A}}{t}}
+        {\subst{t}{x}{\nxt{(\rec{x}{\Later{A}}{t})}}}}
+\and
+\inferrule[fix-$\eta$]
+    {\typed{\Gamma, x : \Later{A}}{t}{A} \and \typed{\Gamma}{z}{A} \and
+        \equals{\Gamma}{z}{\subst{t}{x}{\nxt{z}}}}
+    {\equals[A]{\Gamma}{z}{\rec{x}{\Later{A}}{t}}}
+\end{mathpar}
+\caption{Equality rules in $\lang$. $\name{comp} : (B \to C) \to (A \to B) \to A \to C$ is function composition. Congruence cases are omitted.}
+\label{fig:logic-equalities}
+\end{figure}

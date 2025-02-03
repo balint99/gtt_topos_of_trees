@@ -1,0 +1,157 @@
+\usepackage[utf8]{inputenc}
+\usepackage{comment}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{fdsymbol}
+\usepackage{tikz-cd}
+\usepackage{colonequals}
+\usepackage{mathpartir}
+\usepackage{minted}
+\usepackage{url}
+
+\DeclareUnicodeCharacter{00D7}{$\times$}
+\DeclareUnicodeCharacter{0393}{$\Gamma$}
+\DeclareUnicodeCharacter{03A9}{$\Omega$}
+\DeclareUnicodeCharacter{03B3}{$\gamma$}
+\DeclareUnicodeCharacter{03C0}{$\pi$}
+\DeclareUnicodeCharacter{03BB}{$\lambda$}
+\DeclareUnicodeCharacter{2016}{$\|$}
+\DeclareUnicodeCharacter{2081}{$_1$}
+\DeclareUnicodeCharacter{2192}{$\to$}
+\DeclareUnicodeCharacter{21D2}{$\To$}
+\DeclareUnicodeCharacter{2200}{$\forall$}
+\DeclareUnicodeCharacter{2218}{$\circ$}
+\DeclareUnicodeCharacter{2264}{$\le$}
+\DeclareUnicodeCharacter{227A}{$\prec$}
+\DeclareUnicodeCharacter{22A2}{$\vdash$}
+\DeclareUnicodeCharacter{25B7}{$\later$}
+\DeclareUnicodeCharacter{27E6}{$\lBrack$}
+\DeclareUnicodeCharacter{27E7}{$\rBrack$}
+\DeclareUnicodeCharacter{27E8}{$\langle$}
+\DeclareUnicodeCharacter{27E9}{$\rangle$}
+\DeclareUnicodeCharacter{27F6}{$\longrightarrow$}
+\DeclareUnicodeCharacter{2AAF}{$\preceq$}
+
+\definecolor{coqkw}{rgb}{0,0.5,0}
+
+\setlength{\parindent}{0.7\parindent}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[subsection]
+\newtheorem{ex}[defn]{Example}
+
+\theoremstyle{plain}
+\newtheorem{prop}[defn]{Proposition}
+
+\theoremstyle{remark}
+\newtheorem{rem}[defn]{Remark}
+
+\newminted[coqc]{coq}{escapeinside = //}
+\newmintinline[coqi]{coq}{escapeinside = //}
+
+\newcommand{\ol}{\overline}
+\newcommand{\To}{\Rightarrow}
+\renewcommand{\phi}{\varphi}
+\newcommand{\subs}{\subseteq}
+\newcommand{\nul}{\emptyset}
+\renewcommand{\iff}{\text{ iff }}
+
+\newcommand{\obj}{\mathtt}
+\newcommand{\mor}{\mathtt}
+\newcommand{\name}{\mathtt}
+\newcommand{\sep}{\mathbin{|}}
+\newcommand{\setof}[2]{\{ #1 \sep #2 \}}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\nsuc}{\mor{succ}}
+\newcommand{\2}{\mathbf{2}}
+\newcommand{\btrue}{\mor{true}}
+\newcommand{\bfalse}{\mor{false}}
+\newcommand{\fin}[1]{{[0..#1]}}
+\newcommand{\fino}[1]{{[0..#1)}}
+
+\newcommand{\cat}[1]{\mathcal{#1}}
+\newcommand{\Hom}[3][]{\mathrm{Hom}_{#1}(#2, #3)}
+\newcommand{\id}[1][]{\mor{id}_{#1}}
+\newcommand{\0}{\mathbf{0}}
+\newcommand{\1}{\mathbf{1}}
+\newcommand{\minit}{{!}}
+\newcommand{\mterm}{{!}}
+\newcommand{\mprod}[2]{(#1, #2)}
+\newcommand{\mprojl}{\pi_1}
+\newcommand{\mprojr}{\pi_2}
+\newcommand{\msum}[2]{[#1, #2]}
+\newcommand{\minl}{\kappa_1}
+\newcommand{\minr}{\kappa_2}
+\newcommand{\expt}[2]{#1 \To #2}
+\newcommand{\ev}{\mor{ev}}
+\newcommand{\curry}[1]{\lambda #1}
+\newcommand{\transpose}[1]{\ulcorner #1 \urcorner}
+\newcommand{\fix}[1]{\mu #1}
+\newcommand{\SOC}{\Omega}
+\newcommand{\pow}[1]{\expt{#1}{\SOC}}
+
+\newcommand{\Set}{\mathbf{Set}}
+\newcommand{\TOT}{\cat{S}}
+
+\newcommand{\restr}[2]{#1|_{#2}}
+\newcommand{\oStr}{\obj{Str}}
+\newcommand{\mhd}{\mor{hd}}
+\newcommand{\mtl}{\mor{tl}}
+\newcommand{\mcons}{\mor{cons}}
+\newcommand{\Later}{\blacktriangleright}
+\newcommand{\mnxt}{\mor{next}}
+\newcommand{\mtrue}{\mor{true}}
+\newcommand{\mfalse}{\mor{false}}
+\newcommand{\mconj}{\mor{conj}}
+\newcommand{\mdisj}{\mor{disj}}
+\newcommand{\mimpl}{\mor{impl}}
+\newcommand{\mall}{\mor{all}}
+\newcommand{\mex}{\mor{ex}}
+\newcommand{\mlater}{\triangleright}
+\newcommand{\mlift}{\mor{lift}}
+\newcommand{\meq}{\mor{eq}}
+
+\newcommand{\lang}{\mathcal{L}}
+\newcommand{\unitt}{\1}
+\newcommand{\emptyt}{\0}
+\newcommand{\Prop}{\name{Prop}}
+\newcommand{\unit}{()}
+\newcommand{\pair}[2]{(#1, #2)}
+\newcommand{\projl}[1]{\pi_1 #1}
+\newcommand{\projr}[1]{\pi_2 #1}
+\newcommand{\abort}[1]{\name{abort}\, #1}
+\newcommand{\inl}[1]{\name{inj}_1\, #1}
+\newcommand{\inr}[1]{\name{inj}_2\, #1}
+\newcommand{\case}[5]{\name{case}\, #1\, \name{of}\, #2. #3; #4. #5}
+\newcommand{\lam}[3]{\lambda #1 : #2. #3}
+\newcommand{\app}[2]{#1\, #2}
+\newcommand{\nxt}[1]{\name{next}\, #1}
+\newcommand{\ap}{\circledast}
+\newcommand{\rec}[3]{\mu #1 : #2. #3}
+\newcommand{\true}{\top}
+\newcommand{\false}{\bot}
+\newcommand{\impl}{\supset}
+\newcommand{\all}[3]{\forall #1 : #2. #3}
+\newcommand{\exi}[3]{\exists #1 : #2. #3}
+\newcommand{\later}{\triangleright}
+\newcommand{\lift}[1]{\name{lift}\, #1}
+
+\newcommand{\subst}[3]{#1\left[#2 := #3\right]}
+\newcommand{\typed}[3]{#1 \vdash #2 : #3}
+\newcommand{\entails}[3]{#1 \sep #2 \vdash #3}
+\newcommand{\valid}[2]{#1 \vdash #2}
+\newcommand{\dashvdash}{\mathbin{\dashv\hspace{-1pt}\vdash}}
+\renewcommand{\equiv}[3]{#1 \sep #2 \dashvdash #3}
+\newcommand{\equals}[4][]{#2 \vdash #3 =_{#1} #4}
+
+\newcommand{\Str}{\name{Str}}
+\newcommand{\suc}{\name{succ}}
+\newcommand{\hd}{\name{hd}}
+\newcommand{\tl}{\name{tl}}
+\newcommand{\cons}{\coloncolon}
+
+\newcommand{\sem}[1]{\lsem #1 \rsem}
+\newcommand{\sementails}[3]{#1 \sep #2 \vDash #3}
+\newcommand{\force}[2]{#1 \Vdash #2}

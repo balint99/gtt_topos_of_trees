@@ -308,7 +308,7 @@ to be the exponential transpose of the composite
 	\arrow["{\Later{\ev}}", from=1-3, to=1-4]
 \end{tikzcd}\]
 Explicitly, the 0-th component of $J_{X, Y}$ sends the unique point of the domain
-to $\id[\{*\}]$, and its \mbox{$(n+1)$-st} component maps
+to $\id[\{*\}]$, and its $(n+1)$-st component maps
 $(f_0, \ldots, f_n) \in (X \to Y)_n$ to $(\id[\{*\}], f_0, \ldots, f_n)$.
 \end{defn}
 
@@ -929,7 +929,7 @@ FW : ∀ {n}, fin n → fin (S n)
 \end{coqc}
 defined using the eliminator of the type family \coqi{fin}. But then it is not immediately clear that \coqi{FW k} and \coqi{k} represent the same natural number. In particular, equations such as
 \begin{equation} \label{eq:fw-lemma}
-\coqi{fin_to_nat (FW k) = fin_to_nat k}
+\mbox{\coqi{fin_to_nat (FW k) = fin_to_nat k}}
 \end{equation}
 do not hold by definition and need to be proven by induction on \coqi{k}. Even worse, such lemmas are necessary to type certain simple expressions, an example for which is given in Section \ref{sec:coq-exp}. This is extremely inconvenient and can become quite messy.
 
@@ -1033,7 +1033,7 @@ It is worth noting a subtle but important point regarding the definition of \coq
 
 Similarly, the type of \coqi{x} in the expression \coqi{Exp_morph (FS i) x} is \coqi{X (S (fin_to_nat i))}, but its expected type is \coqi{X (fin_to_nat (FS i))}. Thus, the expression is well-typed only because the equation
 \begin{equation} \label{eq:fs-lemma}
-\coqi{fin_to_nat (FS i) = S (fin_to_nat i)}
+\mbox{\coqi{fin_to_nat (FS i) = S (fin_to_nat i)}}
 \end{equation}
 holds definitionally. However, this would also be the case with the inductive definition of \coqi{fin}, where (\ref{eq:fs-lemma}) would be one of the defining equations for \coqi{fin_to_nat}.
 

@@ -1,6 +1,14 @@
 .vscode
 *.aux
-*.glob
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+
 *.vo
 *.vok
 *.vos
+
+_minted/

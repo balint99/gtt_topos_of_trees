@@ -1,7 +1,6 @@
 \documentclass{article}
 \title{Guarded recursion in the topos of trees
   \\ Internship report (updated version)}
-%TODO title
 \author{Bálint Kocsis}
 \date{\today}
 
@@ -46,7 +45,6 @@ The first application of step-indexing is due to Appel and McAllester \cite{appe
 
 \subsection{Guarded recursion and the later modality} \label{sec:intro-guarded-rec}
 
-%TODO Appel et al. didn't use black triangle
 Although a powerful technique, employing step-indexing directly is tedious, and results in more complicated constructions than standard set-theoretical models. Appel et al. \cite{appel:2007:popl} noticed that the details of step-indexing may be hidden using a modality $\Later$, called 'later' and originally introduced by Nakano \cite{nakano:2000:lics}. Intuitively, the $\Later$ modality allows us to talk about data we only have access to in the next computation step. This modality is then used to guard self-references in recursive type definitions; hence the name \emph{guarded recursion}. For instance, the guarded recursive version of Equation \ref{eq:intro-example} is expressed as
 \[ X = \Later{X} \to A \]
 Furthermore, in his seminal paper \cite{nakano:2000:lics}, Nakano observed that fixed point combinators in lambda calculus may adequately be given the type $(\Later{X} \to X) \to X$ without violating termination. Hence, $\Later$ also allows the definition of guarded recursive functions.
@@ -235,7 +233,7 @@ We have seen in the previous section (Example \ref{ex:morphisms}) that we can de
 
 The reason why we cannot have a tail operation in the form of a morphism $\oStr \to \oStr$ is already apparent at level zero: we only have access to the first element of the stream, but the first element of the output should be the second element of the input. To resolve this mismatch, we need something which allows us to shift the step-indices.
 
-This is achieved by introducing a new type former $\Later$, which semantically corresponds to an endofunctor on $\TOT$. Then, intuitively, the type $\Later{X}$ expresses that we will only have access to the underlying value of type $X$ one step later. It turns out that this is also a key idea for implementing \emph{guarded recursion}, that is, recursion on the available number of steps. %TODO introduction?
+This is achieved by introducing a new type former $\Later$, which semantically corresponds to an endofunctor on $\TOT$. Then, intuitively, the type $\Later{X}$ expresses that we will only have access to the underlying value of type $X$ one step later. It turns out that this is also a key idea for implementing \emph{guarded recursion}, that is, recursion on the available number of steps.
 
 \begin{defn} \label{def:later}
 The functor $\Later : \TOT \to \TOT$, called \emph{later}, sends an object $X$ of $\TOT$ to
@@ -420,7 +418,6 @@ Although the $\Later$ type former enables guarded recursion, it is not sufficien
 \end{ex}
 
 \section{Internal logic of the topos of trees} \label{sec:internal-logic}
-%TODO better title?
 
 As every topos, $\TOT$ possesses a so called \emph{internal logic} or \emph{internal language} \cite{lambek:scott,jacobs:cltt} (also called Mitchell-Bénabou language \cite{maclane:moerdijk}) that makes it possible to reason about $\TOT$ using higher-order logic. With the internal language, we can define objects and morphisms of $\TOT$ and reason about their properties just as if they were sets and functions. The informal lambda calculus notation we have been using so far is actually also part of the internal language, being the basis of the type theory that underlies the internal higher-order logic.
 
@@ -487,10 +484,8 @@ So far we have shown that there is model a of intuitionistic first-order logic i
 \mlater : S \to S,\ \mlater{(A)} = \setof{i \in \N}{i = 0 \vee (i > 0 \wedge i - 1 \in A)}
 \end{equation}
 referred to as the \emph{later} modality. The logical explanation of $\mlater$ is the following: $\mlater{(A)}$ holds at step $n + 1$ iff $A$ holds at step $n$. Thus, $\mlater$ allows us to shift the step-indices.
-%TODO add forward reference (forgot what this refers to)
 
 \subsection{Logic in the topos of trees} \label{sec:logic-definitions}
-%TODO better title?
 
 We now revisit the development in the previous section, but inside the topos of trees.
 Firstly, we need an object $\SOC$ in $\TOT$ analogous to the set of truth values $S$ (Definition \ref{def:siprop}). A naive choice might be the constant object $\Delta S$. However, this does not work. Given a predicate $P : X \to \Delta S$, the compatibility requirement for morphisms implies $P_n = P_0 \circ r^X_{0,n}$ for all $n \in \N$. Thus, $P_0 : X_0 \to S$ determines all other components. Intuitively, this means that a predicate can only use information at level zero, which is too restrictive. The issue is that the step-indexed nature of objects in $\TOT$ is not taken into account.
@@ -546,7 +541,6 @@ The propositional connectives in $\TOT$ are defined as follows:
     $\mimpl_n(A, B) = \setof{i \in \fin{n}}{ \forall j \le i: j \in A \To j \in B}$
 \end{items}
 \end{defn}
-%TODO make nicer
 
 The quantifiers are a bit trickier: since the domain of quantification is now a step-indexed family of sets, it might not be obvious which components to quantify over.
 
@@ -559,9 +553,7 @@ The existential quantifier in $\TOT$ is the morphism
    \mex_n(P) = \setof{i \in \fin{n}}{\exists x \in X_i: i \in P_i(x)} \]
 \end{defn}
 
-In the case of $\mall$, we need to quantify over the components at all lower step indices to make the resulting set downward closed. For $\mex$, this is unnecessary: if $i \in P_i(x)$ for some $x \in X_i$, then $j \in P_j(\restr{x}{j})$ for all $j \le i$ by the compatibility requirement for $P$.
-%TODO Move this before the definition? Perhaps add more explanation/better intuition?
-Note also that the type of predicates on an object $X$ is given by the exponential $\pow{X}$ in $\TOT$, also called the \emph{power object} of $X$, just like how predicates in the set-theoretical model of Section \ref{sec:siprop} are functions $X \to S$.
+In the case of $\mall$, we need to quantify over the components at all lower step indices to make the resulting set downward closed. For $\mex$, this is unnecessary: if $i \in P_i(x)$ for some $x \in X_i$, then $j \in P_j(\restr{x}{j})$ for all $j \le i$ by the compatibility requirement for $P$. Note also that the type of predicates on an object $X$ is given by the exponential $\pow{X}$ in $\TOT$, also called the \emph{power object} of $X$, just like how predicates in the set-theoretical model of Section \ref{sec:siprop} are functions $X \to S$.
 
 The later modality (\ref{eq:siprop-later}) of Section \ref{sec:siprop} also has an analogue in $\TOT$ as a morphism $\SOC \to \SOC$. However, similarly to $\mcons$ (Example \ref{ex:later}), we can give it the stronger type $\Later{\SOC} \to \SOC$, which is necessary for the definition of guarded recursive predicates. We use the name $\mlift$ for the stronger version, and reserve $\mlater$ for the original operation, following tradition.
 
@@ -592,7 +584,6 @@ Note the use of $\mlift$. Intuitively, this is an application of the later modal
 \end{ex}
 
 \subsection{Internal logic} \label{sec:internal-logic-def}
-%TODO better title?
 
 In this section, we demonstrate how one can use the internal logic of $\TOT$ to reason about programs defined via guarded recursion. To start off, we formally introduce the language and inference rules of the logic, and describe its semantics in the topos of trees.
 
@@ -635,7 +626,7 @@ The entailment relation of $\lang$ is given by a judgment $\entails{\Gamma}{P}{Q
 \end{mathpar}
 \caption{Term equalities for $\Later$. $\name{comp} : (B \to C) \to (A \to B) \to A \to C$ is function composition.}
 \label{fig:Later-rules}
-\end{figure} %TODO placement of figure
+\end{figure}
 
 \begin{figure}
 \begin{mathpar}
@@ -663,7 +654,7 @@ The entailment relation of $\lang$ is given by a judgment $\entails{\Gamma}{P}{Q
 \end{mathpar}
 \caption{Inference rules for $\later$}
 \label{fig:later-rules}
-\end{figure} %TODO placement of figure
+\end{figure}
 
 Besides logical rules, we also have the familiar $\beta \eta$-laws for functions, products, and sums. These are complemented by equalities concerning the new type former $\Later$ and its associated constructs, some of which are shown in Figure \ref{fig:Later-rules}. The first two equations are the homomorphism and composition laws for applicative functors \cite{mcbride:2008:jfp}, while the third one establishes that $\rec{x}{\Later{A}}{t}$ is indeed a fixed point of $t$. There is also a corresponding $\eta$ rule, expressing the uniqueness fixed points; see the appendix.
 
@@ -693,7 +684,7 @@ From the basic inference rules of $\lang$, we can derive further sound reasoning
 \end{mathpar}
 \caption{Derived rules for $\later$}
 \label{fig:derived-rules}
-\end{figure} %TODO placement of figure
+\end{figure}
 The rules commuting $\later$ with the various connectives can easily be proved using the monotonicity of $\later$ and the introduction and elimination principles of the connectives.
 The proof of \textsc{strong-löb} is less trivial, but it closely resembles the construction of the internal fixed point operator of Definition \ref{def:fix} from the external one.
 
@@ -910,11 +901,8 @@ The generality of the new rules (\textsc{lift-$\exists$-comm} and \textsc{lift-$
 
 \section{Coq formalization} \label{sec:coq}
 
-%TODO present tense?
-We have formalized the topos of trees, along with the associated structure introduced so far, in the Coq proof assistant \cite{coq}. More specifically, the formalization encompasses the basic categorical structure (Section \ref{sec:basic-struct}), the definitions necessary for guarded recursion (Section \ref{sec:guarded-rec}), and the logical components of Section \ref{sec:logic-definitions}. Moreover, we have verified semantically some of the inference rules of the internal logic.
-%%ODO in particular the novel rules of Section \ref{sec:later-quantifiers}.
+We have formalized the topos of trees, along with the associated structure introduced so far, in the Coq proof assistant \cite{coq}. More specifically, the formalization encompasses the basic categorical structure (Section \ref{sec:basic-struct}), the definitions necessary for guarded recursion (Section \ref{sec:guarded-rec}), and the logical components of Section \ref{sec:logic-definitions}. Moreover, we have verified semantically some of the inference rules of the internal logic, in particular the novel rules of Section \ref{sec:later-quantifiers}.
 
-%TODO placement of reference, multiple citations?
 The formalization does not contain the examples in this report. It is important to note that we do not define a syntax for the internal logic, as we did in Section \ref{sec:internal-logic-def}. Instead, we work with the semantics directly, and use combinators to construct terms. The inference rules of the logic are then stated and proved as lemmas. In other words, we use a \emph{shallow embedding} \cite{wildmoser:2004:tphols} of the internal logic. This contrasts with a \emph{deep embedding} \cite{wildmoser:2004:tphols} of the syntax as an inductive definition, together with an interpretation function to show soundness, as was done in Definition \ref{def:logic-semantics}.
 
 In the following, we discuss some interesting aspects of the formalization, including some of the design choices and technical challenges. Section \ref{sec:finite-types} motivates our definition of finite types. Section \ref{sec:proof-irrelevance} shows how we work with proof-irrelevant propositions. Sections \ref{sec:coq-obj-mor} and \ref{sec:coq-exp} explain some general techniques we used in our formalization via the examples of objects, morphisms, and exponentials. Section \ref{sec:coq-logic} expands on the concept of a shallow embedding and how we applied it to formalize the internal logic. Finally, Section \ref{sec:coq-axioms} touches on the axioms we relied on and how their use could be eliminated.
@@ -952,8 +940,7 @@ This lets us leave applications of \coqi{fin_to_nat} implicit.
 
 \subsection{Proof-irrelevant order relations} \label{sec:proof-irrelevance}
 
-%TODO cite section in book?
-To avoid defining custom order relations, we implement the proof-irrelevant versions of \coqi{≤} and \coqi{<}, denoted by \coqi{⪯} and \coqi{≺} respectively, using \emph{propositional truncation} \cite{hottbook}, called \coqi{Squash} in Coq. That is, \coqi{x ⪯ y} stands for \coqi{Squash (x ≤ y)}, and \coqi{x ≺ y} means \coqi{S x ⪯ y} (which is the same as \coqi{Squash (x < y)}). Thus, we can easily prove lemmas such as
+To avoid defining custom order relations, we implement the proof-irrelevant versions of \coqi{≤} and \coqi{<}, denoted by \coqi{⪯} and \coqi{≺} respectively, using \emph{propositional truncation} \cite[Section 3.7]{hottbook}, called \coqi{Squash} in Coq. That is, \coqi{x ⪯ y} stands for \coqi{Squash (x ≤ y)}, and \coqi{x ≺ y} means \coqi{S x ⪯ y} (which is the same as \coqi{Squash (x < y)}). Thus, we can easily prove lemmas such as
 \begin{coqc}
 Sle_n : ∀ n, n ⪯ n
 Sle_S : ∀ {n m}, n ⪯ m → n ⪯ S m
@@ -1107,7 +1094,6 @@ where \coqi{mid : ∀ {X}, X ⟶ X} is the identity morphism. In the conclusion,
 
 \subsection{Axioms} \label{sec:coq-axioms}
 
-%TODO the equality?
 In our formalization, we often have to show equality of morphisms, e.g. when proving categorical laws. Since morphisms are essentially families of functions, this involves showing equality of Coq functions. In most cases, such equalities do not hold by definition. Hence, we make use of the axiom of \emph{function extensionality}, stating that two functions are equal iff they are equal at every input. This allows us for example to perform case distinction or induction on the input to show equality of the outputs.
 
 In Section \ref{sec:coq-obj-mor}, we have seen that a morphism is actually a record, containing a family of functions \emph{together with} a proof of their naturality. This means that proving equality of morphisms requires proving equality of both components, thus in particular, of equality proofs. Such higher equalities are notoriously difficult to deal with in constructive type theory. To simplify matters, we assume the \emph{proof-irrelevance} axiom, which states that any two proofs of the same proposition are equal. This way, we can prove the following lemma, expressing that equality of morphisms follows from equality of their underlying families of functions:
@@ -1130,16 +1116,12 @@ Record Object : Type :=
   }.
 \end{coqc}
 where \coqi{Equivalence (obj_eq n)} states that \coqi{obj_eq n} is an equivalence relation. The first three fields together express that we have a family of setoids indexed by the natural numbers. The field \coqi{restr_resp} witnesses the fact that restriction respects the equivalence relations. We would need to provide proofs of similar statements for most, if not all, of the operations, including the components of morphisms. To keep the formalization simple, we have decided to stick with the axioms.
-%TODO present perfect?
 
 We could get rid of the dependence on the proof-irrelevance axiom by using an \coqi{SProp} version of the equality type in \coqi{/\textcolor{black}{Morphism}/}, \coqi{Exp_obj}, and \coqi{SOC_obj}. Since we do not rely on definitional equalities between these objects, doing so would not improve the ease of formalization. It would, however, require some boilerplate for proving various lemmas for the new equality type not present in the Coq standard library. For these reasons, we stick with the proof-irrelevance axiom.
 
 \section{Related work} \label{sec:related}
-%TODO Additional references?
-%TODO Order of related work?
 
-Sieczkowski et al. created the ModuRes Coq library \cite{sieczkowski:2015:itp}, which provides a general framework for solving recursive domain equations, and can be used to build models of complex programming languages and program logics. The mathematical context for their library is given by ordered families of equivalences (OFEs) \cite{gianantonio:2002:types} and $\mathcal{M}$-categories \cite{birkedal:2010:tcs}. %TODO unnecessary references?
-They showed that the topos of trees is an $\mathcal{M}$-category, meaning that it provides an appropriate setting for solving recursive domain equations. For this purpose, they only needed a small portion of the structure of the topos of trees. Hence, our formalization of the topos of trees and its logic is more extensive in this regard. However, they also showed the existence of unique fixed points for locally contractive functors, allowing them to model guarded recursive types missing from our formalization. Furthermore, they avoid axioms by using setoids (cf. Section \ref{sec:coq-axioms}).
+Sieczkowski et al. created the ModuRes Coq library \cite{sieczkowski:2015:itp}, which provides a general framework for solving recursive domain equations, and can be used to build models of complex programming languages and program logics. The mathematical context for their library is given by ordered families of equivalences (OFEs) \cite{gianantonio:2002:types} and $\mathcal{M}$-categories \cite{birkedal:2010:tcs}. They showed that the topos of trees is an $\mathcal{M}$-category, meaning that it provides an appropriate setting for solving recursive domain equations. For this purpose, they only needed a small portion of the structure of the topos of trees. Hence, our formalization of the topos of trees and its logic is more extensive in this regard. However, they also showed the existence of unique fixed points for locally contractive functors, allowing them to model guarded recursive types missing from our formalization. Furthermore, they avoid axioms by using setoids (cf. Section \ref{sec:coq-axioms}).
 
 Bergwerf \cite{bergwerf:2022:internship} proved a completeness result for propositional logic with the later modality with respect to the simple step-indexed model of Section \ref{sec:siprop}. In addition to the rules presented in this report, his completeness theorem depends on an extra axiom, called the comparison rule, which carries a classical flavor. In particular, his calculus does not satisfy the disjunction property, a traditional intuitionistic principle. He also formalized his results in Coq, using a deep embedding for the syntax of the logic.
 
@@ -1149,8 +1131,6 @@ The use of the topos of trees as denotational semantics for guarded recursion wa
 Clouston et al. \cite{clouston:2017:lmcs} introduced the program logic $L\mathrm{g}\lambda$ for reasoning about terms of the guarded lambda calculus ($\mathrm{g}\lambda$), an extension of the simply typed lambda calculus with guarded recursion and coinduction. Our presentation of the internal logic of $\TOT$ is largely based on $L\mathrm{g}\lambda$. In addition to guarded recursive types, $\mathrm{g}\lambda$ also supports coinductive types via a second modality $\blacksquare$, allowing the definition of acausal functions such as $\name{even}$ from Remark \ref{rem:coinductive-types}. An alternative approach to extending guarded recursive types to coinductive types is provided by \emph{clock quantifiers} \cite{atkey:2013:icfp, mogelberg:2014:csl-lics, bizjak:2015:mfps}.
 
 Bizjak et al. \cite{bizjak:2016:fossacs} presented guarded dependent type theory (gDTT), a full-fledged dependent type theory with $\Pi$-types, $\Sigma$-types, extensional identity types, and universes, augmented with the $\Later$ modality, guarded recursion, and clock quantifiers. As is usual with dependent type theories, their system integrates the logic into the core term calculus via the Curry-Howard correspondence. They also generalized the applicative structure of $\Later$ to dependent types, which is crucial for both programming and proving. Building on this work, Birkedal et al. \cite{birkedal:2019:jar} combined gDTT with cubical type theory \cite{cohen:2015:types}, resulting in an intensional type theory with an improved treatment of equality and decidable type checking.
-
-%TODO Other calculi/logics with later, but no mention/not extensive study of quantifiers
 
 \section{Conclusion and future work} \label{sec:conclusion}
 

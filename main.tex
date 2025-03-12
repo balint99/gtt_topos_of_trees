@@ -35,7 +35,7 @@ In the field of theoretical computer science, especially programming language se
 
 This can happen for instance when the recursion variable occurs in a negative position. Suppose that $A$ is a set with at least two elements, and we want to find a set $X$ satisfying the equation
 \begin{equation} \label{eq:intro-example}
-X = X \to A
+X = X \to A,
 \end{equation}
 where $X \to A$ is the set of functions from $X$ to $A$. It follows from simple cardinal arithmetic that no such $X$ exists. Hence, the equation cannot act as the \emph{definition} of $X$.
 
@@ -48,34 +48,28 @@ The first application of step-indexing is due to Appel and McAllester~\cite{appe
 \subsection{Guarded recursion and the later modality} \label{sec:intro-guarded-rec}
 
 Although a powerful technique, employing step-indexing directly is tedious, and results in more complicated constructions than standard set-theoretical models. Appel et al.~\cite{appel:2007:popl} noticed that the details of step-indexing may be hidden using a modality $\Later$, called 'later' and originally introduced by Nakano~\cite{nakano:2000:lics}. Intuitively, the $\Later$ modality allows us to talk about data we only have access to in the next computation step. This modality is then used to guard self-references in recursive type definitions; hence the name \emph{guarded recursion}. For instance, the guarded recursive version of \cref{eq:intro-example} is expressed as
-\[ X = \Later{X} \to A \]
+\[ X = \Later{X} \to A. \]
 Furthermore, in his seminal paper~\cite{nakano:2000:lics}, Nakano observed that fixed point combinators in lambda calculus may adequately be given the type $(\Later{X} \to X) \to X$ without violating termination. Hence, $\Later$ also allows the definition of guarded recursive functions.
 
 Under the Curry-Howard correspondence, the $\Later$ type former corresponds to a logical connective $\later$, also pronounced 'later'. This leads us to consider step-indexed logics, where the truth of a proposition depends on a step-index which may be viewed as the number of computation steps left. Under this interpretation, $\later{P}$ holds at $n+1$ if $P$ holds at $n$. There is also an induction principle, called Löb induction, which mirrors the type of the guarded fixed point operators:
-\begin{mathpar}
-\inferrule[]{}{\later{P} \impl P \vdash P}
-\end{mathpar}
+\[ \later{P} \impl P \vdash P. \]
 Intuitively, this principle states that in order to prove a proposition $P$, we may assume as an induction hypothesis that $P$ holds one step later.
 
-Birkedal et al.~\cite{birkedal:2011:lics,birkedal:2012:lmcs} presented the topos of trees as a model of guarded recursion, and proposed to use its internal logic to construct synthetic versions of step-indexed models of programming languages and program logics in order to hide the step-indexing. As mentioned in \cref{sec:intro-step-indexing}, Iris~\cite{jung:2018:jfp} is a program logic with a step-indexed model. In its current implementation, the mathematical framework for step-indexing is provided by ordered families of equivalences (OFEs)~\cite{jung:2018:jfp}. Hence, it is natural to ask if a synthetic model of Iris could be constructed in the internal logic of the topos of trees.
+Birkedal et al.~\cite{birkedal:2011:lics,birkedal:2012:lmcs} presented the topos of trees as a model of guarded recursion, and proposed to use its internal logic to construct synthetic versions of step-indexed models of programming languages and program logics in order to hide the step-indexing. As mentioned in \cref{sec:intro-step-indexing}, Iris~\cite{jung:2018:jfp} is a program logic with a step-indexed model. In its current implementation, the mathematical framework for step-indexing is provided by ordered families of equivalences~\cite{jung:2018:jfp}. It is natural to ask if a synthetic model of Iris could be constructed in the internal logic of the topos of trees.
 
 \subsection{Rules for the \texorpdfstring{$\later$}{later} modality} \label{sec:intro-later-rules}
 
 If we wish to use the internal logic of the topos of trees to construct a model of Iris, we need to ensure that the logic is rich enough to prove the soundness of the inference rules of Iris. For instance, consider the Iris rule
-\begin{mathpar}
-\inferrule[]{}{\later{(P \ast Q)} \dashvdash \later{P} \ast \later{Q}}
-\end{mathpar}
+\[ \later{(P \ast Q)} \dashvdash \later{P} \ast \later{Q}. \]
 Since the definition of the separating conjunction $\ast$ contains an existential quantifier, it seems likely that we need rules to move the $\later$ modality under an existential quantifier. However, the following rule is not sound:
-\begin{mathpar}
-\inferrule{}{\later{(\exi{x}{A}{P})} \dashvdash \exi{x}{A}{\later{P}}}
-\end{mathpar}
+\[ \later{(\exi{x}{A}{P})} \dashvdash \exi{x}{A}{\later{P}}. \]
 Finding as general rules as possible is also an interesting question on its own right. Unfortunately, to the best of our knowledge, no general rule commuting $\later$ with quantifiers appears in the literature.
 
 For this purpose, we propose a novel rule for step-indexed logics, from which previously known commuting rules are derivable. Our insights are based on an observation already made by Birkedal et al. (\cite{birkedal:2012:lmcs}, Section 2.3) that the $\later$ modality may be decomposed as $\later = \mlift \circ \nxt$. (The name $\mlift$ was introduced in Clouston et al.~\cite{clouston:2017:lmcs}, Section 3.1.)
 
 \subsection{Formalization} \label{sec:intro-formalization}
 
-It seems that not much of the structure of the topos of trees has been formalized in the literature. To fill this hole, we formalize most constructions, definitions, and propositions in the present report. The original goal of the formalization was to experiment with a model of Iris constructed using the internal logic of the topos of trees, as alluded to in \cref{sec:intro-later-rules}. This is however left to future work (see \cref{sec:conclusion}).
+It seems that not much of the structure of the topos of trees has been formalized in the literature. To fill this hole, we formalize most constructions, definitions, and propositions in the present report. The original goal of the formalization was to experiment with a model of Iris constructed using the internal logic of the topos of trees, as alluded to in \cref{sec:intro-guarded-rec}. This is however left to future work.
 
 An important insight gained from the formalization concerns the representation of finite types.
 Our experiments have shown that the traditional inductive representation of the natural number indexed family \coqi{fin n} of finite types seemed to entail messy type coercions. Representing elements of \coqi{fin n} as natural numbers equipped with a proof that they are less than $n$ proved to be more fruitful. The details are given in \cref{sec:finite-types}.
@@ -88,7 +82,7 @@ Our contributions are the following:
 
     \item We present a novel axiom from which previously known inference rules exchanging the $\later$ modality with a quantifier can be derived. Our axiom relies on the observation that we can decompose the $\later$ modality into two components, and then study the interaction between the quantifiers and the two components separately.
 
-    \item Finally, we provide a formalization of the topos of trees in the Coq proof assistant, including a shallow embedding of its internal logic. We provide details and technical insights in the report.
+    \item Finally, we have formalized the topos of trees in the Coq theorem prover~\cite{coq}, including a shallow embedding of its internal logic. We provide details and technical insights in the report.
 \end{items}
 
 In \cref{sec:tot}, we review the main semantic definitions in the topos of trees. Then we study its internal logic in \cref{sec:internal-logic}. In \cref{sec:coq}, we elaborate on some design choices and technical challenges of our Coq formalization. Related work is discussed in \cref{sec:related}. Finally, \cref{sec:conclusion} concludes with a summary and future directions.
@@ -105,7 +99,7 @@ natural numbers with their usual ordering.
 
 Explicitly, this means that an object $X$ in $\TOT$ is a family of
 sets $(X_n)_{n \in \omega}$ indexed by the natural numbers, together with
-restriction maps $(r^X_n \colon X_{n+1} \to X_n)_{n \in \omega}$. This can be depicted as the diagram
+restriction maps $(r^X_n \colon X_{n+1} \to X_n)_{n \in \omega}$. This can be depicted as
 % https://q.uiver.app/?q=WzAsNCxbMCwwLCJYXzAiXSxbMiwwLCJYXzIiXSxbMSwwLCJYXzEiXSxbMywwLCJcXGNkb3RzIl0sWzIsMCwicl5YXzAiLDJdLFsxLDIsInJeWF8xIiwyXSxbMywxLCJyXlhfMiIsMl1d
 \[\begin{tikzcd}
 	{X_0} & {X_1} & {X_2} & \cdots
@@ -115,7 +109,7 @@ restriction maps $(r^X_n \colon X_{n+1} \to X_n)_{n \in \omega}$. This can be de
 \end{tikzcd}\]
 A morphism $f$ from $X$ to $Y$  is a family of maps
 $(f_n \colon X_n \to Y_n)_{n \in \omega}$
-commuting with the restriction maps, as shown by the following commutative diagram:
+commuting with the restriction maps, as shown by the following commutative diagram.
 % https://q.uiver.app/?q=WzAsOCxbMCwwLCJYXzAiXSxbMSwwLCJYXzEiXSxbMiwwLCJYXzIiXSxbMCwxLCJZXzAiXSxbMSwxLCJZXzEiXSxbMiwxLCJZXzIiXSxbMywwLCJcXGNkb3RzIl0sWzMsMSwiXFxjZG90cyJdLFsxLDAsInJeWF8wIiwyXSxbMiwxLCJyXlhfMSIsMl0sWzQsMywicl5ZXzAiXSxbNSw0LCJyXllfMSJdLFswLDMsImZfMCIsMl0sWzEsNCwiZl8xIiwyXSxbMiw1LCJmXzIiLDJdLFs2LDIsInJeWF8yIiwyXSxbNyw1LCJyXllfMiJdXQ==
 \[\begin{tikzcd}
 	{X_0} & {X_1} & {X_2} & \cdots \\
@@ -135,12 +129,12 @@ $r_n \circ \cdots \circ r_{m-1}$. Moreover, if $x \in X_m$ and $n \le m$, we use
 \emph{restriction of $x$ to $n$}.
 \end{defn}
 
-Intuitively, the topos of trees provides a setting in which sets can evolve over time. Given an object $X$, the set $X_n$ can be thought of as the observable part of $X$ after $n$ steps. Here, "step" is an abstract notion, but in the case of programming it more or less corresponds to computation steps.
+Intuitively, the topos of trees provides a setting in which sets can evolve over time. Given an object $X$, the set $X_n$ can be thought of as the observable part of $X$ after $n$ steps. Here, `step' is an abstract notion, but in the case of programming, it more or less corresponds to computation steps.
 To reinforce this intuition, we consider a non-trivial example of objects in the
 topos of trees.
 
 \begin{ex} \label{ex:stream}
-We define the object $\oStr$ of \emph{step-indexed streams} of natural numbers as follows:
+We define the object $\oStr$ of \emph{step-indexed streams} of natural numbers as follows.
 % https://q.uiver.app/?q=WzAsNCxbMCwwLCJcXG1hdGhiYntOfSJdLFsyLDAsIlxcbWF0aGJie059XjMiXSxbMSwwLCJcXG1hdGhiYntOfV4yIl0sWzMsMCwiXFxjZG90cyJdLFsyLDAsInJee1xcbWF0aHJte1N0cn19XzAiLDJdLFszLDEsInJee1xcbWF0aHJte1N0cn19XzIiLDJdLFsxLDIsInJee1xcbWF0aHJte1N0cn19XzEiLDJdXQ==
 \[\begin{tikzcd}
 	{\N} & {\N^2} & {\N^3} & \cdots
@@ -148,13 +142,13 @@ We define the object $\oStr$ of \emph{step-indexed streams} of natural numbers a
 	\arrow["{r^{\oStr}_2}"', from=1-4, to=1-3]
 	\arrow["{r^{\oStr}_1}"', from=1-3, to=1-2]
 \end{tikzcd}\]
-where $r^{\oStr}_n \colon \N^{n+2} \to \N^{n+1}$ is the projection
-$(s_0, \ldots, s_n, s_{n+1}) \mapsto (s_0, \ldots, s_n)$. At step-index $n$ we only have access the first $(n+1)$ elements of the stream, and thus we set
-$\oStr_n = \N^{n+1}$. The restriction map $r^{\oStr}_n$ expresses the connection between the views of the \emph{same} stream at two consecutive time steps:
+Here, $r^{\oStr}_n \colon \N^{n+2} \to \N^{n+1}$ is the projection
+$(s_0, \ldots, s_n, s_{n+1}) \mapsto (s_0, \ldots, s_n)$. At step-index $n$, we only have access to the first $(n+1)$ elements of the stream, and thus we set
+$\oStr_n = \N^{n+1}$. The restriction map $r^{\oStr}_n$ connects the approximations of the \emph{same} stream at two consecutive time steps:
 if the view at index $(n+1)$ is $(s_0, \ldots, s_n, s_{n+1})$, then the view at index $n$ is $(s_0, \ldots, s_n)$.
 \end{ex}
 
-The category $\TOT$, being a topos, has many useful categorical and logical properties (for an introduction, see e.g.~\cite{lambek:scott,maclane:moerdijk}). The following definition collects the most important of these properties.
+The category $\TOT$, being a topos, enjoys many useful categorical properties (for an introduction, see e.g.~\cite{lambek:scott,maclane:moerdijk}). The following definition collects the most important of these properties.
 \begin{defn} \label{def:tot-struct}
 \hfill \vspace{-6pt}
 \begin{enum}
@@ -168,14 +162,13 @@ The category $\TOT$, being a topos, has many useful categorical and logical prop
     $\Delta f$ as well.
     
     \item The product of $X$ and $Y$ is the family
-    $(X \times Y)_n = X_n \times Y_n$ together with restriction maps
+    $(X \times Y)_n = X_n \times Y_n$ together with the restriction maps
     $r^X_n \times r^Y_n \colon X_{n+1} \times Y_{n+1} \to X_n \times Y_n$.
     Similarly, their coproduct has $(X + Y)_n = X_n + Y_n$ and
     $r^X_n + r^Y_n \colon X_{n+1} + Y_{n+1} \to X_n + Y_n$ as restriction maps. The
     projections and coprojections will be denoted by $\mprojl, \mprojr$ and
     $\minl, \minr$, respectively. We will use the notation $(f, g)$ and
-    $[f, g]$ for the unique morphism arising from the
-    universal property of the product and coproduct, respectively.
+    $[f, g]$ for the tupling and cotupling of $f$ and $g$, respectively.
 
     \item
     Given $X$ and $Y$, the $n$-th component of the
@@ -190,7 +183,7 @@ The category $\TOT$, being a topos, has many useful categorical and logical prop
 \end{enum}
 \end{defn}
 
-As an object of $\TOT$ consists of a family of sets (as opposed to a single set), we cannot talk about elements of an object directly. Instead, we have the following categorical definition:
+As an object of $\TOT$ consists of a family of sets (as opposed to a single set), we cannot talk about elements of an object directly. Instead, we have the following categorical definition.
 \begin{defn} \label{def:glob-el}
 A \emph{global element} of an object $X$ is a morphism $\1 \to X$.
 \end{defn}
@@ -202,9 +195,9 @@ We tend to think of global elements $\1 \to X$ as being real elements. Indeed, t
 \begin{ex} \label{ex:morphisms}
 \hfill \vspace{-6pt}
 \begin{enum}
-    \item The infinite stream of natural numbers $\mor{nats} \colon \1 \to \oStr$ can be defined by $\mor{nats}_n = (0, \ldots, n)$. In general, any infinite
+    \item The infinite stream $\mor{nats} \colon \1 \to \oStr$ of natural numbers can be defined as $\mor{nats}_n = (0, \ldots, n)$. In general, any infinite
     sequence $s \in \N^\omega$ can be represented as the global element
-    $\bar{s} \colon \1 \to \oStr$, $\bar{s}_n = (s_0, \ldots, s_n)$.
+    \[ \bar{s} \colon \1 \to \oStr,\ \bar{s}_n = (s_0, \ldots, s_n). \]
 
     \item The stream function $\mor{inc} \colon \N^\omega \to \N^\omega, \mor{inc}(s)_n = s_n + 1$ adds one to every element in a stream. This function can also be defined on approximations:
     we have functions
@@ -214,9 +207,9 @@ We tend to think of global elements $\1 \to X$ as being real elements. Indeed, t
     $\mor{inc} \colon \oStr \to \oStr$ in $\TOT$.
 
     \item One may wonder if it is possible to generalize the previous example to all
-    stream functions $\N^\omega \to \N^\omega$. The answer is no, but it is possible for \emph{causal functions}, that is, functions such that the $n$-th element of the output depends only on the first $n$ elements of the input. Such functions $f \colon \N^\omega \to \N^\omega$ can be written as $f(s)_n = g_n(s_0, \ldots, s_n)$ for some $g_n \colon \N^{n+1} \to \N$, and can be represented by
+    stream functions $\N^\omega \to \N^\omega$. The answer is no, but it is possible for \emph{causal functions}, that is, functions such that the $n$-th element of the output depends only on the first $n$ elements of the input. Such functions $f \colon \N^\omega \to \N^\omega$ can be written as $f(s)_n = g_n(s_0, \ldots, s_n)$ for some $g_n \colon \N^{n+1} \to \N$, and can be represented as
     \[ \bar{f} \colon \oStr \to \oStr,\ 
-        \bar{f}_n(s_0, \ldots, s_n) = (g_0(s_0), \ldots, g_n(s_0, \ldots, s_n)) \]
+        \bar{f}_n(s_0, \ldots, s_n) = (g_0(s_0), \ldots, g_n(s_0, \ldots, s_n)). \]
     We shall see in \cref{sec:guarded-rec} how to encode some non-causal functions in $\TOT$.
 
     \item The \emph{head} function $\mhd \colon \oStr \to \N$ is given by the components
@@ -227,7 +220,7 @@ We tend to think of global elements $\1 \to X$ as being real elements. Indeed, t
 In programming-motivated examples, we prefer to use the syntax of simply-typed lambda calculus, extended with appropriate type formers, to write terms. These are interpreted in the cartesian closed category $\cat{S}$ as usual~\cite{crole:1993,taylor:1999}.
 In particular, the interpretation of a term $\typed{\Gamma}{t}{A}$ of type $A$ in context $\Gamma$ is a morphism $\sem{t} \colon \sem{\Gamma} \to \sem{A}$, where $\sem{\Gamma}$ is the product of the interpretations of the types in $\Gamma$, and a closed term of type $A$ is interpreted as a global element of $\sem{A}$. For instance, the term
 $\typed{f : \N \to \N}{\lam{x}{\N}{\app{f}{(\app{\suc}{x})}}}{\N \to \N}$ denotes the
-morphism $\curry{(\ev \circ (\id \times \nsuc))} \colon (\expt{\N}{\N}) \to (\expt{\N}{\N})$, where $\nsuc$ is the successor function on natural numbers. The semantics of lambda terms (among other things) is described in more detail in \cref{sec:internal-logic-def} (\cref{def:logic-semantics}).
+morphism $\curry{(\ev \circ (\id \times \nsuc))} \colon (\expt{\N}{\N}) \to (\expt{\N}{\N})$, where $\nsuc$ is the successor function on natural numbers. The semantics of lambda terms is described formally in \cref{def:logic-semantics}.
 
 \subsection{Guarded recursion} \label{sec:guarded-rec}
 
@@ -264,7 +257,7 @@ $(\Later{f})_0 = \id[\{*\}]$ and $(\Later f)_{n+1} = f_n$.
 \end{ex}
 
 \begin{defn} \label{def:next}
-We define the natural transformation $\mnxt \colon \id[\cat{S}] \to \Later$, whose components $\mnxt_X \colon X \to \Later{X}$ are given by $(\mnxt_X)_n = r^{\Later{X}}_n$. This is a well-defined family of morphisms in $\TOT$ since $\mnxt_X$ respects the restrictions maps, as shown below:
+We define the natural transformation $\mnxt \colon \id[\cat{S}] \to \Later$, whose components $\mnxt_X \colon X \to \Later{X}$ are given by $(\mnxt_X)_n = r^{\Later{X}}_n$. This is a well-defined family of morphisms in $\TOT$ since $\mnxt_X$ respects the restrictions maps, as shown below.
 % https://q.uiver.app/?q=WzAsOCxbMSwwLCJYXzEiXSxbMiwwLCJYXzIiXSxbMCwwLCJYXzAiXSxbMCwxLCJcXHsqXFx9Il0sWzEsMSwiWF8wIl0sWzIsMSwiWF8xIl0sWzMsMCwiXFxjZG90cyJdLFszLDEsIlxcY2RvdHMiXSxbNiwxLCJyXlhfMiIsMl0sWzEsMCwicl5YXzEiLDJdLFswLDIsInJeWF8wIiwyXSxbNCwzLCIhIl0sWzUsNCwicl5YXzAiXSxbNyw1LCJyXlhfMSJdLFsyLDMsIiEiLDJdLFswLDQsInJeWF8wIiwyXSxbMSw1LCJyXlhfMSIsMl1d
 \[\begin{tikzcd}
 	{X_0} & {X_1} & {X_2} & \cdots \\
@@ -300,10 +293,10 @@ $(\Later{\mprojl}, \Later{\mprojr})$. \qedhere
 
 \begin{defn} \label{def:J}
 Define $J_{X, Y} \colon \Later{(\expt{X}{Y})} \to (\expt{\Later{X}}{\Later{Y}})$
-to be the exponential transpose of the composite
+to be the exponential transpose of
 % https://q.uiver.app/?q=WzAsMyxbMCwwLCJcXExhdGVyeyhcXGV4cHR7WH17WX0pfSBcXHRpbWVzIFxcTGF0ZXJ7WH0iXSxbMiwwLCJcXExhdGVyeygoXFxleHB0e1h9e1l9KSBcXHRpbWVzIFgpfSJdLFszLDAsIlxcTGF0ZXJ7WX0iXSxbMCwxLCJsX3tYIFxcdG8gWSwgWH0iXSxbMSwyLCJcXExhdGVye1xcZXZ9Il1d
 \[\begin{tikzcd}
-	{\Later{(\expt{X}{Y})} \times \Later{X}} && {\Later{((\expt{X}{Y}) \times X)}} & {\Later{Y}}
+	{\Later{(\expt{X}{Y})} \times \Later{X}} && {\Later{((\expt{X}{Y}) \times X)}} & {\Later{Y}}.
 	\arrow["{l_{X \to Y, X}}", from=1-1, to=1-3]
 	\arrow["{\Later{\ev}}", from=1-3, to=1-4]
 \end{tikzcd}\]
@@ -335,7 +328,7 @@ f_{n+1}(r^X_n(x_{n+1})) = f_{n+1}(x_n)$. Thus, the definition of $x$ was forced.
 \end{proof}
 \end{prop}
 We will write $\fix{f}$ for the unique fixed point of $f \colon \Later{X} \to X$. Note that the existence of such fixed points does not compromise consistency, as there is in general no morphism $\Later{X} \to X$. In particular, there is no morphism $\Later{\0} \to \0$, so the above proposition does not give us an inhabitant of the empty type.
-In contrast, this morphism does exist in the OFE model of Iris~\cite{jung:2018:jfp}. As a result, fixed points in Iris are designed differently: we can take the fixed point of an arbitrary map $X \to X$, provided we can prove that it is \emph{contractive} (see~\cite{jung:2018:jfp}, Section 4.2).
+In contrast, this morphism does exist in the OFE model of Iris~\cite{jung:2018:jfp}. As a result, fixed points in Iris are designed differently: we can take the fixed point of an arbitrary map $X \to X$, provided we can prove that it is \emph{contractive} (see~\cite[Section 4.2]{jung:2018:jfp}).
 
 \begin{ex} \label{ex:fixpoint}
 Let $f \colon \Later{\oStr} \to \oStr$ be the morphism given by the components $f_0(*) = 0$ and
@@ -343,12 +336,12 @@ $f_{n+1}(s_0, \ldots, s_n) = (0, s_1, \ldots, s_n)$. Alternatively, $f$ could al
 $\fix{f} \colon \1 \to \oStr$ represents the constant stream with value 0.
 \end{ex}
 
-Note that the construction of \cref{prop:fixpoint} is external, meaning that the assignment of the fixed point $\fix{f}$ to the morphism $f$ happens in the metalogic, instead of being an operation in $\TOT$. Thus, it does not correspond to a term of type ($\expt{\Later{X}}{X}) \to X$ in lambda calculus. It turns out, however, that we can \emph{define} such a term using this simple fixed point operator and other existing structure.
+Note that the construction of \cref{prop:fixpoint} is external, meaning that the assignment of the fixed point $\fix{f}$ to the morphism $f$ happens in the metalogic instead of being an operation in $\TOT$. Thus, it does not correspond to a term of type ($\expt{\Later{X}}{X}) \to X$ in lambda calculus. It turns out, however, that we can \emph{define} such a term using this fixed point operator and other existing structure.
 
 \begin{defn} \label{def:fix}
 The morphism $\mor{fix}_X \colon (\expt{\Later{X}}{X}) \to X$ is defined as follows:
-\[ \mor{fix}_X = \ev \circ \mprod{\fix{(\curry{f})} \circ \mterm}{\id} \]
-where $f \colon \Later{(\expt{(\expt{\Later{X}}{X})}{X})} \times (\expt{\Later{X}}{X}) \to X$ is the middle horizontal composite in the diagram
+\[ \mor{fix}_X = \ev \circ \mprod{\fix{(\curry{f})} \circ \mterm}{\id}, \]
+where $f$ is the middle horizontal composite in the diagram
 % https://q.uiver.app/?q=WzAsNixbMCwxLCJcXExhdGVyeyhcXGV4cHR7KFxcZXhwdHtcXExhdGVye1h9fXtYfSl9e1h9KX0gXFx0aW1lcyAoXFxleHB0e1xcTGF0ZXJ7WH19e1h9KSJdLFswLDIsIihcXGV4cHR7XFxMYXRlcnsoXFxleHB0e1xcTGF0ZXJ7WH19e1h9KX19e1xcTGF0ZXJ7WH19KSBcXHRpbWVzIFxcTGF0ZXJ7KFxcZXhwdHtcXExhdGVye1h9fXtYfSl9Il0sWzEsMiwiXFxMYXRlcntYfSJdLFsxLDAsIlxcZXhwdHtcXExhdGVye1h9fXtYfSJdLFsxLDEsIihcXGV4cHR7XFxMYXRlcntYfX17WH0pIFxcdGltZXMgXFxMYXRlcntYfSJdLFszLDEsIlgiXSxbMSwyLCJcXGV2IiwyXSxbMCwxLCJKIFxcdGltZXMgXFxtb3J7bmV4dH0iLDJdLFswLDMsIlxccGlfMiJdLFswLDQsIiIsMix7InN0eWxlIjp7ImJvZHkiOnsibmFtZSI6ImRhc2hlZCJ9fX1dLFs0LDUsIlxcZXYiXSxbNCwyXSxbNCwzXV0=
 \[\begin{tikzcd}
 	& {\expt{\Later{X}}{X}} \\
@@ -369,7 +362,7 @@ That is,
 If we write $\rec{x}{\Later{X}}{t}$ for the fixed point of a term $t$ of type $X$ with one free variable $x$ of type $\Later{X}$, then the above definition can be expressed as the program
 \[ \name{fix}(f) =
     \app{(\rec{g}{\Later{((\Later{X} \to X) \to X)}}{
-        \lam{f}{\Later{X} \to X}{\app{f}{(g \ap \nxt{f})}}})} f \]
+        \lam{f}{\Later{X} \to X}{\app{f}{(g \ap \nxt{f})}}})} f. \]
 To make notation easier, we adopt the fixed point operator of \cref{def:fix} as a primitive in our informal programs, so that we can take fixed points of functions with parameters. Thus, if $\typed{\conext{\Gamma}{x}{\Later{X}}}{t}{X}$,
 then $\typed{\Gamma}{\rec{x}{\Later{X}}{t}}{X}$ is interpreted as
 $\mor{fix}_X \circ \curry{t}$ (see \cref{def:logic-semantics}).
@@ -377,32 +370,32 @@ $\mor{fix}_X \circ \curry{t}$ (see \cref{def:logic-semantics}).
 \begin{ex} \label{ex:guarded-recursion}
 \hfill \vspace{-6pt}
 \begin{enum}
-    \item We show how to capture the morphism $\mor{inc} \colon \oStr \to \oStr$ from \cref{ex:morphisms} internally in lambda calculus. To this end, we first perform a series of transformations on the original definition.
+    \item We show how to define the morphism $\mor{inc} \colon \oStr \to \oStr$ from \cref{ex:morphisms} in lambda calculus. To this end, we first perform a series of transformations on the original definition.
     
     The components $\mor{inc}_n$ can also be defined by recursion on $n$ as
     \begin{align*}
-    \mor{inc}_0(s_0) &= s_0 + 1 \\
-    \mor{inc}_{n+1}(s_0, s_1, \ldots, s_{n+1}) &= (s_0 + 1, \mor{inc}_n(s_1, \ldots, s_{n+1}))
+    \mor{inc}_0(s_0) &= s_0 + 1, \\
+    \mor{inc}_{n+1}(s_0, s_1, \ldots, s_{n+1}) &= (s_0 + 1, \mor{inc}_n(s_1, \ldots, s_{n+1})).
     \end{align*}
-    Employing the morphisms $\mhd$, $\mtl$, and $\mcons$ from \cref{ex:morphisms,ex:later}, this can be written as
+    Employing the morphisms $\mhd$, $\mtl$, and $\mcons$ from \cref{ex:morphisms,ex:later}, the above two equations can be written as
     \begin{align*}
-    \mor{inc}_0(s) &= \mcons_0(\hd_0(s) + 1, \mtl_0(s)) \\
-    \mor{inc}_{n+1}(s) &= \mcons_{n+1}(\mhd_{n+1}(s) + 1, \mor{inc}_{n}(\mtl_{n+1}(s)))
+    \mor{inc}_0(s) &= \mcons_0(\hd_0(s) + 1, \mtl_0(s)), \\
+    \mor{inc}_{n+1}(s) &= \mcons_{n+1}(\mhd_{n+1}(s) + 1, \mor{inc}_{n}(\mtl_{n+1}(s))).
     \end{align*}
     If we agree to the convention that $\oStr_{-1} = \{*\}$ and $\mor{inc}_{-1} = \id[\{*\}]$, then we can merge the previous two clauses into the equation
-    \[ \mor{inc}_n(s) = \mcons_n(\mhd_n(s) + 1, \mor{inc}_{n-1}(\mtl_n(s))) \]
+    \[ \mor{inc}_n(s) = \mcons_n(\mhd_n(s) + 1, \mor{inc}_{n-1}(\mtl_n(s))). \]
     
     This recursive definition is then reflected in lambda calculus as the term
     \[ \name{inc} = \rec{r}{\Later{(\Str \to \Str)}}{
        \lam{s}{\Str}{(\app{\hd}{s} + 1) \cons
-          (r \ap \app{\tl}{s})}} : \Str \to \Str \]
+          (r \ap \app{\tl}{s})}} : \Str \to \Str. \]
     
     \item The constant stream with value zero (see \cref{ex:fixpoint}) can be defined as
-    \[ \name{zeros} = \rec{s}{\Later{\Str}}{0 \cons s} : \Str \]
+    \[ \name{zeros} = \rec{s}{\Later{\Str}}{0 \cons s} : \Str. \]
     
     \item We can use $\name{inc}$ to define the stream of natural numbers:
     \[ \name{nats} = \rec{s}{\Later{\Str}}{
-            0 \cons (\nxt{\name{inc}} \ap s)} : \Str \]
+            0 \cons (\nxt{\name{inc}} \ap s)} : \Str. \]
 
     \item A generalization of $\name{inc}$ is the program
     \[ \name{add} = \lam{n}{\N}{
@@ -414,7 +407,7 @@ $\mor{fix}_X \circ \curry{t}$ (see \cref{def:logic-semantics}).
 We refer the reader to~\cite{clouston:2017:lmcs} for many more examples.
 
 \begin{rem} \label{rem:coinductive-types}
-Although the $\Later$ type former enables guarded recursion, it is not sufficient to express true coinductive types. For instance, the object $\obj{Str}$ from \cref{ex:stream} models guarded recursive streams, whereas coinductive streams are given by the constant object $\N^\omega$. Unfortunately, guarded recursive streams are not enough to represent all stream functions. In particular, using the system to be introduced in \cref{sec:internal-logic-def}, we cannot define the function $\mor{even} \colon \N^\omega \to \N^\omega$ keeping only elements at even indices.
+Although the $\Later$ type former enables guarded recursion, it is not sufficient to express true coinductive types. For instance, the object $\obj{Str}$ from \cref{ex:stream} models guarded recursive streams, whereas coinductive streams are given by the constant object $\N^\omega$. Unfortunately, guarded recursive streams are not enough to represent all stream functions. In particular, using the system to be introduced in \cref{sec:internal-logic-def}, we cannot define the function $\mor{even} \colon \N^\omega \to \N^\omega$ that keeps only elements at even indices.
 \end{rem}
 
 \end{ex}
@@ -433,13 +426,13 @@ Normally, propositions in classical logic are either true or false. That is, the
 
 More precisely, let $\ol{\N} = \N \cup \{\omega\}$ be the set of natural numbers extended with an additional element $\omega$ which is greater than any natural number. We think of $n \in \N$ as the truth value 'something holds for $n$ steps', the case $n = 0$ corresponding to the truth value \emph{false}. The element $\omega$ is thought of as the truth value \emph{true}, i.e. that 'something holds forever'. The interpretation of the propositional connectives is then the following:
 \begin{align*}
-\top &= \omega \\
-\bot &= 0 \\
-m \wedge n &= \min(m, n) \\
-m \vee n &= \max(m, n) \\
+\top &= \omega, \\
+\bot &= 0, \\
+m \wedge n &= \min(m, n), \\
+m \vee n &= \max(m, n), \\
 m \impl n &= \begin{cases}
-               n & \text{if $m > n$} \\
-               \omega & \text{otherwise} \\
+               n & \text{if $m > n$,} \\
+               \omega & \text{otherwise.} \\
              \end{cases}
 \end{align*}
 
@@ -448,7 +441,7 @@ $\min(m, n)$ steps. Disjunction is similar. The implication $\phi \impl \psi$ ho
 
 Semantic entailment $m \vDash n$ is simply defined as the order relation on $\ol{\N}$. Thus, $\phi \vDash \psi$ means $\psi$ holds for at least as long as $\phi$ does. One can easily check that this interpretation is sound with respect to the standard inference rules of intuitionistic propositional logic. However, the law of excluded middle does not hold in this model: for $n > 0$ we have $n \vee \neg n = n$ (where $\neg n$ is $n \impl \bot$).
 
-A slightly different perspective on this idea is to regard natural numbers not as the truth values themselves, but as time steps, and to define when a proposition holds at a certain time step. Thus, a proposition is identified with the set of time steps at which it holds. To be consistent with the previous interpretation, we impose the condition that if a proposition holds at a given step, it should also hold for all smaller time steps. This leads us to the following definition:
+A slightly different perspective on this idea is to regard natural numbers not as the truth values themselves, but as time steps, and to define when a proposition holds at a certain time step. Thus, a proposition is identified with the set of time steps at which it holds. To be consistent with the previous interpretation, we impose the condition that if a proposition holds at a given step, it should also hold for all smaller time steps. This leads us to the following definition.
 \begin{defn} \label{def:siprop}
 The set of truth values is the set
 \[ S = \setof{A \subs \N}{\forall i, j \in \N.\,j \le i \wedge i \in A \To j \in A} \]
@@ -456,30 +449,30 @@ of \emph{downward closed subsets} of $\N$.
 \end{defn}
 The interpretation of the propositional connectives is as follows:
 \begin{align*}
-\top &= \N \\
-\bot &= \nul \\
-A \wedge B &= A \cap B \\
-A \vee B &= A \cup B \\
-A \impl B &= \setof{i \in \N}{\forall j \le i.\,j \in A \To j \in B}
+\top &= \N, \\
+\bot &= \nul, \\
+A \wedge B &= A \cap B, \\
+A \vee B &= A \cup B, \\
+A \impl B &= \setof{i \in \N}{\forall j \le i.\,j \in A \To j \in B}.
 \end{align*}
 It is straightforward to prove that if $A$ and $B$ are downward closed, so are $A \wedge B$ and $A \vee B$; $A \impl B$ is downward closed by definition. Semantic entailment is given by the subset relation.
 
 In a classical metatheory, this model is equivalent to the previous one, in the sense that there is bijection
 $b \colon \ol{\N} \cong S$ preserving the interpretation of each of the connectives. Specifically,
 $b$ sends $n \in \ol{\N}$ to the interval $\fino{n} = \setof{m \in \N}{m < n}$; in
-particular, $b(0) = \nul$ and $b(\omega) = \N$. However, the latter interpretation is more constructive. This becomes clear once we consider quantifiers, which are essentially infinitary versions of conjunction and disjunction. In the first model, they are given by
+particular, $b(0) = \nul$ and $b(\omega) = \N$. However, the latter interpretation is more constructive. This becomes clear once we consider quantifiers, which are infinitary versions of conjunction and disjunction. In the first model, they are given by
 \begin{align*}
-\forall P &= \inf_{x \in X}{P(x)} \\
-\exists P &= \sup_{x \in X}{P(x)}
+\forall P &= \inf_{x \in X}{P(x)}, \\
+\exists P &= \sup_{x \in X}{P(x)},
 \end{align*}
 where $X$ is a set (the domain of quantification) and $P \colon X \to \N$ is a predicate on $X$. Thus, the quantifiers are operations of type $(X \to \N) \to \N$. Unfortunately, if $X$ is infinite, then the above definitions of these operations are uncomputable.
 
-For formalization purposes in a constructive type theory, such as Coq or Agda, it is important that all functions be computable. This can be achieved in the second model, where the interpretation of the quantifiers is
+For formalization purposes in a constructive type theory such as Coq or Agda, it is crucial that all functions be computable. This can be achieved in the second model, where the interpretation of the quantifiers is given by
 \begin{align*}
- \forall P &= \bigcap_{x \in X}{P(x)} = \setof{i \in \N}{\forall x \in X.\,i \in P(x)} \\
-\exists P &= \bigcup_{x \in X}{P(x)} = \setof{i \in \N}{\exists x \in X.\,i \in P(x)} 
+ \forall P &= \bigcap_{x \in X}{P(x)} = \setof{i \in \N}{\forall x \in X.\,i \in P(x)}, \\
+\exists P &= \bigcup_{x \in X}{P(x)} = \setof{i \in \N}{\exists x \in X.\,i \in P(x)},
 \end{align*}
-for $P \colon X \to S$. These definitions are constructive since, type-theoretically, subsets of $\N$ are given by functions $\N \to \Prop$.
+where $P \colon X \to S$. These definitions are constructive since, type-theoretically, subsets of $\N$ are given by functions $\N \to \Prop$.
 
 So far we have shown that there is model a of intuitionistic first-order logic in which formulas are interpreted as extended natural numbers (or, equivalently, downward closed subsets of $\N$). To end this section, we observe that the model supports an additional operation with meaningful logical content. Namely, it is the successor function $s \colon \ol{\N} \to \ol{\N}$ sending $n \in \N$ to $n + 1$ and $\omega$ to itself. Under the equivalence $b \colon \ol{\N} \cong S$, this corresponds to the operation
 \begin{equation} \label{eq:siprop-later}
@@ -498,7 +491,7 @@ Recall that an element $A \in S$ is thought of as the set of time steps at which
 The \emph{subobject classifier} $\SOC$ of $\TOT$ has components
 \[ \SOC_n = \setof{A \subs \fin{n}}{\forall i, j \in \fin{n}.\,j \le i \wedge i \in A \To j \in A} \]
 with restriction maps
-\[ r^\SOC_n(A) = A \cap \fin{n} \]
+\[ r^\SOC_n(A) = A \cap \fin{n}. \]
 \end{defn}
 \begin{rem} \label{rem:soc}
 Technically, the subobject classifier is not the object $\SOC$ itself, but the morphism
@@ -511,8 +504,8 @@ $\1 \xrightarrow{\mtrue} \SOC$ that picks out the truth value `true', defined be
     \item We can lift a set-theoretic predicate $A \subs X$ to a morphism
     $\bar{A} \colon \Delta X \to \SOC$ given by
     \[ \bar{A}_n(x) = \begin{cases}
-                          \fin{n} & \text{ if $x \in A$} \\
-                          \nul & \text{ if $x \notin A$}
+                          \fin{n} & \text{ if $x \in A$,} \\
+                          \nul & \text{ otherwise.}
                       \end{cases} \]
     More abstractly, let $\2 = \{\btrue, \bfalse\}$ denote the set of booleans. There is a morphism $c \colon \2 \to \SOC$ whose $n$-th component sends $\btrue$ to $\fin{n}$ and $\bfalse$ to $\nul$. Assuming a classical metatheory, subsets $A$ of $X$ correspond to \emph{characteristic functions} $\chi_A \colon X \to \2$. Then $\bar{A}$ is simply described as the composite $X \xrightarrow{\chi_A} \2 \xrightarrow{c} \SOC$.
     
@@ -520,7 +513,7 @@ $\1 \xrightarrow{\mtrue} \SOC$ that picks out the truth value `true', defined be
 
     \item As a slightly more interesting example, consider the stream predicate
     \[ \mor{isZero} \colon \oStr \to \SOC,\
-       \mor{isZero}_n(s) = \setof{i \in \fin{n}}{\forall j \le i.\,s_j = 0} \]
+       \mor{isZero}_n(s) = \setof{i \in \fin{n}}{\forall j \le i.\,s_j = 0}. \]
     As the name suggests, $\mor{isZero}$ checks whether its argument stream is the constant zero stream. However, the truth value of the predicate is not a mere true or false, but the set of step-indices $i$ such that the stream is constant zero up to $i$. Intuitively, if the first $n$ elements of a stream are zero, then we can say that it is zero for $n$ time steps.
 \end{enum}
 \end{ex}
@@ -532,15 +525,15 @@ The propositional connectives in $\TOT$ are defined as follows:
 \vspace{-6pt}
 \begin{items}
     \item True: $\mtrue \colon \1 \to \SOC$,
-    $\mtrue_n = \fin{n}$
+    $\mtrue_n = \fin{n}$.
     \item False: $\mfalse \colon \1 \to \SOC$,
-    $\mfalse_n = \nul$
+    $\mfalse_n = \nul$.
     \item Conjunction: $\mconj \colon \SOC \times \SOC \to \SOC$, 
-    $\mconj_n(A, B) = A \cap B$
+    $\mconj_n(A, B) = A \cap B$.
     \item Disjunction: $\mdisj \colon \SOC \times \SOC \to \SOC$,
-    $\mdisj_n(A, B) = A \cup B$
+    $\mdisj_n(A, B) = A \cup B$.
     \item Implication: $\mimpl \colon \SOC \times \SOC \to \SOC$,
-    $\mimpl_n(A, B) = \setof{i \in \fin{n}}{\forall j \le i.\,j \in A \To j \in B}$
+    $\mimpl_n(A, B) = \setof{i \in \fin{n}}{\forall j \le i.\,j \in A \To j \in B}$.
 \end{items}
 \end{defn}
 
@@ -549,10 +542,10 @@ The quantifiers are a bit trickier: since the domain of quantification is now a 
 \begin{defn} \label{def:internal-quantifiers}
 The universal quantifier in $\TOT$ is the morphism
 \[ \mall \colon (\pow{X}) \to \SOC,\ 
-   \mall_n(P) = \setof{i \in \fin{n}}{\forall j \le i, x \in X_j.\,j \in P_j(x)} \]
+   \mall_n(P) = \setof{i \in \fin{n}}{\forall j \le i, x \in X_j.\,j \in P_j(x)}. \]
 The existential quantifier in $\TOT$ is the morphism
 \[ \mex \colon (\pow{X}) \to \SOC,\ 
-   \mex_n(P) = \setof{i \in \fin{n}}{\exists x \in X_i.\,i \in P_i(x)} \]
+   \mex_n(P) = \setof{i \in \fin{n}}{\exists x \in X_i.\,i \in P_i(x)}. \]
 \end{defn}
 
 In the case of $\mall$, we need to quantify over the components at all lower step indices to make the resulting set downward closed. For $\mex$, this is unnecessary: if $i \in P_i(x)$ for some $x \in X_i$, then $j \in P_j(\restr{x}{j})$ for all $j \le i$ by the compatibility requirement for $P$. Note also that the type of predicates on an object $X$ is given by the exponential $\pow{X}$ in $\TOT$, also called the \emph{power object} of $X$, just like how predicates in the set-theoretical model of \cref{sec:siprop} are functions $X \to S$.
@@ -560,11 +553,11 @@ In the case of $\mall$, we need to quantify over the components at all lower ste
 The later modality of \cref{sec:siprop} (\cref{eq:siprop-later}) also has an analogue in $\TOT$ as a morphism $\SOC \to \SOC$. However, similarly to $\mcons$ (\cref{ex:later}), we can give it the stronger type $\Later{\SOC} \to \SOC$, which is necessary for the definition of guarded recursive predicates. We use the name $\mlift$ for the stronger version, and reserve $\mlater$ for the original operation, following tradition.
 
 \begin{defn} \label{def:lift-later}
-We define the morphism $\mlift \colon \Later{\SOC} \to \SOC$, by
+We define the morphism $\mlift \colon \Later{\SOC} \to \SOC$ by
 \begin{align*}
-\mlift_{0}(*) &= \{0\} \\
+\mlift_{0}(*) &= \{0\}, \\
 \mlift_{n}(A) &= \setof{i \in \fin{n}}{i = 0 \vee (i > 0 \wedge i-1 \in A)}
-    \quad (n > 0)
+    \quad (n > 0).
 \end{align*}
 Furthermore, $\mlater \colon \SOC \to \SOC$ is defined as $\mlater = \mlift \circ \mnxt$.
 \end{defn}
@@ -573,15 +566,15 @@ Finally, to prove properties of programs, we need an appropriate notion of equal
 
 \begin{defn} \label{def:equality}
 The \emph{step-indexed equality} predicate $\meq \colon X \times X \to \SOC$ is given by
-\[ \meq_n(x, y) = \setof{i \in \fin{n}}{\restr{x}{i} = \restr{y}{i}} \]
+\[ \meq_n(x, y) = \setof{i \in \fin{n}}{\restr{x}{i} = \restr{y}{i}}. \]
 \end{defn}
 
 \begin{ex} \label{ex:predicate-programs}
 The predicate $\mor{isZero}$ from \cref{ex:predicates} can be defined syntactically as
-\[ \name{isZero} = \lam{s}{\Str}{s = \name{zeros}} : \Str \to \Prop \]
+\[ \name{isZero} = \lam{s}{\Str}{s = \name{zeros}} : \Str \to \Prop, \]
 where $\name{zeros}$ is the constant zero stream (see \cref{ex:guarded-recursion}). Alternatively, we can also give a guarded recursive definition, equivalent to the previous one:
 \[ \name{isZero} = \rec{r}{\Later{(\Str \to \Prop)}}{\lam{s}{\Str}{
-   \app{\hd}{s} = 0 \wedge \lift{(r \ap \app{\tl}{s})}}} : \Str \to \Prop \]
+   \app{\hd}{s} = 0 \wedge \lift{(r \ap \app{\tl}{s})}}} : \Str \to \Prop. \]
 Note the use of $\mlift$. Intuitively, this is an application of the later modality: we only have access to the tail one step later, so any statements made about it must also refer to the future. However, we merely get a $\Later{\Prop}$ from the recursive call instead of a $\Prop$, so we must use $\mlift$.
 \end{ex}
 
@@ -592,8 +585,8 @@ In this section, we demonstrate how one can use the internal logic of $\TOT$ to 
 \begin{defn} \label{def:internal-logic}
 The internal logic $\lang$ of $\TOT$ is a typed higher-order logic, whose types are generated by the grammar
 \[ A ::= X \sep \unitt \sep A \times A \sep \emptyt \sep A + A \sep
-         A \to A \sep \Later{A} \sep \Prop \]
-where $X$ ranges over the objects of $\TOT$. Note that by including all objects of $\TOT$ as basic types, we get some redundancy. For instance, if $A, B \in \TOT$, then $A \times B$ arises both as a basic type and as the product of $A$ and $B$. We identify all such pairs of types arising from the type constructors $\times$, $+$, $\to$ and $\Later$. Furthermore, the types $\unitt$, $\emptyt$, and $\Prop$ are identified with the objects $\1$, $\0$, and $\SOC$, respectively.
+         A \to A \sep \Later{A} \sep \Prop, \]
+where $X$ ranges over the objects of $\TOT$. Note that by including all objects of $\TOT$ as base types, we get some redundancy. For instance, if $A, B \in \TOT$, then we have both the base type $A \times B$ (where $\times$ is the categorical product) and the product type $A \times B$ (where $\times$ is a type former). We identify all such pairs of types arising from the type constructors $\times$, $+$, $\to$, and $\Later$. Furthermore, the types $\unitt$, $\emptyt$, and $\Prop$ are identified with the objects $\1$, $\0$, and $\SOC$, respectively.
 
 The terms of $\lang$ are defined by the grammar
 \begin{align*}
@@ -602,15 +595,16 @@ t ::=\ &x \sep f \sep \unit \sep \pair{t}{t} \sep \projl{t} \sep \projr{t} \sep
        &\case{t}{x}{t}{x}{t} \sep \lam{x}{A}{t} \sep \app{t}{t} \sep
        \nxt{t} \sep t \ap t \sep \rec{x}{A}{t} \sep \phantom{} \\
        &\true \sep \false \sep t =_A t \sep t \wedge t \sep t \vee t \sep t \impl t \sep
-        \all{x}{A}{t} \sep \exi{x}{A}{t} \sep \later{t}
+        \all{x}{A}{t} \sep \exi{x}{A}{t} \sep \later{t},
 \end{align*}
-where $x$ ranges over a countable set of variables, and $f$ ranges over the morphisms in $\TOT$. The $\name{case}$ construct binds the variable $x$ in the term following the dot, as do $\lambda$ and $\mu$-abstraction, and the quantifiers. Just like in the case of types, the inclusion of morphisms in $\TOT$ as term constants gives rise to duplicates in the syntax; these duplicates are identified.
+where $x$ ranges over a countable set of variables, and $f$ ranges over the morphisms in $\TOT$. The $\name{case}$ construct binds the variable $x$ in the term following the dot, as do $\lambda$ and $\mu$-abstraction, and the quantifiers. Just as in the case of types, the inclusion of morphisms in $\TOT$ as term constants gives rise to duplicates in the syntax; these duplicates are identified.
 
 A typing context is a finite list of distinct typed variables, written as $x_1 : A_1, \ldots, x_n : A_n$. The extension of $\Gamma$ by a fresh variable $x$ of type $A$ is denoted by $\conext{\Gamma}{x}{A}$. The typing judgment takes the form $\typed{\Gamma}{t}{A}$, where $\Gamma$ is a typing context, $t$ is a term, and $A$ is a type. Its inference rules are the standard ones from the simply typed lambda calculus, extended with additional rules for the applicative structure of $\Later$, the fixed point operator $\rec{x}{A}{t}$, and propositions in the expected way. They are displayed in the appendix (\cref{fig:logic-typing-rules}).
 
 The entailment relation of $\lang$ is given by a judgment $\entails{\Gamma}{P}{Q}$, where $\Gamma$ is a typing context and $\typed{\Gamma}{P, Q}{\Prop}$. This expresses that we can prove $Q$ from the hypothesis $P$. We write $\valid{\Gamma}{P}$ for $\entails{\Gamma}{\true}{P}$, and $\equiv{\Gamma}{P}{Q}$ to mean $\entails{\Gamma}{P}{Q}$ and $\entails{\Gamma}{Q}{P}$. It includes standard structural rules, equality rules, and logical rules for the propositional connectives and quantifiers. The complete set of inference rules can be found in \cref{fig:structural-logical-rules,fig:logic-equalities} in the appendix.
 \end{defn}
 
+Besides logical rules, we also have the familiar $\beta \eta$-laws for functions, products, and sums. These are complemented by equalities concerning the new type former $\Later$ and its associated constructs, some of which are shown in \cref{fig:Later-rules}. The first two equations are the homomorphism and composition laws for applicative functors~\cite{mcbride:2008:jfp}, while the third one establishes that $\rec{x}{\Later{A}}{t}$ is indeed a fixed point of $t$. There is also an $\eta$ rule for fixed points expressing uniqueness; see the appendix.
 \begin{figure}
 \begin{mathpar}
 \inferrule[$\ap$-next]
@@ -630,6 +624,7 @@ The entailment relation of $\lang$ is given by a judgment $\entails{\Gamma}{P}{Q
 \label{fig:Later-rules}
 \end{figure}
 
+\Cref{fig:later-rules} lists some important inference rules for the $\later$ modality. Of particular interest is the rule \textsc{löb}, called \emph{Löb induction}. This principle internalizes the technique of induction on the step-index, and it is the main tool for proving properties of guarded recursively defined programs. Note the formal similarity between \textsc{löb} and the fixed point operator of \cref{prop:fixpoint}. Another important rule is \textsc{$\later$-eq}, which establishes a strong connection between the $\later$ modality and the $\Later$ type former.
 \begin{figure}
 \begin{mathpar}
 \inferrule[$\later$-intro]{}{\entails{\Gamma}{P}{\later{P}}}
@@ -658,14 +653,12 @@ The entailment relation of $\lang$ is given by a judgment $\entails{\Gamma}{P}{Q
 \label{fig:later-rules}
 \end{figure}
 
-Besides logical rules, we also have the familiar $\beta \eta$-laws for functions, products, and sums. These are complemented by equalities concerning the new type former $\Later$ and its associated constructs, some of which are shown in \cref{fig:Later-rules}. The first two equations are the homomorphism and composition laws for applicative functors~\cite{mcbride:2008:jfp}, while the third one establishes that $\rec{x}{\Later{A}}{t}$ is indeed a fixed point of $t$. There is also a corresponding $\eta$ rule, expressing the uniqueness fixed points; see the appendix.
-
-\Cref{fig:later-rules} lists some important inference rules for the $\later$ modality. Of particular interest is the rule \textsc{löb}, called \emph{Löb induction}. This principle internalizes the technique of induction on the step-index, and it is the main tool for proving properties of guarded recursively defined programs. Note the formal similarity between \textsc{löb} and the fixed point operator of \cref{prop:fixpoint}. Another important rule is \textsc{$\later$-eq}, which establishes a strong connection between the $\later$ modality and the $\Later$ type former.
-
 It is worth mentioning that $\lang$ also contains an inference rule corresponding to the principle of \emph{propositional extensionality} (\cref{fig:logic-equalities}), asserting that if two propositions entail each other, then they are equal. Furthermore, the principle of \emph{function extensionality}, i.e. that two functions are equal whenever their values are equal for every argument, is a consequence of the $\eta$ law for functions.
 
 From the basic inference rules of $\lang$, we can derive further sound reasoning principles. Some of these are presented in \cref{fig:derived-rules}.
-\begin{figure}[ht]
+The rules commuting $\later$ with the various connectives can easily be proved using the monotonicity of $\later$ and the introduction and elimination principles of the connectives.
+The proof of \textsc{strong-löb} is less trivial, but it closely resembles the construction of the internal fixed point operator of \cref{def:fix} from the external one.
+\begin{figure}
 \begin{mathpar}
 \inferrule[strong-löb]{}{\entails{\Gamma}{\later{P} \impl P}{P}}
 \and
@@ -687,10 +680,8 @@ From the basic inference rules of $\lang$, we can derive further sound reasoning
 \caption{Derived rules for $\later$}
 \label{fig:derived-rules}
 \end{figure}
-The rules commuting $\later$ with the various connectives can easily be proved using the monotonicity of $\later$ and the introduction and elimination principles of the connectives.
-The proof of \textsc{strong-löb} is less trivial, but it closely resembles the construction of the internal fixed point operator of \cref{def:fix} from the external one.
 
-For the semantics of the $\name{case}$ construct, we need the following proposition which is a consequence of the cartesian closure of $\TOT$:
+For the semantics of the $\name{case}$ construct, we need the following proposition, which is a consequence of the cartesian closure of $\TOT$.
 \begin{prop} \label{prop:distributivity}
 For all objects $X, Y$ and $Z$ of $\TOT$, the canonical map
 \[ X \times Y + X \times Z \xrightarrow{\msum{\id \times \minl}{\id \times \minr}}
@@ -703,26 +694,26 @@ We interpret types $A$ as objects $\sem{A}$ of $\TOT$ in the standard way, using
 
 Terms $\typed{\Gamma}{t}{A}$ of type $A$ in context $\Gamma$ are interpreted as morphisms $\sem{\Gamma} \to \sem{A}$. In particular, closed terms of type $A$ are interpreted as global elements of $\sem{A}$. The clauses of the interpretation are as follows (dropping the contexts and the types from the notation):
 \begin{items}
-    \item If $\Gamma = x_1 : A_1, \ldots, x_n : A_n$, $\sem{x_i}$ is the $i$-th projection $\sem{\Gamma} \to \sem{A_i}$ corresponding to the variable $(x_i : A_i) \in \Gamma$;
-    \item For a morphism $f \colon A \to B$ in $\TOT$, $\sem{f}$ is $\sem{\Gamma} \to \1 \xrightarrow{\transpose{f}} (\expt{\sem{A}}{\sem{B}})$;
-    \item $\sem{\unit} = \mterm \colon \sem{\Gamma} \to \1$;
-    \item $\sem{\true}$ is $\sem{\Gamma} \to \1 \xrightarrow{\mtrue} \SOC$; similarly for $\sem{\false}$ using $\mfalse$;
-    \item The unary operators $\projl, \projr, \abort, \inl, \inr, \nxt$, and $\later$ are interpreted via postcomposition with $\mprojl, \mprojr, \minit, \minl, \minr, \mnxt$, and $\mlater$, respectively;
-    \item $\sem{\pair{t}{u}} = \mprod{\sem{t}}{\sem{u}}$;
-    \item $\sem{\app{t}{u}} = \ev \circ \mprod{\sem{t}}{\sem{u}}$; the binary operators $=, \wedge, \vee$, and $\impl$ are interpreted similarly, replacing $\ev$ with $\meq, \mconj, \mdisj$, and $\mimpl$, respectively;
+    \item If $\Gamma = x_1 : A_1, \ldots, x_n : A_n$, $\sem{x_i}$ is the $i$-th projection $\sem{\Gamma} \to \sem{A_i}$ corresponding to the variable $(x_i : A_i) \in \Gamma$.
+    \item For a morphism $f \colon A \to B$ in $\TOT$, $\sem{f}$ is $\sem{\Gamma} \to \1 \xrightarrow{\transpose{f}} (\expt{\sem{A}}{\sem{B}})$.
+    \item $\sem{\unit} = \mterm$.
+    \item $\sem{\true}$ is $\sem{\Gamma} \to \1 \xrightarrow{\mtrue} \SOC$; similarly for $\sem{\false}$ using $\mfalse$.
+    \item The unary operators $\projl, \projr, \abort, \inl, \inr, \nxt$, and $\later$ are interpreted via postcomposition with $\mprojl, \mprojr, \minit, \minl, \minr, \mnxt$, and $\mlater$, respectively.
+    \item $\sem{\pair{t}{u}} = \mprod{\sem{t}}{\sem{u}}$.
+    \item $\sem{\app{t}{u}} = \ev \circ \mprod{\sem{t}}{\sem{u}}$; the binary operators $=, \wedge, \vee$, and $\impl$ are interpreted similarly, replacing $\ev$ with $\meq, \mconj, \mdisj$, and $\mimpl$, respectively.
     \item $\sem{\case{s}{x}{t}{y}{u}}$ is the composite
-    \[ \sem{\Gamma} \xrightarrow{\mprod{\id}{\sem{s}}} \sem{\Gamma} \times (\sem{A} + \sem{B}) \cong \sem{\Gamma} \times \sem{A} + \sem{\Gamma} \times \sem{B} \xrightarrow{\msum{\sem{t}}{\sem{u}}} \sem{C} \]
-    where the middle map is the isomorphism from \cref{prop:distributivity};
-    \item $\sem{\lam{x}{A}{t}} = \curry{\sem{t}}$;
+    \[ \sem{\Gamma} \xrightarrow{\mprod{\id}{\sem{s}}} \sem{\Gamma} \times (\sem{A} + \sem{B}) \cong \sem{\Gamma} \times \sem{A} + \sem{\Gamma} \times \sem{B} \xrightarrow{\msum{\sem{t}}{\sem{u}}} \sem{C}, \]
+    where the middle map is the isomorphism from \cref{prop:distributivity}.
+    \item $\sem{\lam{x}{A}{t}} = \curry{\sem{t}}$.
     \item $\sem{t \ap u}$ is the composite
-    \[ \sem{\Gamma} \xrightarrow{\mprod{\sem{t}}{\sem{u}}} \Later{(\expt{\sem{A}}{\sem{B}})} \times \Later{\sem{A}} \xrightarrow{J \times \id} (\expt{\Later{\sem{A}}}{\Later{\sem{B}}}) \times \Later{\sem{A}} \xrightarrow{\ev} \Later{\sem{B}} \]
+    \[ \sem{\Gamma} \xrightarrow{\mprod{\sem{t}}{\sem{u}}} \Later{(\expt{\sem{A}}{\sem{B}})} \times \Later{\sem{A}} \xrightarrow{J \times \id} (\expt{\Later{\sem{A}}}{\Later{\sem{B}}}) \times \Later{\sem{A}} \xrightarrow{\ev} \Later{\sem{B}}. \]
     \item $\sem{\rec{x}{\Later{A}}{t}} = \name{fix} \circ \curry{\sem{t}}$; $\sem{\all{x}{A}{P}}$ and $\sem{\exi{x}{A}{P}}$ are similar, using $\mall$ and $\mex$, respectively, in place of $\name{fix}$.
 \end{items}
 
 Lastly, semantic entailment $\sementails{\Gamma}{P}{Q}$, where $\typed{\Gamma}{P, Q}{\Prop}$, is defined as
 \[ \sementails{\Gamma}{P}{Q} \iff
    \forall n \in \N, \gamma \in \sem{\Gamma}_n\,
-      n \in \sem{P}_n(\gamma) \To n \in \sem{Q}_n(\gamma) \]
+      n \in \sem{P}_n(\gamma) \To n \in \sem{Q}_n(\gamma). \]
 One can check that all the inference rules of \cref{fig:structural-logical-rules,fig:logic-equalities} are valid with respect to this interpretation. We say that a formula $\typed{\Gamma}{P}{\Prop}$ \emph{holds} or that it is \emph{valid} (in $\TOT$) if $\sementails{\Gamma}{\top}{P}$.
 \end{defn}
 
@@ -737,36 +728,34 @@ Consider the program $\name{add}$ from \cref{ex:guarded-recursion}. We wish to p
 for all $m, n : \N$, where $\name{comp} = \lam{f}{B \to C}{\lam{g}{A \to B}{\lam{x}{A}{\app{f}{(\app{g}{x})}}}}$ is function composition. Since $\name{add}$ was defined as a fixed point, we will eventually need to handle a recursive call. Hence, we use Löb induction (\textsc{Löb}) to get an induction hypothesis
 \begin{equation*}
 \later{(\app{\name{add}}{(m + n)} =_{\Str \to \Str}
-    \app{\app{\name{comp}}{(\app{\name{add}}{m})}}{(\app{\name{add}}{n})})}
+    \app{\app{\name{comp}}{(\app{\name{add}}{m})}}{(\app{\name{add}}{n})})}.
 \end{equation*}
 By function extensionality, it suffices to prove the equality once both sides are applied to an argument stream $s : \Str$. Unfolding the definition of $\name{add}$, and using the appropriate $\beta$-rules, including one application of \textsc{fix-$\beta$}, the left hand side becomes
 \begin{equation*}
-(\app{\hd}{s} + (m + n)) \cons (\nxt{(\app{\name{add}}{(m + n)})} \ap \app{\tl}{s})
+(\app{\hd}{s} + (m + n)) \cons (\nxt{(\app{\name{add}}{(m + n)})} \ap \app{\tl}{s}).
 \end{equation*}
 Similarly, after unfolding the right hand side (using that $\app{\hd}{(a \cons s)} = a$ and $\app{\tl}{(a \cons s)} = s$), we get
 \begin{equation*}
 ((\app{\hd}{s} + n) + m) \cons
-    (\nxt{(\app{\name{add}}{m})} \ap (\nxt{(\app{\name{add}}{n})} \ap \app{\tl}{s}))
+    (\nxt{(\app{\name{add}}{m})} \ap (\nxt{(\app{\name{add}}{n})} \ap \app{\tl}{s})).
 \end{equation*}
 The heads of the two streams are equal (by associativity and commutativity of addition), so it suffices to prove the equality of the tails. By \textsc{$\later$-eq}, our induction hypothesis is equivalent to
 \begin{equation*}
 \nxt{(\app{\name{add}}{(m + n)})} =_{\Later{(\Str \to \Str)}}
-    \nxt{(\app{\app{\name{comp}}{(\app{\name{add}}{m})}}{(\app{\name{add}}{n})})}
+    \nxt{(\app{\app{\name{comp}}{(\app{\name{add}}{m})}}{(\app{\name{add}}{n})})}.
 \end{equation*}
 Now we conclude the proof using \textsc{$\ap$-next} and \textsc{$\ap$-comp}:
-\begin{equation*}
-\begin{split}
+\begin{align*}
 \nxt{(\app{\name{add}}{(m + n)})} \ap \app{\tl}{s}
     &= \nxt{(\app{\app{\name{comp}}{(\app{\name{add}}{m})}}{(\app{\name{add}}{n})})} \ap \app{\tl}{s} \\
     &= \nxt{\name{comp}} \ap \nxt{(\app{\name{add}}{m})} \ap \nxt{(\app{\name{add}}{n})} \ap \app{\tl}{s} \\
-    &= \nxt{(\app{\name{add}}{m})} \ap (\nxt{(\app{\name{add}}{n})} \ap \app{\tl}{s})
-\end{split}
-\end{equation*}
+    &= \nxt{(\app{\name{add}}{m})} \ap (\nxt{(\app{\name{add}}{n})} \ap \app{\tl}{s}).
+\end{align*}
 \end{ex}
 
 \subsection{The \texorpdfstring{$\later$}{later} modality and quantifiers} \label{sec:later-quantifiers}
 
-We have seen that $\later$ commutes with the propositional connectives $\wedge$, $\vee$, and $\impl$. We are interested in establishing similar rules for the quantifiers, allowing us to move $\later$ under a quantifier. The first guess for such rules might be as follows:
+We have seen that $\later$ commutes with the propositional connectives $\wedge$, $\vee$, and $\impl$. We are interested in establishing similar rules for the quantifiers, allowing us to move $\later$ under a quantifier. The first guess for such rules might be the following.
 \begin{mathpar}
 \inferrule[$\later$-$\exists$-comm]{}{\equiv{\Gamma}{\later{(\exi{x}{A}{P})}}{\exi{x}{A}{\later{P}}}}
 \and
@@ -778,39 +767,39 @@ As the rules \textsc{$\exists$-$\later$} and \textsc{$\later$-$\forall$} (\cref{
 \begin{prop}[Kripke-Joyal semantics] \label{prop:kripke-joyal}
 The forcing relation satisfies the following clauses:
 \begin{align*}
-\force{n}{\true} &\quad\phantom{\iff}\quad \text{always} \\
-\force{n}{\false} &\quad\phantom{\iff}\quad \text{never} \\
+\force{n}{\true} &\quad\phantom{\iff}\quad \text{always}, \\
+\force{n}{\false} &\quad\phantom{\iff}\quad \text{never}, \\
 \force{n}{(t =_A u)(\gamma)} &\quad\iff\quad
-  \sem{t}_n(\gamma) = \sem{u}_n(\gamma) \\
+  \sem{t}_n(\gamma) = \sem{u}_n(\gamma), \\
 \force{n}{(P \wedge Q)(\gamma)} &\quad\iff\quad
-  \force{n}{P(\gamma)} \wedge \force{n}{Q(\gamma)} \\
+  \force{n}{P(\gamma)} \wedge \force{n}{Q(\gamma)}, \\
 \force{n}{(P \vee Q)(\gamma)} &\quad\iff\quad
-  \force{n}{P(\gamma)} \vee \force{n}{Q(\gamma)} \\
+  \force{n}{P(\gamma)} \vee \force{n}{Q(\gamma)}, \\
 \force{n}{(P \impl Q)(\gamma)} &\quad\iff\quad
-  \forall m \le n.\,\force{m}{P(\restr{\gamma}{m})} \To \force{m}{Q(\restr{\gamma}{m})} \\
+  \forall m \le n.\,\force{m}{P(\restr{\gamma}{m})} \To \force{m}{Q(\restr{\gamma}{m})}, \\
 \force{n}{(\exi{x}{A}{P})(\gamma)} &\quad\iff\quad
-  \exists a \in \sem{A}_n.\,\force{n}{P(\gamma, a)} \\
+  \exists a \in \sem{A}_n.\,\force{n}{P(\gamma, a)}, \\
 \force{n}{(\all{x}{A}{P})(\gamma)} &\quad\iff\quad
-  \forall m \le n, a \in \sem{A}_m.\,\force{m}{P(\restr{\gamma}{m}, a)} \\
+  \forall m \le n, a \in \sem{A}_m.\,\force{m}{P(\restr{\gamma}{m}, a)}, \\
 \force{n}{(\later{P})(\gamma)} &\quad\iff\quad
-  n = 0 \vee \force{n-1}{P(\restr{\gamma}{n-1})}
+  n = 0 \vee \force{n-1}{P(\restr{\gamma}{n-1})}.
 \end{align*}
 \end{prop}
 
-It is clear from the definitions that $\sementails{\Gamma}{P}{Q}$ iff for all $n \in \N$ and $\gamma \in \sem{\Gamma}_n$, $\force{n}{P(\gamma)}$ implies $\force{n}{Q(\gamma)}$. In particular, a formula $P$ holds in $\TOT$ iff $\force{n}{P(\gamma)}$ for all $n \in \N$ and $\gamma \in \sem{\Gamma}_n$. Thus, we can use \cref{prop:kripke-joyal} to prove or disprove semantic entailments by inductively calculating the meaning of logical formulas. Coming back to the rule \textsc{$\later$-$\exists$-comm}, and assuming that $\Gamma$ is the empty context, we have
+It is clear from the definitions that $\sementails{\Gamma}{P}{Q}$ iff for all $n \in \N$ and $\gamma \in \sem{\Gamma}_n$, $\force{n}{P(\gamma)}$ implies $\force{n}{Q(\gamma)}$. In particular, a formula $P$ holds in $\TOT$ iff $\force{n}{P(\gamma)}$ for all $n \in \N$ and $\gamma \in \sem{\Gamma}_n$. Thus, we can use \cref{prop:kripke-joyal} to prove or disprove semantic entailments by inductively calculating the meaning of logical formulas. Coming back to the rule \textsc{$\later$-$\exists$-comm} and taking $\Gamma$ to be empty, we have
 \[ \force{n+1}{\later{(\exi{x}{A}{P})}} \iff
    \exists a \in \sem{A}_n.\,\force{n}{P(a)} \]
 and
 \[ \force{n+1}{\exi{x}{A}{\later{P}}} \iff
-   \exists a \in \sem{A}_{n+1}.\,\force{n}{P(\restr{a}{n})} \]
+   \exists a \in \sem{A}_{n+1}.\,\force{n}{P(\restr{a}{n})}. \]
 We see that, semantically, the two sides quantify over different levels of $A$. Setting $A = \Later{\emptyt}$ and $P = \true$, we have $\sem{A}_0 = \{*\}$ and $\sem{A}_1 = \nul$, so the left hand side is true at step-index 1, while the right hand side is not. This shows that the left-to-right implication is not generally true.
 
 Similarly, we calculate the meaning of the two sides of \textsc{$\later$-$\forall$-comm}:
 \begin{align*}
 \force{n+1}{\later{(\all{x}{A}{P})}} &\iff
-  \forall m \le n, a \in \sem{A}_m.\,\force{m}{P(a)} \\
+  \forall m \le n, a \in \sem{A}_m.\,\force{m}{P(a)}, \\
 \force{n+1}{\all{x}{A}{\later{P}}} &\iff
-  \forall m \le n, a \in \sem{A}_{m+1}.\,\force{m}{P(\restr{a}{m})}
+  \forall m \le n, a \in \sem{A}_{m+1}.\,\force{m}{P(\restr{a}{m})}.
 \end{align*}
 Now taking $A = \Later{\emptyt}$ and $P = \false$ provides a counterexample to the validity of the right-to-left implication at step-index 1.
 
@@ -819,9 +808,9 @@ In both cases, the asymmetry arises from the fact that the two sides quantify ov
 An object $X$ of $\TOT$ is called \emph{total} if all the restriction maps $r^X_n$ are surjective.
 \end{defn}
 
-For a total object $X$, considered as a type in $\lang$, we have $\force{n+1}{\later{(\exi{x}{X}{P})}}$ if and only if $\force{n+1}{\exi{x}{X}{\later{P}}}$, and similarly for $\forall$.  Since $\force{0}{\later{(\all{x}{X}{P})}}$ and $\force{0}{\all{x}{X}{\later{P}}}$ always hold, we get that the rule \textsc{$\later$-$\forall$-comm} is valid for total objects $X$. For \textsc{$\later$-$\exists$-comm} to hold at level 0, we need the additional assumption that $X_0$ is inhabited. It is easy to see that for total objects $X$, this is equivalent to all $X_n$ being inhabited, which is in turn equivalent to the existence of a morphism $\1 \to X$, i.e. being inhabited by a global element.
+For a total object $X$, considered as a type in $\lang$, we have $\force{n+1}{\later{(\exi{x}{X}{P})}}$ if and only if $\force{n+1}{\exi{x}{X}{\later{P}}}$, and similarly for $\forall$.  Since $\force{0}{\later{(\all{x}{X}{P})}}$ and $\force{0}{\all{x}{X}{\later{P}}}$ always hold, we get that the rule \textsc{$\later$-$\forall$-comm} is valid for total objects $X$. For \textsc{$\later$-$\exists$-comm} to hold at level 0, we need the additional assumption that $X_0$ is inhabited. For total objects $X$, this condition is equivalent to the existence of a morphism $\1 \to X$, i.e. being inhabited by a global element.
 \begin{defn} \label{def:total-inhabited-object}
-An object $X$ of $\TOT$ is \emph{total and inhabited} if it is total and inhabited by a global element.
+An object $X$ of $\TOT$ is called \emph{total and inhabited} if it is total and inhabited by a global element (i.e. there exists a global element of $X$).
 \end{defn}
 
 Thus, the rule \textsc{$\later$-$\exists$-comm} holds for total and inhabited $X$. It turns out that we can characterize this property in the internal logic.
@@ -831,12 +820,12 @@ An object $X$ of $\TOT$ is total and inhabited iff $\mnxt \colon X \to \Later{X}
 holds in $\TOT$.
 \begin{proof}
 We have
-\[ \force{n}{\name{TI}(X)} \iff \forall m \le n, \forall y \in (\Later{X})_m, \exists x \in X_m.\,\mnxt_m(x) = y \]
+\[ \force{n}{\name{TI}(X)} \iff \forall m \le n, \forall y \in (\Later{X})_m, \exists x \in X_m.\,\mnxt_m(x) = y. \]
 Hence, $\name{TI}(X)$ holds in $\TOT$ iff all components of $\mnxt \colon X \to \Later{X}$ are surjective. Since $\mnxt_{n+1} = r^X_n$, and $\mnxt_0 \colon X_0 \to \{*\}$ is surjective iff $X_0$ is inhabited, the claim follows. \qedhere
 \end{proof}
 \end{prop}
 
-We have thus shown the soundness of the following rules:
+We have thus shown the soundness of the following rules.
 \begin{mathpar}
 \inferrule[$\later$-$\exists$-comm-ti]
   {\valid{}{\name{TI}(A)}}
@@ -850,18 +839,18 @@ It would be nice if we could derive these rules in the system $\lang$. Unfortuna
 
 Firstly, as noted earlier (\cref{def:lift-later}), we can decompose the later modality as the composite $\mlater = \mlift \circ \mnxt$. This suggests that we could study the interaction of the quantifiers with $\mlift$ and $\mnxt$ separately. In fact, the homomorphism property of $\mnxt$ implies that $\mnxt$ commutes with the quantifiers. More precisely, let $\mex, \mall \colon (\pow{X}) \to \SOC$ be the morphisms from \cref{def:internal-quantifiers}, which can be defined internally as
 \[ \mex = \lam{P}{\pow{X}}{\exi{x}{X}{\app{P}{x}}},\ \text{ and }\ 
-   \mall = \lam{P}{\pow{X}}{\all{x}{X}{\app{P}{x}}} \]
+   \mall = \lam{P}{\pow{X}}{\all{x}{X}{\app{P}{x}}}. \]
 Then, by \textsc{$\ap$-next}, we have
 \begin{equation} \label{eq:next-exists}
 \nxt{(\exi{x}{A}{\app{P}{x}})} = \nxt{(\app{\mex}{P})} = \nxt{\mex} \ap \nxt{P}
 \end{equation}
 and similarly
 \[ \nxt{(\all{x}{A}{\app{P}{x}})} = \nxt{(\app{\mall}{P})} = \nxt{\mall} \ap \nxt{P} \]
-for every predicate $P : \pow{X}$. Hence, it seems that the difficulties are concentrated within the $\mlift$ operation.
+for every predicate $P : X \to \Prop$.
 
 Secondly, recall that, semantically, the right hand side of the original rules quantifies over elements that are one level higher compared to the elements quantified over by the left hand side, due to the shift introduced by $\later$. To resolve this mismatch, we could try also introducing a shift on the type level, by using $\Later{X}$ instead of $X$ as the domain of quantification on the right hand side.
 
-From these considerations, we can guess reasonable candidates for sound rules that commute $\mlift$ with a quantifier. Since the type of $\mlift$ is $\Later{\SOC} \to \SOC$, we start with a `delayed' predicate $Q : \Later{(A \to \Prop)}$, and apply the quantifier under the $\Later$. Thus, we arrive at the following rules:
+From these considerations, we can guess reasonable candidates for sound rules that commute $\mlift$ with a quantifier. Since the type of $\mlift$ is $\Later{\SOC} \to \SOC$, we start with a `delayed' predicate $Q : \Later{(A \to \Prop)}$, and apply the quantifier under the $\Later$. Thus, we arrive at the following rules.
 \begin{mathpar}
 \inferrule[lift-$\exists$-comm]
   {\typed{\Gamma}{Q}{\Later{(A \to \Prop)}}}
@@ -897,7 +886,7 @@ The rules \textsc{$\later$-$\exists$-comm-ti} and \textsc{$\later$-$\forall$-com
 by \cref{eq:next-exists}. By \textsc{lift-$\exists$-comm}, this holds iff $\exi{y}{\Later{A}}{\lift{(\nxt{\tilde{P}} \ap y)}}$. Since $A$ is total and inhabited, this is equivalent to $\exi{x}{A}{\lift{(\nxt{\tilde{P}} \ap \nxt{x})}}$. But
 \[ \lift{(\nxt{\tilde{P}} \ap \nxt{x})} = \lift{(\nxt{(\app{\tilde{P}}{x})})} =
    \later{P} \]
-using \textsc{$\ap$-next}, so we are done. Note that the assumption $\name{TI}(A)$ is only necessary for the left-to-right direction.
+using \textsc{$\ap$-next}, so we are done.
 
 The generality of the new rules (\textsc{lift-$\exists$-comm} and \textsc{lift-$\forall$-comm}) indicates that $\mlift$ should be taken as the primitive logical connective, with $\later{P} = \lift{(\nxt{P})}$ being a defined connective. This claim is also supported by the necessity of $\mlift$ for defining guarded recursive predicates (\cref{ex:predicate-programs}). However, it is not yet clear what the analogues of e.g. monotonicity or Löb induction would be, or if such analogues exist. This question is further discussed in \cref{sec:conclusion}.
 
@@ -911,7 +900,7 @@ In the following, we discuss some interesting aspects of the formalization, incl
 
 \subsection{Finite types} \label{sec:finite-types}
 
-The definition of the subobject classifier (\cref{def:subobject-classifier}) refers to the set $\fin{n}$ of natural numbers from 0 to $n$. Therefore, we need to represent such finite sets. For this purpose, the Coq standard library defines an inductive family of types as follows:
+The definition of the subobject classifier (\cref{def:subobject-classifier}) refers to the set $\fin{n}$ of natural numbers from 0 to $n$. Therefore, we need to represent such finite sets. For this purpose, the Coq standard library defines an inductive family of types as follows.
 \begin{coqc}
 Inductive fin : nat → Type :=
   | FZ {n} : fin (S n)
@@ -934,7 +923,7 @@ Our solution is to define \coqi{fin n} as the sigma type \coqi{{m : nat | m < n}
 
 To make working with finite types more convenient, we employ Coq's \emph{definitionally proof-irrelevant} sort \coqi{SProp} of propositions~\cite{gilbert:2019:popl}. Definitional proof-irrelevance means that if \coqi{A : SProp}, then any two inhabitants of \coqi{A} are definitionally equal. In the definition of \coqi{fin}, we replace the less-than relation \coqi{<} by its proof-irrelevant counterpart (see \cref{sec:proof-irrelevance}). The effect of this change is that two terms of type \coqi{fin n} are now convertible iff their first projections are convertible. Thus, once we define helper functions \coqi{FZ} for zero and \coqi{FS} for successor, we can treat elements of finite types as if they were natural numbers, with some additional type information.
 
-We can further enhance the situation by declaring the conversion function \coqi{fin_to_nat} as a Coq coercion:
+We can further enhance the situation by declaring the function \coqi{fin_to_nat} as a Coq coercion:
 \begin{coqc}
 Coercion fin_to_nat : fin >-> nat.
 \end{coqc}
@@ -965,21 +954,21 @@ The necessity of defining large elimination for the order relation is not the co
 
 In the previous sections, many definitions about the topos of trees were presented as one or more components satisfying certain properties. For instance, objects are families of types together with restriction functions; morphisms are families of functions satisfying a naturality condition. 
 
-In Coq, we can conveniently package up such definitions as record declarations. The type of objects is defined as follows:
+In Coq, we can conveniently package up such definitions as record declarations. The type of objects is defined as follows.
 \begin{coqc}
 Record Object : Type := 
   { obj :> nat → Type
   ; restr : ∀ n, obj (S n) → obj n
   }.
 \end{coqc}
-This creates a new record type along with the two corresponding record projections
+This creates a new record type along with the two corresponding record projections below.
 \begin{coqc}
 obj : Object → nat → Type
 restr : ∀ (X : Object) n, obj X (S n) → obj X n
 \end{coqc}
 The notation \coqi{obj :> nat → Type} automatically declares the record projection \coqi{obj} as a coercion. This allows us to write \coqi{X n} instead of \coqi{obj X n} for the \coqi{n}-th component of an object \coqi{X}. For readability, we keep the first argument of \coqi{restr} implicit.
 
-We define the more general restriction operations $r^X_{n,m}$ (see \cref{def:tot}) by recursion on the proof of $n \le m$:
+We define the more general restriction operations $r^X_{n,m}$ (see \cref{def:tot}) using the elimination principle \coqi{Sle_rect} mentioned above.
 \begin{coqc}
 Definition restr' {X : Object} {m n} : n ⪯ m → X m → X n :=
   Sle_rect n m (λ m _, X m → X n) id (λ m _ f, f ∘ restr m).
@@ -989,9 +978,9 @@ As a special case of \coqi{restr'}, we also have
 Definition restrTo {X : Object} {n} (i : [0..n]) (x : X n) : X i :=
   restr' (Sle_S_n (Spr2 i)) x.
 \end{coqc}
-where \coqi{[0..n]} is notation for \coqi{fin (S n)}, and \coqi{Spr2 i} is proof that \coqi{i ≺ S n} (recall that \coqi{fin n} is defined as a sigma type). This corresponds to the notation $\restr{x}{i}$ introduced in \cref{def:tot}. This use case explains why we need to use \coqi{⪯} instead of the ordinary \coqi{≤} for \coqi{restr'}.
+Here, \coqi{[0..n]} is notation for \coqi{fin (S n)}, and \coqi{Spr2 i} is proof that \coqi{i ≺ S n} (recall that \coqi{fin n} is defined as a sigma type). This corresponds to the notation $\restr{x}{i}$ introduced in \cref{def:tot}. This use case explains why we need to use \coqi{⪯} instead of the ordinary \coqi{≤} for \coqi{restr'}.
 
-Similarly to objects, morphisms are also defined as a record:
+Similarly to objects, morphisms are also defined as a record.
 \begin{coqc}
 Record /\textcolor{black}{Morphism}/ (X Y : Object) : Type :=
   { morph :> ∀ n, X n → Y n
@@ -1005,7 +994,7 @@ Notice how the formal definitions of both objects and morphisms follow closely t
 
 An important difference between objects and morphisms is that morphisms also contain a proof component. That is, whenever we want to construct a morphism \coqi{X ⟶ Y} (which is a family of maps \coqi{X n → Y n} for all \coqi{n}), we have the obligation to show that it satisfies the naturality condition \coqi{morph_natural}. Typically, we wish to carry out such verifications using Coq's tactic language instead of constructing proof terms by hand.
 
-A convenient way to achieve this is provided by Coq's \coqi{/\textcolor{coqkw}{Program}/} facilities, originally proposed by Sozeau~\cite{sozeau:2008:phd}. The \coqi{/\textcolor{coqkw}{Program}/ Definition} command allows us to leave holes in a definition, which can then be filled in using Coq's proof mode. As an example, consider
+A convenient way to achieve this is provided by Coq's \coqi{/\textcolor{coqkw}{Program}/} facilities, originally proposed by Sozeau~\cite{sozeau:2008:phd}. The \coqi{/\textcolor{coqkw}{Program}/ Definition} command allows us to leave holes in a definition, which can then be filled in using Coq's proof mode. As an example, consider the following definition.
 \begin{coqc}
 /\textcolor{coqkw}{Program}/ Definition mcomp {X Y Z} (f : Y ⟶ Z) (g : X ⟶ Y) : X ⟶ Z :=
   ⟦λ n, f n ∘ g n⟧.
@@ -1015,7 +1004,7 @@ Here, \coqi{⟦h⟧} is notation for \coqi{{| morph := h; morph_natural := _ |}}
 
 \subsection{Exponentials} \label{sec:coq-exp}
 
-Given \coqi{X Y : Object}, we may construct the exponential \coqi{Exp X Y}, denoted by \coqi{X ⇒ Y}, based on \cref{def:tot-struct}. There, we have seen that the $n$-th component of the exponential $\expt{X}{Y}$ is the collection of $(n+1)$-tuples $(f_i \colon X_i \to Y_i)_{i \in \fin{n}}$ commuting with the restriction maps. Therefore, similarly to \coqi{/\textcolor{black}{Morphism}/}, we define the \coqi{n}-th component of \coqi{Exp X Y} as a record:
+Given \coqi{X Y : Object}, we may construct the exponential \coqi{Exp X Y}, denoted by \coqi{X ⇒ Y}, based on \cref{def:tot-struct}. There, we have seen that the $n$-th component of the exponential $\expt{X}{Y}$ is the collection of $(n+1)$-tuples $(f_i \colon X_i \to Y_i)_{i \in \fin{n}}$ commuting with the restriction maps. Therefore, similarly to \coqi{/\textcolor{black}{Morphism}/}, we define the \coqi{n}-th component of \coqi{Exp X Y} as a record.
 \begin{coqc}
 Record Exp_obj (X Y : Object) (n : nat) : Type :=
   { Exp_morph :> ∀ i : [0..n], X i → Y i
@@ -1027,7 +1016,7 @@ Here, \coqi{[0..n|]} and \coqi{[0..n]} are notations for \coqi{fin n} and \coqi{
 
 It is worth noting a subtle but important point regarding the definition of \coqi{Exp_obj}. In the expression \coqi{Exp_morph (FW i) (restr i x)} in the type of \coqi{Exp_morph_natural}, the second argument of \coqi{Exp_morph} is supposed to have type \coqi{X (fin_to_nat (FW i))}. However, \coqi{restr i x} has type \coqi{X (fin_to_nat i)}. Thus, the well-typedness of this expression crucially depends on \cref{eq:fw-lemma} in \cref{sec:finite-types} holding definitionally. Had we chosen the alternative representation of \coqi{fin} as an inductive family, it would be necessary to transport along this equation explicitly. This would make reasoning with \coqi{Exp_morph_natural} (and in general, \coqi{Exp_morph}) much more difficult.
 
-Similarly, the type of \coqi{x} in the expression \coqi{Exp_morph (FS i) x} is \coqi{X (S (fin_to_nat i))}, but its expected type is \coqi{X (fin_to_nat (FS i))}. Thus, the expression is well-typed only because the equation
+Similarly, the type of \coqi{x} in \coqi{Exp_morph (FS i) x} is \coqi{X (S (fin_to_nat i))}, but its expected type is \coqi{X (fin_to_nat (FS i))}. Thus, the expression is well-typed only because the equation
 \begin{equation} \label{eq:fs-lemma}
 \mbox{\coqi{fin_to_nat (FS i) = S (fin_to_nat i)}}
 \end{equation}
@@ -1035,7 +1024,7 @@ holds definitionally. However, this would also be the case with the inductive de
 
 \subsection{Logic} \label{sec:coq-logic}
 
-As stated in \cref{def:subobject-classifier}, the $n$-th component of the subobject classifier is the collection of downward closed subsets of $\fin{n}$. In type theory, subsets $A$ of a set $X$ are usually formalized as predicates \coqi{A : X → Prop}, where $x \in A$ iff \coqi{A x} holds. Hence, a reasonable formalization of $\SOC_n$ is
+As stated in \cref{def:subobject-classifier}, the $n$-th component of the subobject classifier is the collection of downward closed subsets of $\fin{n}$. In type theory, subsets $A$ of a set $X$ are usually formalized as predicates \coqi{A : X → Prop}, where $x \in A$ iff \coqi{A x} holds. Hence, a reasonable formalization of $\SOC_n$ would be the following record type.
 \begin{coqc}
 Record SOC_obj (n : nat) :=
   { SOC_pred :> [0..n] → Prop
@@ -1048,17 +1037,17 @@ SOC_pred_closed : ∀ i : [0..n|], SOC_pred (FS i) → SOC_pred (FW i)
 \end{coqc}
 That is, we only require $n + 1 \in A \To n \in A$ for $A \in \SOC_n$. The stronger condition \coqi{SOC_pred_closed'} then follows by induction on the proof of \coqi{j ⪯ i} (using \coqi{Sle_rect}).
 
-As mentioned in the introduction to this section, we use a shallow embedding to formalize the internal logic of $\TOT$ in Coq. This means that we use the semantics of the logic in $\TOT$ to represent types, terms, and proof derivations. That is, types are objects, (well-typed) terms are morphisms from their typing context to their type, and proof derivations are metatheoretic (Coq) proofs. The definitions of term constructors are then given by their interpretations according to \cref{def:logic-semantics}, whereas the inference rules are verified with respect to semantic entailment. In this way, we obtain a small combinator library with which we can construct and reason about terms as if they were syntactic objects.
+As mentioned in the introduction to this section, we use a shallow embedding to formalize the internal logic of $\TOT$ in Coq. This means that we use the semantics of the logic in $\TOT$ to represent types, terms, and proof derivations. That is, types are objects, (well-typed) terms are morphisms from their typing context to their type, and proof derivations are metatheoretic (Coq) proofs. The definitions of term constructors are then given by their interpretations according to \cref{def:logic-semantics}, whereas the inference rules are verified as lemmas using semantic entailment. In this way, we obtain a small combinator library with which we can construct and reason about terms and formulas as if they were syntactic objects.
 
 For instance, we have the internal conjunction 
 \begin{coqc}
 conjI : Ω × Ω ⟶ Ω
 \end{coqc}
-introduced in \cref{def:internal-heyting}, where \coqi{Ω : Object} is the subobject classifier. We can define the respective term former as
+introduced in \cref{def:internal-heyting}, where \coqi{Ω : Object} is the subobject classifier. We can define the respective term former as follows.
 \begin{coqc}
 Definition conj {Γ} (P Q : Γ ⟶ Ω) : Γ ⟶ Ω := conjI ∘ ⟨P, Q⟩.
 \end{coqc}
-where \coqi{⟨P, Q⟩} denotes categorical pairing. Note that \coqi{conj} corresponds to the typing rule \textsc{conj} (\cref{fig:logic-typing-rules}): given two \emph{semantic} terms \coqi{P} and \coqi{Q} of type \coqi{Ω} (i.e. propositions) in context \coqi{Γ}, it constructs another proposition in the same context. Also note that its definition follows the semantics given in \cref{def:logic-semantics}.
+Here, \coqi{⟨P, Q⟩} denotes categorical pairing. Note that \coqi{conj} corresponds to the typing rule \textsc{conj} (\cref{fig:logic-typing-rules}): given two \emph{semantic} terms \coqi{P} and \coqi{Q} of type \coqi{Ω} (i.e. propositions) in context \coqi{Γ}, it constructs another proposition in the same context. Also note that its definition follows closely the semantics given in \cref{def:logic-semantics}.
 
 As another example, consider the universal quantifier, corresponding to the typing rule \textsc{forall}:
 \begin{coqc}
@@ -1067,12 +1056,12 @@ Definition all {Γ} A (P : Γ × A ⟶ Ω) : Γ ⟶ Ω := allI ∘ λ(P).
 \end{coqc}
 where \coqi{λ(P)} is the exponential transpose of \coqi{P}. Here, \coqi{P} is a semantic proposition in context \coqi{Γ × A}, that is, \coqi{Γ} extended with a new variable of type \coqi{A}.
 
-Given the embedding of our term language into Coq, all we have left to do is to verify semantically the inference rules of the logic. First, recall the semantic provability relation $\sementails{\Gamma}{P}{Q}$ from \cref{def:logic-semantics}:
+Given the embedding of our term language into Coq, all we have left to do in order to complete the shallow embedding is to verify semantically the inference rules of the logic. First, recall the semantic provability relation $\sementails{\Gamma}{P}{Q}$ from \cref{def:logic-semantics}.
 \begin{coqc}
 Definition entails {Γ} (P Q : Γ ⟶ Ω) : Prop :=
   ∀ n γ, P n γ n → Q n γ n.
 \end{coqc}
-The inference rules of the logic (\cref{fig:structural-logical-rules,fig:logic-equalities}) can then be proved as separate lemmas. For example, the following lemma states conjunction introduction (\textsc{$\wedge$-intro}):
+The inference rules of the logic (\cref{fig:structural-logical-rules,fig:logic-equalities}) can then be proved as separate lemmas. For example, the following lemma states conjunction introduction (\textsc{$\wedge$-intro}).
 \begin{coqc}
 Lemma conj_intro {Γ} {R P Q : Γ ⟶ Ω} :
   R ⊢ P →
@@ -1081,24 +1070,24 @@ Lemma conj_intro {Γ} {R P Q : Γ ⟶ Ω} :
 \end{coqc}
 Perhaps a bit confusingly, we use the \coqi{⊢} symbol for provability in the formalization. This is because we would like to treat the shallow embedding of the internal language as a combinator calculus, so we prefer to use syntactic notations.
 
-An interesting aspect of our shallow embedding is that there are no variable names: we work with purely categorical combinators. Since terms are represented as morphisms from their context to their type, substitution can simply be implemented by precomposition. For instance, the rule \textsc{$\forall$-intro} is formalized as follows:
+An interesting aspect of our shallow embedding is that there are no variable names: we work with purely categorical combinators. Since terms are represented as morphisms from their context to their type, substitution can simply be implemented by precomposition. For instance, the rule \textsc{$\forall$-intro} is formalized as follows.
 \begin{coqc}
 Lemma all_intro {Γ A} (R : Γ ⟶ Ω) (P : Γ × A ⟶ Ω) :
   R ∘ π₁ ⊢ P →
   R ⊢ all A P.
 \end{coqc}
-Here, the first projection \coqi{π₁} on the left hand side of the premise is a weakening substitution. It is necessary to bring \coqi{R} into the same context as \coqi{P}, which has an additional free variable of type \coqi{A}. Another example is the rule \textsc{$\forall$-elim}:
+Here, the first projection \coqi{π₁} on the left hand side of the premise is a weakening substitution. It is necessary to bring \coqi{R} into the same context as \coqi{P}, which has an additional free variable of type \coqi{A}. Another example is the rule \textsc{$\forall$-elim} below.
 \begin{coqc}
 Lemma all_elim {Γ A} (P : Γ × A ⟶ Ω) (t : Γ ⟶ A) :
   all A P ⊢ P ∘ ⟨mid, t⟩.
 \end{coqc}
-where \coqi{mid : ∀ {X}, X ⟶ X} is the identity morphism. In the conclusion, \coqi{⟨mid, t⟩} is the categorical version of the substitution $\subst{}{x}{t}$, mapping the last variable to \coqi{t} and leaving all other variables unchanged.
+Here, \coqi{mid : ∀ {X}, X ⟶ X} is the identity morphism. In the conclusion, the expression \coqi{⟨mid, t⟩} is the categorical version of the substitution $\subst{}{x}{t}$, mapping the last variable to \coqi{t} and leaving all other variables unchanged.
 
 \subsection{Axioms} \label{sec:coq-axioms}
 
 In our formalization, we often have to show equality of morphisms, e.g. when proving categorical laws. Since morphisms are essentially families of functions, this involves showing equality of Coq functions. In most cases, such equalities do not hold by definition. Hence, we make use of the axiom of \emph{function extensionality}, stating that two functions are equal iff they are equal at every input. This allows us for example to perform case distinction or induction on the input to show equality of the outputs.
 
-In \cref{sec:coq-obj-mor}, we have seen that a morphism is actually a record, containing a family of functions \emph{together with} a proof of their naturality. This means that proving equality of morphisms requires proving equality of both components, thus in particular, of equality proofs. Such higher equalities are notoriously difficult to deal with in constructive type theory. To simplify matters, we assume the \emph{proof-irrelevance} axiom, which states that any two proofs of the same proposition are equal. This way, we can prove the following lemma, expressing that equality of morphisms follows from equality of their underlying families of functions:
+In \cref{sec:coq-obj-mor}, we have seen that a morphism is actually a record, containing a family of functions \emph{together with} a proof of their naturality. This means that proving equality of morphisms requires proving equality of both components, thus in particular, of equality proofs. Such higher equalities are notoriously difficult to deal with in constructive type theory. To simplify matters, we assume the \emph{proof-irrelevance} axiom, which states that any two proofs of the same proposition are equal. This way, we can prove the following lemma, expressing that equality of morphisms follows from equality of their underlying families of functions.
 \begin{coqc}
 Lemma morph_inj {X Y} {f g : X ⟶ Y} (e : morph f = morph g) : f = g.
 \end{coqc}
@@ -1107,7 +1096,7 @@ The above two considerations also apply to the other record types, namely \coqi{
 
 Some might not be satisfied with our Coq assumptions. All uses of additional axioms in our formalization arise from the need to prove \emph{propositional equality} of various Coq objects. A standard way to remedy this situation is to replace sets/types with \emph{setoids}~\cite{barthe:2003:jfp}, also called \emph{Bishop sets}. The main idea is to equip types with an equivalence relation, which we think of as a customized notion of equality. Then, instead of proving propositional equality of elements, we only prove that they are related by the relation corresponding to their type. Thus, by giving appropriate equivalence relations for \coqi{/\textcolor{black}{Morphism}/}, \coqi{Exp_obj}, and \coqi{SOC_obj}, we can eliminate our reliance on the axioms mentioned so far.
 
-A downside of this approach is that we would also need to show that functions preserve the respective equivalence relations, resulting in a longer and more complicated formalization. For instance, the \coqi{Object} type defined in \cref{sec:coq-obj-mor} would become
+A downside of this approach is that we would also need to show that functions preserve the respective equivalence relations, resulting in a longer and more complicated formalization. For instance, the \coqi{Object} type defined in \cref{sec:coq-obj-mor} would become the following record.
 \begin{coqc}
 Record Object : Type := 
   { obj : nat → Type
@@ -1117,7 +1106,7 @@ Record Object : Type :=
   ; restr_resp : ∀ n x y, obj_eq (S n) x y → obj_eq n (restr n x) (restr n y)
   }.
 \end{coqc}
-where \coqi{Equivalence (obj_eq n)} states that \coqi{obj_eq n} is an equivalence relation. The first three fields together express that we have a family of setoids indexed by the natural numbers. The field \coqi{restr_resp} witnesses the fact that restriction respects the equivalence relations. We would need to provide proofs of similar statements for most, if not all, of the operations, including the components of morphisms. To keep the formalization simple, we have decided to stick with the axioms.
+Here, \coqi{Equivalence (obj_eq n)} states that \coqi{obj_eq n} is an equivalence relation. The first three fields together express that we have a family of setoids indexed by the natural numbers. The field \coqi{restr_resp} witnesses the fact that restriction respects the equivalence relations. We would need to provide proofs of similar statements for most, if not all, of the operations, including the components of morphisms. To keep the formalization simple, we have decided to stick with the axioms.
 
 We could get rid of the dependence on the proof-irrelevance axiom by using an \coqi{SProp} version of the equality type in \coqi{/\textcolor{black}{Morphism}/}, \coqi{Exp_obj}, and \coqi{SOC_obj}. Since we do not rely on definitional equalities between these objects, doing so would not improve the ease of formalization. It would, however, require some boilerplate for proving various lemmas for the new equality type not present in the Coq standard library. For these reasons, we stick with the proof-irrelevance axiom.
 
@@ -1137,7 +1126,7 @@ Bizjak et al.~\cite{bizjak:2016:fossacs} presented guarded dependent type theory
 
 We have provided an in-depth exposition of the topos of trees, including how it can be used to model guarded recursive functions, as well as its internal logic. We have argued that the $\mlift$ connective should replace the $\later$ modality as a primitive connective, due to its necessity for defining guarded recursive predicates and generalizing earlier axioms involving $\later$ and quantifiers. Finally, we have formalized most constructions and rules presented in the report in the Coq proof assistant, discussing technical insights and design choices.
 
-The study of the $\mlift$ connective is far from complete. If $\mlift$ is to replace the $\later$ modality, then the original rules involving $\later$ must be generalized to use $\mlift$ as well. However, it is not clear how this can be achieved. For instance, the monotonicity rule (\textsc{$\later$-mono}) should be replaced by a rule similar to the following:
+The study of the $\mlift$ connective is far from complete. If $\mlift$ is to replace the $\later$ modality, then the original rules involving $\later$ must be generalized to use $\mlift$ as well. However, it is not clear how this can be achieved. For instance, the monotonicity rule (\textsc{$\later$-mono}) should be replaced by a rule similar to the following.
 \begin{mathpar}
 \inferrule[$\mlift$-mono]
     {\entails{\Gamma}{P}{Q}}
@@ -1145,7 +1134,7 @@ The study of the $\mlift$ connective is far from complete. If $\mlift$ is to rep
 \end{mathpar}
 The issue is that $P$ and $Q$ have type $\Later{\Prop}$ instead of $\Prop$, so the logical consequence $\entails{\Gamma}{P}{Q}$ is undefined. A possible remedy is to define a separate entailment relation between terms of type $\Later{\Prop}$, along with rules allowing us to move between the two kinds of judgments. This approach is reminiscent of the philosophy behind modal type theory (MTT)~\cite{gratzer:2021:lmcs}, where multiple copies of some core type theory are interacting as prescribed by a `mode' theory. This idea is reinforced by the fact that guarded dependent type theory can be obtained by instantiating MTT.
 
-As alluded to in the introduction, step-indexed logics can be used to construct models of programming languages and program logics with self-referential features, such as Iris~\cite{jung:2018:jfp}. It would be worthwhile to attempt to formalize a model of Iris in the internal logic of the topos of trees. It would be especially interesting to carry out the formalization in a proof assistant which implements guarded recursion natively, such as guarded dependent type theory~\cite{bizjak:2016:fossacs} or guarded cubical type theory~\cite{birkedal:2019:jar}.
+As alluded to in the introduction, step-indexed logics can be used to construct models of programming languages and program logics with self-referential features, such as Iris~\cite{jung:2018:jfp}. It would be worthwhile to attempt to formalize a model of Iris in the internal logic of the topos of trees. It would be especially interesting to carry out the formalization in a proof assistant which implements guarded recursion natively, such as guarded cubical type theory~\cite{birkedal:2019:jar}.
 
 \paragraph{Acknowledgements.}
 I am grateful to Robbert Krebbers for his patience and kindness, for his feedback and helpful suggestions on this report, for the interesting discussions during our meetings, and for sharing his Coq expertise.

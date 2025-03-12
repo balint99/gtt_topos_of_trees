@@ -5,8 +5,8 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
-\usepackage{fdsymbol}
 \usepackage{mathpartir}
+\usepackage{stmaryrd}
 \usepackage{tikz-cd}
 
 \usepackage[hidelinks,colorlinks,linkcolor=magenta,citecolor=olive,urlcolor=cyan]{hyperref}
@@ -35,8 +35,8 @@
 \DeclareUnicodeCharacter{227A}{$\prec$}
 \DeclareUnicodeCharacter{22A2}{$\vdash$}
 \DeclareUnicodeCharacter{25B7}{$\later$}
-\DeclareUnicodeCharacter{27E6}{$\lBrack$}
-\DeclareUnicodeCharacter{27E7}{$\rBrack$}
+\DeclareUnicodeCharacter{27E6}{$\llbracket$}
+\DeclareUnicodeCharacter{27E7}{$\rrbracket$}
 \DeclareUnicodeCharacter{27E8}{$\langle$}
 \DeclareUnicodeCharacter{27E9}{$\rangle$}
 \DeclareUnicodeCharacter{27F6}{$\longrightarrow$}
@@ -109,7 +109,7 @@
 \newcommand{\mhd}{\mor{hd}}
 \newcommand{\mtl}{\mor{tl}}
 \newcommand{\mcons}{\mor{cons}}
-\newcommand{\Later}{\blacktriangleright}
+\DeclareMathOperator{\Later}{\blacktriangleright\hspace{-1pt}}
 \newcommand{\mnxt}{\mor{next}}
 \newcommand{\mtrue}{\mor{true}}
 \newcommand{\mfalse}{\mor{false}}
@@ -152,7 +152,7 @@
 \newcommand{\typed}[3]{#1 \vdash #2 : #3}
 \newcommand{\entails}[3]{#1 \sep #2 \vdash #3}
 \newcommand{\valid}[2]{#1 \vdash #2}
-\newcommand{\dashvdash}{\mathbin{\dashv\hspace{-1pt}\vdash}}
+\newcommand{\dashvdash}{\mathbin{\dashv\vdash}}
 \renewcommand{\equiv}[3]{#1 \sep #2 \dashvdash #3}
 \newcommand{\equals}[4][]{#2 \vdash #3 =_{#1} #4}
 
@@ -162,6 +162,6 @@
 \newcommand{\tl}{\name{tl}}
 \newcommand{\cons}{\coloncolon}
 
-\newcommand{\sem}[1]{\lsem #1 \rsem}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
 \newcommand{\sementails}[3]{#1 \sep #2 \vDash #3}
 \newcommand{\force}[2]{#1 \Vdash #2}

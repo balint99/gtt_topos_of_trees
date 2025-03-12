@@ -372,7 +372,7 @@ If we write $\rec{x}{\Later{X}}{t}$ for the fixed point of a term $t$ of type $X
         \lam{f}{\Later{X} \to X}{\app{f}{(g \ap \nxt{f})}}})} f \]
 To make notation easier, we adopt the fixed point operator of \cref{def:fix} as a primitive in our informal programs, so that we can take fixed points of functions with parameters. Thus, if $\typed{\conext{\Gamma}{x}{\Later{X}}}{t}{X}$,
 then $\typed{\Gamma}{\rec{x}{\Later{X}}{t}}{X}$ is interpreted as
-$\mor{fix}_X \circ \curry{t}$.
+$\mor{fix}_X \circ \curry{t}$ (see \cref{def:logic-semantics}).
 
 \begin{ex} \label{ex:guarded-recursion}
 \hfill \vspace{-6pt}
@@ -451,7 +451,7 @@ Semantic entailment $m \vDash n$ is simply defined as the order relation on $\ol
 A slightly different perspective on this idea is to regard natural numbers not as the truth values themselves, but as time steps, and to define when a proposition holds at a certain time step. Thus, a proposition is identified with the set of time steps at which it holds. To be consistent with the previous interpretation, we impose the condition that if a proposition holds at a given step, it should also hold for all smaller time steps. This leads us to the following definition:
 \begin{defn} \label{def:siprop}
 The set of truth values is the set
-\[ S = \setof{A \subs \N}{ \forall i, j \in \N.\,j \le i \wedge i \in A \To j \in A} \]
+\[ S = \setof{A \subs \N}{\forall i, j \in \N.\,j \le i \wedge i \in A \To j \in A} \]
 of \emph{downward closed subsets} of $\N$.
 \end{defn}
 The interpretation of the propositional connectives is as follows:
@@ -460,7 +460,7 @@ The interpretation of the propositional connectives is as follows:
 \bot &= \nul \\
 A \wedge B &= A \cap B \\
 A \vee B &= A \cup B \\
-A \impl B &= \setof{i \in \N}{ \forall j \le i: j \in A \To j \in B}
+A \impl B &= \setof{i \in \N}{\forall j \le i.\,j \in A \To j \in B}
 \end{align*}
 It is straightforward to prove that if $A$ and $B$ are downward closed, so are $A \wedge B$ and $A \vee B$; $A \impl B$ is downward closed by definition. Semantic entailment is given by the subset relation.
 
@@ -476,8 +476,8 @@ where $X$ is a set (the domain of quantification) and $P \colon X \to \N$ is a p
 
 For formalization purposes in a constructive type theory, such as Coq or Agda, it is important that all functions be computable. This can be achieved in the second model, where the interpretation of the quantifiers is
 \begin{align*}
- \forall P &= \bigcap_{x \in X}{P(x)} = \setof{i \in \N}{ \forall x \in X: i \in P(x)} \\
-\exists P &= \bigcup_{x \in X}{P(x)} = \setof{i \in \N}{\exists x \in X: i \in P(x)} 
+ \forall P &= \bigcap_{x \in X}{P(x)} = \setof{i \in \N}{\forall x \in X.\,i \in P(x)} \\
+\exists P &= \bigcup_{x \in X}{P(x)} = \setof{i \in \N}{\exists x \in X.\,i \in P(x)} 
 \end{align*}
 for $P \colon X \to S$. These definitions are constructive since, type-theoretically, subsets of $\N$ are given by functions $\N \to \Prop$.
 
@@ -496,7 +496,7 @@ Recall that an element $A \in S$ is thought of as the set of time steps at which
 
 \begin{defn} \label{def:subobject-classifier}
 The \emph{subobject classifier} $\SOC$ of $\TOT$ has components
-\[ \SOC_n = \setof{A \subs \fin{n}}{ \forall i, j \in \fin{n}: j \le i \wedge i \in A \To j \in A} \]
+\[ \SOC_n = \setof{A \subs \fin{n}}{\forall i, j \in \fin{n}.\,j \le i \wedge i \in A \To j \in A} \]
 with restriction maps
 \[ r^\SOC_n(A) = A \cap \fin{n} \]
 \end{defn}
@@ -520,7 +520,7 @@ $\1 \xrightarrow{\mtrue} \SOC$ that picks out the truth value `true', defined be
 
     \item As a slightly more interesting example, consider the stream predicate
     \[ \mor{isZero} \colon \oStr \to \SOC,\
-       \mor{isZero}_n(s) = \setof{i \in \fin{n}}{\forall j \le i: s_j = 0} \]
+       \mor{isZero}_n(s) = \setof{i \in \fin{n}}{\forall j \le i.\,s_j = 0} \]
     As the name suggests, $\mor{isZero}$ checks whether its argument stream is the constant zero stream. However, the truth value of the predicate is not a mere true or false, but the set of step-indices $i$ such that the stream is constant zero up to $i$. Intuitively, if the first $n$ elements of a stream are zero, then we can say that it is zero for $n$ time steps.
 \end{enum}
 \end{ex}
@@ -540,7 +540,7 @@ The propositional connectives in $\TOT$ are defined as follows:
     \item Disjunction: $\mdisj \colon \SOC \times \SOC \to \SOC$,
     $\mdisj_n(A, B) = A \cup B$
     \item Implication: $\mimpl \colon \SOC \times \SOC \to \SOC$,
-    $\mimpl_n(A, B) = \setof{i \in \fin{n}}{ \forall j \le i: j \in A \To j \in B}$
+    $\mimpl_n(A, B) = \setof{i \in \fin{n}}{\forall j \le i.\,j \in A \To j \in B}$
 \end{items}
 \end{defn}
 
@@ -549,10 +549,10 @@ The quantifiers are a bit trickier: since the domain of quantification is now a 
 \begin{defn} \label{def:internal-quantifiers}
 The universal quantifier in $\TOT$ is the morphism
 \[ \mall \colon (\pow{X}) \to \SOC,\ 
-   \mall_n(P) = \setof{i \in \fin{n}}{ \forall j \le i,  \forall x \in X_j: j \in P_j(x)} \]
+   \mall_n(P) = \setof{i \in \fin{n}}{\forall j \le i, x \in X_j.\,j \in P_j(x)} \]
 The existential quantifier in $\TOT$ is the morphism
 \[ \mex \colon (\pow{X}) \to \SOC,\ 
-   \mex_n(P) = \setof{i \in \fin{n}}{\exists x \in X_i: i \in P_i(x)} \]
+   \mex_n(P) = \setof{i \in \fin{n}}{\exists x \in X_i.\,i \in P_i(x)} \]
 \end{defn}
 
 In the case of $\mall$, we need to quantify over the components at all lower step indices to make the resulting set downward closed. For $\mex$, this is unnecessary: if $i \in P_i(x)$ for some $x \in X_i$, then $j \in P_j(\restr{x}{j})$ for all $j \le i$ by the compatibility requirement for $P$. Note also that the type of predicates on an object $X$ is given by the exponential $\pow{X}$ in $\TOT$, also called the \emph{power object} of $X$, just like how predicates in the set-theoretical model of \cref{sec:siprop} are functions $X \to S$.
@@ -721,7 +721,7 @@ Terms $\typed{\Gamma}{t}{A}$ of type $A$ in context $\Gamma$ are interpreted as 
 
 Lastly, semantic entailment $\sementails{\Gamma}{P}{Q}$, where $\typed{\Gamma}{P, Q}{\Prop}$, is defined as
 \[ \sementails{\Gamma}{P}{Q} \iff
-   \forall n \in \N, \gamma \in \sem{\Gamma}_n:
+   \forall n \in \N, \gamma \in \sem{\Gamma}_n\,
       n \in \sem{P}_n(\gamma) \To n \in \sem{Q}_n(\gamma) \]
 One can check that all the inference rules of \cref{fig:structural-logical-rules,fig:logic-equalities} are valid with respect to this interpretation. We say that a formula $\typed{\Gamma}{P}{\Prop}$ \emph{holds} or that it is \emph{valid} (in $\TOT$) if $\sementails{\Gamma}{\top}{P}$.
 \end{defn}
@@ -787,11 +787,11 @@ The forcing relation satisfies the following clauses:
 \force{n}{(P \vee Q)(\gamma)} &\quad\iff\quad
   \force{n}{P(\gamma)} \vee \force{n}{Q(\gamma)} \\
 \force{n}{(P \impl Q)(\gamma)} &\quad\iff\quad
-  \forall m \le n: \force{m}{P(\restr{\gamma}{m})} \To \force{m}{Q(\restr{\gamma}{m})} \\
+  \forall m \le n.\,\force{m}{P(\restr{\gamma}{m})} \To \force{m}{Q(\restr{\gamma}{m})} \\
 \force{n}{(\exi{x}{A}{P})(\gamma)} &\quad\iff\quad
-  \exists a \in \sem{A}_n: \force{n}{P(\gamma, a)} \\
+  \exists a \in \sem{A}_n.\,\force{n}{P(\gamma, a)} \\
 \force{n}{(\all{x}{A}{P})(\gamma)} &\quad\iff\quad
-  \forall m \le n, a \in \sem{A}_m: \force{m}{P(\restr{\gamma}{m}, a)} \\
+  \forall m \le n, a \in \sem{A}_m.\,\force{m}{P(\restr{\gamma}{m}, a)} \\
 \force{n}{(\later{P})(\gamma)} &\quad\iff\quad
   n = 0 \vee \force{n-1}{P(\restr{\gamma}{n-1})}
 \end{align*}
@@ -799,18 +799,18 @@ The forcing relation satisfies the following clauses:
 
 It is clear from the definitions that $\sementails{\Gamma}{P}{Q}$ iff for all $n \in \N$ and $\gamma \in \sem{\Gamma}_n$, $\force{n}{P(\gamma)}$ implies $\force{n}{Q(\gamma)}$. In particular, a formula $P$ holds in $\TOT$ iff $\force{n}{P(\gamma)}$ for all $n \in \N$ and $\gamma \in \sem{\Gamma}_n$. Thus, we can use \cref{prop:kripke-joyal} to prove or disprove semantic entailments by inductively calculating the meaning of logical formulas. Coming back to the rule \textsc{$\later$-$\exists$-comm}, and assuming that $\Gamma$ is the empty context, we have
 \[ \force{n+1}{\later{(\exi{x}{A}{P})}} \iff
-   \exists a \in \sem{A}_n: \force{n}{P(a)} \]
+   \exists a \in \sem{A}_n.\,\force{n}{P(a)} \]
 and
 \[ \force{n+1}{\exi{x}{A}{\later{P}}} \iff
-   \exists a \in \sem{A}_{n+1}: \force{n}{P(\restr{a}{n})} \]
+   \exists a \in \sem{A}_{n+1}.\,\force{n}{P(\restr{a}{n})} \]
 We see that, semantically, the two sides quantify over different levels of $A$. Setting $A = \Later{\emptyt}$ and $P = \true$, we have $\sem{A}_0 = \{*\}$ and $\sem{A}_1 = \nul$, so the left hand side is true at step-index 1, while the right hand side is not. This shows that the left-to-right implication is not generally true.
 
 Similarly, we calculate the meaning of the two sides of \textsc{$\later$-$\forall$-comm}:
 \begin{align*}
 \force{n+1}{\later{(\all{x}{A}{P})}} &\iff
-  \forall m \le n, a \in \sem{A}_m: \force{m}{P(a)} \\
+  \forall m \le n, a \in \sem{A}_m.\,\force{m}{P(a)} \\
 \force{n+1}{\all{x}{A}{\later{P}}} &\iff
-  \forall m \le n, a \in \sem{A}_{m+1}: \force{m}{P(\restr{a}{m})}
+  \forall m \le n, a \in \sem{A}_{m+1}.\,\force{m}{P(\restr{a}{m})}
 \end{align*}
 Now taking $A = \Later{\emptyt}$ and $P = \false$ provides a counterexample to the validity of the right-to-left implication at step-index 1.
 
@@ -831,7 +831,7 @@ An object $X$ of $\TOT$ is total and inhabited iff $\mnxt \colon X \to \Later{X}
 holds in $\TOT$.
 \begin{proof}
 We have
-\[ \force{n}{\name{TI}(X)} \iff \forall m \le n, \forall y \in (\Later{X})_m, \exists x \in X_m: \mnxt_m(x) = y \]
+\[ \force{n}{\name{TI}(X)} \iff \forall m \le n, \forall y \in (\Later{X})_m, \exists x \in X_m.\,\mnxt_m(x) = y \]
 Hence, $\name{TI}(X)$ holds in $\TOT$ iff all components of $\mnxt \colon X \to \Later{X}$ are surjective. Since $\mnxt_{n+1} = r^X_n$, and $\mnxt_0 \colon X_0 \to \{*\}$ is surjective iff $X_0$ is inhabited, the claim follows. \qedhere
 \end{proof}
 \end{prop}
@@ -874,7 +874,7 @@ From these considerations, we can guess reasonable candidates for sound rules th
                  {\all{y}{\Later{A}}{\lift{(Q \ap y)}}}}
 \end{mathpar}
 The soundness of these rules can be established using the original semantics (\cref{def:logic-semantics}). The proof essentially amounts to checking the commutativity of the diagrams below; we omit the details.
-% https://q.uiver.app/#q=WzAsMTEsWzAsMCwiXFxMYXRlcnsoXFxwb3d7WH0pfSJdLFswLDEsIlxcZXhwdHtcXExhdGVye1h9fXtcXExhdGVye1xcU09DfX0iXSxbMCwyLCJcXHBvd3tcXExhdGVye1h9fSJdLFsxLDIsIlxcU09DIl0sWzEsMCwiXFxMYXRlcntcXFNPQ30iXSxbMiwwXSxbMywwLCJcXExhdGVyeyhcXHBvd3tYfSl9Il0sWzMsMSwiXFxleHB0e1xcTGF0ZXJ7WH19e1xcTGF0ZXJ7XFxTT0N9fSJdLFszLDIsIlxccG93e1xcTGF0ZXJ7WH19Il0sWzQsMiwiXFxTT0MiXSxbNCwwLCJcXExhdGVye1xcU09DfSJdLFs0LDMsIlxcbWxpZnQiXSxbMCw0LCJcXExhdGVye1xcbWV4fSJdLFswLDEsIkoiLDJdLFsxLDIsIlxcY3Vycnl7KFxcbWxpZnQgXFxjaXJjIFxcZXYpfSIsMl0sWzIsMywiXFxtZXgiLDJdLFs2LDEwLCJcXExhdGVye1xcbWFsbH0iXSxbNiw3LCJKIiwyXSxbNyw4LCJcXGN1cnJ5eyhcXG1saWZ0IFxcY2lyYyBcXGV2KX0iLDJdLFsxMCw5LCJcXG1saWZ0Il0sWzgsOSwiXFxtYWxsIiwyXV0=
+% https://q.uiver.app/#q=WzAsMTEsWzAsMCwiXFxMYXRlcnsoXFxwb3d7WH0pfSJdLFswLDEsIlxcZXhwdHtcXExhdGVye1h9fXtcXExhdGVye1xcU09DfX0iXSxbMCwyLCJcXHBvd3tcXExhdGVye1h9fSJdLFsxLDIsIlxcU09DIl0sWzEsMCwiXFxMYXRlcntcXFNPQ30iXSxbMiwwXSxbMywwLCJcXExhdGVyeyhcXHBvd3tYfSl9Il0sWzMsMSwiXFxleHB0e1xcTGF0ZXJ7WH19e1xcTGF0ZXJ7XFxTT0N9fSJdLFszLDIsIlxccG93e1xcTGF0ZXJ7WH19Il0sWzQsMiwiXFxTT0MiXSxbNCwwLCJcXExhdGVye1xcU09DfSJdLFs0LDMsIlxcbWxpZnQiXSxbMCw0LCJcXExhdGVye1xcbWV4fSJdLFswLDEsIkoiLDJdLFsxLDIsIlxcZXhwdHtcXGlkfXtcXG1saWZ0fSIsMl0sWzIsMywiXFxtZXgiLDJdLFs2LDEwLCJcXExhdGVye1xcbWFsbH0iXSxbNiw3LCJKIiwyXSxbNyw4LCJcXGV4cHR7XFxpZH17XFxtbGlmdH0iLDJdLFsxMCw5LCJcXG1saWZ0Il0sWzgsOSwiXFxtYWxsIiwyXV0=
 \[\begin{tikzcd}
 	{\Later{(\pow{X})}} & {\Later{\SOC}} & {} & {\Later{(\pow{X})}} & {\Later{\SOC}} \\
 	{\expt{\Later{X}}{\Later{\SOC}}} &&& {\expt{\Later{X}}{\Later{\SOC}}} \\
@@ -885,8 +885,8 @@ The soundness of these rules can be established using the original semantics (\c
 	\arrow["{\Later{\mall}}", from=1-4, to=1-5]
 	\arrow["J"', from=1-4, to=2-4]
 	\arrow["\mlift", from=1-5, to=3-5]
-	\arrow["{\curry{(\mlift \circ \ev)}}"', from=2-1, to=3-1]
-	\arrow["{\curry{(\mlift \circ \ev)}}"', from=2-4, to=3-4]
+	\arrow["{\expt{\id}{\mlift}}"', from=2-1, to=3-1]
+	\arrow["{\expt{\id}{\mlift}}"', from=2-4, to=3-4]
 	\arrow["\mex"', from=3-1, to=3-2]
 	\arrow["\mall"', from=3-4, to=3-5]
 \end{tikzcd}\]

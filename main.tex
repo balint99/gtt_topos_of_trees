@@ -94,7 +94,7 @@ We begin by introducing the topos of trees as a model of guarded recursive funct
 \subsection{Basic structure} \label{sec:basic-struct}
 
 \begin{defn} \label{def:tot}
-The \emph{topos of trees} $\TOT$ is the category of presheaves on $\omega$, the set of
+The \emph{topos of trees} (denoted by $\TOT$) is the category of presheaves on $\omega$, the set of
 natural numbers with their usual ordering.
 
 Explicitly, this means that an object $X$ in $\TOT$ is a family of
@@ -229,7 +229,6 @@ We have seen in the previous section (\cref{ex:morphisms}) that we can define ca
 The reason why we cannot have a tail operation in the form of a morphism $\oStr \to \oStr$ is already apparent at level zero: we only have access to the first element of the stream, but the first element of the output should be the second element of the input. To resolve this mismatch, we need something which allows us to shift the step-indices.
 
 This is achieved by introducing a new type former $\Later$, which semantically corresponds to an endofunctor on $\TOT$. Then, intuitively, the type $\Later{X}$ expresses that we will only have access to the underlying value of type $X$ one step later. It turns out that this is also a key idea for implementing \emph{guarded recursion}, that is, recursion on the available number of steps.
-
 \begin{defn} \label{def:later}
 The functor $\Later \colon \TOT \to \TOT$, called \emph{later}, sends an object $X$ of $\TOT$ to
 % https://q.uiver.app/?q=WzAsNCxbMCwwLCJcXHsqXFx9Il0sWzIsMCwiWF8xIl0sWzEsMCwiWF8wIl0sWzMsMCwiXFxjZG90cyJdLFsyLDAsIiEiLDJdLFsxLDIsInJeWF8wIiwyXSxbMywxLCJyXlhfMSIsMl1d
@@ -273,7 +272,6 @@ We define the natural transformation $\mnxt \colon \id[\cat{S}] \to \Later$, who
 	\arrow["{r^X_1}"', from=1-3, to=2-3]
 \end{tikzcd}\]
 \end{defn}
-
 Essentially, $\mnxt_X$ is the reflection of the restriction maps of $X$ (or rather $\Later{X}$) into $\TOT$. This makes it possible to talk about the internal structure of objects using the internal logic of $\TOT$. \Cref{prop:total-inhabited-internal} will provide an illustration of this point.
 
 \begin{prop} \label{prop:later-product}
@@ -283,13 +281,13 @@ induced by the morphism
 $(\Later{\mprojl}, \Later{\mprojr}) :
     \Later{(X \times Y)} \to \Later{X} \times \Later{Y}$.
 In other words, the functor $\Later$ preserves products.
+\end{prop}
 \begin{proof}
 Let
 $l_{X,Y} \colon \Later{X} \times \Later{Y} \to \Later{(X \times Y)}$ be given by
 $l_0(*, *) = *$, $l_{n+1}(x, y) = (x, y)$. This provides an inverse to
 $(\Later{\mprojl}, \Later{\mprojr})$. \qedhere
 \end{proof}
-\end{prop}
 
 \begin{defn} \label{def:J}
 Define $J_{X, Y} \colon \Later{(\expt{X}{Y})} \to (\expt{\Later{X}}{\Later{Y}})$
@@ -314,10 +312,10 @@ A crucial ingredient for being able to make guarded recursive definitions
 is the existence of unique fixed points for morphisms. Certainly, not
 every morphism $X \to X$ will have a fixed point (e.g. $\0 \to \0$). However, we
 have the following proposition.
-
 \begin{prop} \label{prop:fixpoint}
 Let $f \colon \Later{X} \to X$ be a morphism of $\TOT$. Then there exists a unique
 $x \colon \1 \to X$ such that $f \circ \mnxt_X \circ x = x$.
+\end{prop}
 \begin{proof}
 The global element $x \colon \1 \to X$ is defined by recursion: $x_0 = f_0(*)$ and $x_{n+1} = f_{n+1}(x_n)$. One can check using induction on $n$ that $x$ is well-defined, that is, $r^X_n(x_{n+1}) = x_n$, and that $f_n((\mnxt_X)_n(x_n)) = x_n$ holds.
 
@@ -326,7 +324,7 @@ $f \circ \mnxt_X \circ x = x$, then $x_0 = f_0(r^{\Later{X}}_0(x_0)) = f_0(*)$ a
 $x_{n+1} = f_{n+1}(r^{\Later{X}}_{n+1}(x_{n+1})) =
 f_{n+1}(r^X_n(x_{n+1})) = f_{n+1}(x_n)$. Thus, the definition of $x$ was forced. \qedhere
 \end{proof}
-\end{prop}
+
 We will write $\fix{f}$ for the unique fixed point of $f \colon \Later{X} \to X$. Note that the existence of such fixed points does not compromise consistency, as there is in general no morphism $\Later{X} \to X$. In particular, there is no morphism $\Later{\0} \to \0$, so the above proposition does not give us an inhabitant of the empty type.
 In contrast, this morphism does exist in the OFE model of Iris~\cite{jung:2018:jfp}. As a result, fixed points in Iris are designed differently: we can take the fixed point of an arbitrary map $X \to X$, provided we can prove that it is \emph{contractive} (see~\cite[Section 4.2]{jung:2018:jfp}).
 
@@ -337,7 +335,6 @@ $\fix{f} \colon \1 \to \oStr$ represents the constant stream with value 0.
 \end{ex}
 
 Note that the construction of \cref{prop:fixpoint} is external, meaning that the assignment of the fixed point $\fix{f}$ to the morphism $f$ happens in the metalogic instead of being an operation in $\TOT$. Thus, it does not correspond to a term of type ($\expt{\Later{X}}{X}) \to X$ in lambda calculus. It turns out, however, that we can \emph{define} such a term using this fixed point operator and other existing structure.
-
 \begin{defn} \label{def:fix}
 The morphism $\mor{fix}_X \colon (\expt{\Later{X}}{X}) \to X$ is defined as follows:
 \[ \mor{fix}_X = \ev \circ \mprod{\fix{(\curry{f})} \circ \mterm}{\id}, \]
@@ -405,12 +402,11 @@ $\mor{fix}_X \circ \curry{t}$ (see \cref{def:logic-semantics}).
     that adds a specified natural number to every element of a stream. Observe that in this example, we take the fixed point of a function with a parameter, namely $n$.
 \end{enum}
 We refer the reader to~\cite{clouston:2017:lmcs} for many more examples.
+\end{ex}
 
 \begin{rem} \label{rem:coinductive-types}
 Although the $\Later$ type former enables guarded recursion, it is not sufficient to express true coinductive types. For instance, the object $\obj{Str}$ from \cref{ex:stream} models guarded recursive streams, whereas coinductive streams are given by the constant object $\N^\omega$. Unfortunately, guarded recursive streams are not enough to represent all stream functions. In particular, using the system to be introduced in \cref{sec:internal-logic-def}, we cannot define the function $\mor{even} \colon \N^\omega \to \N^\omega$ that keeps only elements at even indices.
 \end{rem}
-
-\end{ex}
 
 \section{Internal logic of the topos of trees} \label{sec:internal-logic}
 
@@ -447,6 +443,7 @@ The set of truth values is the set
 \[ S = \setof{A \subs \N}{\forall i, j \in \N.\,j \le i \wedge i \in A \To j \in A} \]
 of \emph{downward closed subsets} of $\N$.
 \end{defn}
+
 The interpretation of the propositional connectives is as follows:
 \begin{align*}
 \top &= \N, \\
@@ -455,7 +452,7 @@ A \wedge B &= A \cap B, \\
 A \vee B &= A \cup B, \\
 A \impl B &= \setof{i \in \N}{\forall j \le i.\,j \in A \To j \in B}.
 \end{align*}
-It is straightforward to prove that if $A$ and $B$ are downward closed, so are $A \wedge B$ and $A \vee B$; $A \impl B$ is downward closed by definition. Semantic entailment is given by the subset relation.
+It follows from the definitions prove that if $A$ and $B$ are downward closed, so are $A \wedge B$ and $A \vee B$; $A \impl B$ is downward closed by definition. Semantic entailment is given by the subset relation.
 
 In a classical metatheory, this model is equivalent to the previous one, in the sense that there is bijection
 $b \colon \ol{\N} \cong S$ preserving the interpretation of each of the connectives. Specifically,
@@ -486,17 +483,12 @@ We now revisit the development in the previous section, but inside the topos of 
 Firstly, we need an object $\SOC$ in $\TOT$ analogous to the set of truth values $S$ (\cref{def:siprop}). A naive choice might be the constant object $\Delta S$. However, this does not work. Given a predicate $P \colon X \to \Delta S$, the compatibility requirement for morphisms implies $P_n = P_0 \circ r^X_{0,n}$ for all $n \in \N$. Thus, $P_0 \colon X_0 \to S$ determines all other components. Intuitively, this means that a predicate can only use information at level zero, which is too restrictive. The issue is that the step-indexed nature of objects in $\TOT$ is not taken into account.
 
 Recall that an element $A \in S$ is thought of as the set of time steps at which a proposition holds, and that the $n$-th component of an object represents our view of that object with $n$ available computation steps. This suggests that at level $n$ we should consider time steps only up to $n$; that is, elements of $\SOC_n$ should be subsets of $\fin{n}$. This turns out to be the right idea, justified by the fact that the resulting object is an instance of the categorical notion of a \emph{subobject classifier}, which is the object of truth values in a category.
-
 \begin{defn} \label{def:subobject-classifier}
 The \emph{subobject classifier} $\SOC$ of $\TOT$ has components
 \[ \SOC_n = \setof{A \subs \fin{n}}{\forall i, j \in \fin{n}.\,j \le i \wedge i \in A \To j \in A} \]
 with restriction maps
 \[ r^\SOC_n(A) = A \cap \fin{n}. \]
 \end{defn}
-\begin{rem} \label{rem:soc}
-Technically, the subobject classifier is not the object $\SOC$ itself, but the morphism
-$\1 \xrightarrow{\mtrue} \SOC$ that picks out the truth value `true', defined below.
-\end{rem}
 
 \begin{ex} \label{ex:predicates}
 \hfill \vspace{-6pt}
@@ -519,7 +511,6 @@ $\1 \xrightarrow{\mtrue} \SOC$ that picks out the truth value `true', defined be
 \end{ex}
 
 We can carry over the set-theoretic definitions of the propositional connectives from \cref{sec:siprop}, and obtain componentwise operations on $\SOC$, and thus morphisms in $\TOT$.
-
 \begin{defn} \label{def:internal-heyting}
 The propositional connectives in $\TOT$ are defined as follows:
 \vspace{-6pt}
@@ -538,7 +529,6 @@ The propositional connectives in $\TOT$ are defined as follows:
 \end{defn}
 
 The quantifiers are a bit trickier: since the domain of quantification is now a step-indexed family of sets, it might not be obvious which components to quantify over.
-
 \begin{defn} \label{def:internal-quantifiers}
 The universal quantifier in $\TOT$ is the morphism
 \[ \mall \colon (\pow{X}) \to \SOC,\ 
@@ -547,11 +537,9 @@ The existential quantifier in $\TOT$ is the morphism
 \[ \mex \colon (\pow{X}) \to \SOC,\ 
    \mex_n(P) = \setof{i \in \fin{n}}{\exists x \in X_i.\,i \in P_i(x)}. \]
 \end{defn}
-
 In the case of $\mall$, we need to quantify over the components at all lower step indices to make the resulting set downward closed. For $\mex$, this is unnecessary: if $i \in P_i(x)$ for some $x \in X_i$, then $j \in P_j(\restr{x}{j})$ for all $j \le i$ by the compatibility requirement for $P$. Note also that the type of predicates on an object $X$ is given by the exponential $\pow{X}$ in $\TOT$, also called the \emph{power object} of $X$, just like how predicates in the set-theoretical model of \cref{sec:siprop} are functions $X \to S$.
 
 The later modality of \cref{sec:siprop} (\cref{eq:siprop-later}) also has an analogue in $\TOT$ as a morphism $\SOC \to \SOC$. However, similarly to $\mcons$ (\cref{ex:later}), we can give it the stronger type $\Later{\SOC} \to \SOC$, which is necessary for the definition of guarded recursive predicates. We use the name $\mlift$ for the stronger version, and reserve $\mlater$ for the original operation, following tradition.
-
 \begin{defn} \label{def:lift-later}
 We define the morphism $\mlift \colon \Later{\SOC} \to \SOC$ by
 \begin{align*}
@@ -563,7 +551,6 @@ Furthermore, $\mlater \colon \SOC \to \SOC$ is defined as $\mlater = \mlift \cir
 \end{defn}
 
 Finally, to prove properties of programs, we need an appropriate notion of equality in $\TOT$.
-
 \begin{defn} \label{def:equality}
 The \emph{step-indexed equality} predicate $\meq \colon X \times X \to \SOC$ is given by
 \[ \meq_n(x, y) = \setof{i \in \fin{n}}{\restr{x}{i} = \restr{y}{i}}. \]
@@ -718,7 +705,6 @@ One can check that all the inference rules of \cref{fig:structural-logical-rules
 \end{defn}
 
 We are finally in a position to be able to prove a nontrivial property of a guarded recursive program. We use natural language to carry out the proof, which can readily be translated to a derivation in $\lang$. We indicate the less obvious steps by reference to particular inference rules.
-
 \begin{ex} \label{ex:add-proof}
 Consider the program $\name{add}$ from \cref{ex:guarded-recursion}. We wish to prove
 \begin{equation*}
@@ -763,7 +749,6 @@ We have seen that $\later$ commutes with the propositional connectives $\wedge$,
 \end{mathpar}
 
 As the rules \textsc{$\exists$-$\later$} and \textsc{$\later$-$\forall$} (\cref{fig:derived-rules}) show, one direction of both equivalences is derivable in the system $\lang$. In both cases, however, the other direction is not semantically valid. To explain why, we first characterize logical validity in $\TOT$ in a more intuitive way, known in the literature as \emph{Kripke-Joyal semantics}~\cite{lambek:scott,maclane:moerdijk}. This characterization is formulated in terms of a \emph{forcing relation} $\force{}{}$: for $\typed{\Gamma}{P}{\Prop}$, $n \in \N$, and $\gamma \in \sem{\Gamma}_n$, we define $\force{n}{P(\gamma)}$ iff $n \in \sem{P}_n(\gamma)$. Intuitively, $\force{n}{P(\gamma)}$ means that $P$ holds at step-index $n$, where the parameters of $P$ have been substituted with the semantic values $\gamma$. If $\Gamma$ is the empty context, we simply write $\force{n}{P}$.
-
 \begin{prop}[Kripke-Joyal semantics] \label{prop:kripke-joyal}
 The forcing relation satisfies the following clauses:
 \begin{align*}
@@ -818,12 +803,12 @@ Thus, the rule \textsc{$\later$-$\exists$-comm} holds for total and inhabited $X
 An object $X$ of $\TOT$ is total and inhabited iff $\mnxt \colon X \to \Later{X}$ is internally surjective, that is, iff the formula
 \[ \name{TI}(X) := \all{y}{\Later{X}}{\exi{x}{X}{\nxt{x} =_{\Later{X}} y}} \]
 holds in $\TOT$.
+\end{prop}
 \begin{proof}
 We have
 \[ \force{n}{\name{TI}(X)} \iff \forall m \le n, \forall y \in (\Later{X})_m, \exists x \in X_m.\,\mnxt_m(x) = y. \]
 Hence, $\name{TI}(X)$ holds in $\TOT$ iff all components of $\mnxt \colon X \to \Later{X}$ are surjective. Since $\mnxt_{n+1} = r^X_n$, and $\mnxt_0 \colon X_0 \to \{*\}$ is surjective iff $X_0$ is inhabited, the claim follows. \qedhere
 \end{proof}
-\end{prop}
 
 We have thus shown the soundness of the following rules.
 \begin{mathpar}

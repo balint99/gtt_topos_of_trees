@@ -134,20 +134,21 @@
 \newcommand{\inl}[1]{\name{inj}_1\, #1}
 \newcommand{\inr}[1]{\name{inj}_2\, #1}
 \newcommand{\case}[5]{\name{case}\, #1\, \name{of}\, #2. #3; #4. #5}
-\newcommand{\lam}[3]{\lambda #1 : #2. #3}
+\newcommand{\lam}[3]{\lambda #1 : #2.\,#3}
 \newcommand{\app}[2]{#1\, #2}
 \newcommand{\nxt}[1]{\name{next}\, #1}
 \newcommand{\ap}{\circledast}
-\newcommand{\rec}[3]{\mu #1 : #2. #3}
+\newcommand{\rec}[3]{\mu #1 : #2.\,#3}
 \newcommand{\true}{\top}
 \newcommand{\false}{\bot}
 \newcommand{\impl}{\supset}
-\newcommand{\all}[3]{\forall #1 : #2. #3}
-\newcommand{\exi}[3]{\exists #1 : #2. #3}
+\newcommand{\all}[3]{\forall #1 : #2.\,#3}
+\newcommand{\exi}[3]{\exists #1 : #2.\,#3}
 \newcommand{\later}{\triangleright}
 \newcommand{\lift}[1]{\name{lift}\, #1}
 
 \newcommand{\subst}[3]{#1\left[#2 := #3\right]}
+\newcommand{\conext}[3]{#1, #2 : #3}
 \newcommand{\typed}[3]{#1 \vdash #2 : #3}
 \newcommand{\entails}[3]{#1 \sep #2 \vdash #3}
 \newcommand{\valid}[2]{#1 \vdash #2}

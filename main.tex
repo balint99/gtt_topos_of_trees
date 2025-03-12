@@ -105,7 +105,7 @@ natural numbers with their usual ordering.
 
 Explicitly, this means that an object $X$ in $\TOT$ is a family of
 sets $(X_n)_{n \in \omega}$ indexed by the natural numbers, together with
-restriction maps $(r^X_n : X_{n+1} \to X_n)_{n \in \omega}$. This can be depicted as the diagram
+restriction maps $(r^X_n \colon X_{n+1} \to X_n)_{n \in \omega}$. This can be depicted as the diagram
 % https://q.uiver.app/?q=WzAsNCxbMCwwLCJYXzAiXSxbMiwwLCJYXzIiXSxbMSwwLCJYXzEiXSxbMywwLCJcXGNkb3RzIl0sWzIsMCwicl5YXzAiLDJdLFsxLDIsInJeWF8xIiwyXSxbMywxLCJyXlhfMiIsMl1d
 \[\begin{tikzcd}
 	{X_0} & {X_1} & {X_2} & \cdots
@@ -114,7 +114,7 @@ restriction maps $(r^X_n : X_{n+1} \to X_n)_{n \in \omega}$. This can be depicte
 	\arrow["{r^X_2}"', from=1-4, to=1-3]
 \end{tikzcd}\]
 A morphism $f$ from $X$ to $Y$  is a family of maps
-$(f_n : X_n \to Y_n)_{n \in \omega}$
+$(f_n \colon X_n \to Y_n)_{n \in \omega}$
 commuting with the restriction maps, as shown by the following commutative diagram:
 % https://q.uiver.app/?q=WzAsOCxbMCwwLCJYXzAiXSxbMSwwLCJYXzEiXSxbMiwwLCJYXzIiXSxbMCwxLCJZXzAiXSxbMSwxLCJZXzEiXSxbMiwxLCJZXzIiXSxbMywwLCJcXGNkb3RzIl0sWzMsMSwiXFxjZG90cyJdLFsxLDAsInJeWF8wIiwyXSxbMiwxLCJyXlhfMSIsMl0sWzQsMywicl5ZXzAiXSxbNSw0LCJyXllfMSJdLFswLDMsImZfMCIsMl0sWzEsNCwiZl8xIiwyXSxbMiw1LCJmXzIiLDJdLFs2LDIsInJeWF8yIiwyXSxbNyw1LCJyXllfMiJdXQ==
 \[\begin{tikzcd}
@@ -130,7 +130,7 @@ commuting with the restriction maps, as shown by the following commutative diagr
 	\arrow["{r^X_2}"', from=1-4, to=1-3]
 	\arrow["{r^Y_2}", from=2-4, to=2-3]
 \end{tikzcd}\]
-For $n \le m$, $r^X_{n,m} : X_m \to X_n$ is defined to be the composite
+For $n \le m$, $r^X_{n,m} \colon X_m \to X_n$ is defined to be the composite
 $r_n \circ \cdots \circ r_{m-1}$. Moreover, if $x \in X_m$ and $n \le m$, we use the notation $\restr{x}{n}$ for $r^X_{n,m}(x)$, referred to as the
 \emph{restriction of $x$ to $n$}.
 \end{defn}
@@ -148,7 +148,7 @@ We define the object $\oStr$ of \emph{step-indexed streams} of natural numbers a
 	\arrow["{r^{\oStr}_2}"', from=1-4, to=1-3]
 	\arrow["{r^{\oStr}_1}"', from=1-3, to=1-2]
 \end{tikzcd}\]
-where $r^{\oStr}_n : \N^{n+2} \to \N^{n+1}$ is the projection
+where $r^{\oStr}_n \colon \N^{n+2} \to \N^{n+1}$ is the projection
 $(s_0, \ldots, s_n, s_{n+1}) \mapsto (s_0, \ldots, s_n)$. At step-index $n$ we only have access the first $(n+1)$ elements of the stream, and thus we set
 $\oStr_n = \N^{n+1}$. The restriction map $r^{\oStr}_n$ expresses the connection between the views of the \emph{same} stream at two consecutive time steps:
 if the view at index $(n+1)$ is $(s_0, \ldots, s_n, s_{n+1})$, then the view at index $n$ is $(s_0, \ldots, s_n)$.
@@ -158,20 +158,20 @@ The category $\TOT$, being a topos, has many useful categorical and logical prop
 \begin{defn} \label{def:tot-struct}
 \hfill \vspace{-6pt}
 \begin{enum}
-    \item The initial object $\0$ and the terminal object $\1$ are the empty set and the singleton set at every level, respectively, with the obvious restriction maps. We will denote both the unique morphism from $\0$ and the one to $\1$ by $\minit$.
+    \item The initial object $\0$ and the terminal object $\1$ are the empty set and the singleton set at every level, respectively, with identities as restriction maps. We will denote both the unique morphism from $\0$ and the one to $\1$ by $\minit$.
     
     \item These are special cases of what are called \emph{constant objects},
-    which form the image of the diagonal functor $\Delta : \Set \to \TOT$. For a set
-    $X$, $\Delta X$ is the constant presheaf at $X$ given by $(\Delta X)_n = X$ and
-    with identities as the restriction maps. We will usually omit the application of
+    which form the image of the diagonal functor $\Delta \colon \Set \to \TOT$. For a set
+    $X$, $\Delta X$ is the constant presheaf at $X$ with $(\Delta X)_n = X$ and
+    identities as restriction maps. We will usually omit the application of
     this functor, and write $X$ for the object $\Delta X$ and $f$ for the morphism
     $\Delta f$ as well.
     
     \item The product of $X$ and $Y$ is the family
     $(X \times Y)_n = X_n \times Y_n$ together with restriction maps
-    $r^X_n \times r^Y_n : X_{n+1} \times Y_{n+1} \to X_n \times Y_n$.
+    $r^X_n \times r^Y_n \colon X_{n+1} \times Y_{n+1} \to X_n \times Y_n$.
     Similarly, their coproduct has $(X + Y)_n = X_n + Y_n$ and
-    $r^X_n + r^Y_n : X_{n+1} + Y_{n+1} \to X_n + Y_n$ as restriction maps. The
+    $r^X_n + r^Y_n \colon X_{n+1} + Y_{n+1} \to X_n + Y_n$ as restriction maps. The
     projections and coprojections will be denoted by $\mprojl, \mprojr$ and
     $\minl, \minr$, respectively. We will use the notation $(f, g)$ and
     $[f, g]$ for the unique morphism arising from the
@@ -180,13 +180,13 @@ The category $\TOT$, being a topos, has many useful categorical and logical prop
     \item
     Given $X$ and $Y$, the $n$-th component of the
     exponential $Y^X$ is the set of $(n+1)$-tuples $(f_0, \dots, f_n)$, where
-    $f_i : X_i \to Y_i$, commuting with the restriction maps. In other words, an
+    $f_i \colon X_i \to Y_i$, commuting with the restriction maps. In other words, an
     element of $(Y^X)_n$ is like a morphism $X \to Y$ but only up to level $n$.
     The restriction maps are given by projections forgetting the last element.
     We will usually use the notation $\expt{X}{Y}$ for $Y^X$. We will write $\ev$ for the
-    evaluation map $(\expt{X}{Y}) \times X \to Y$ and $\curry{f} : Z \to (\expt{X}{Y})$
-    for the exponential transpose of $f : Z \times X \to Y$. For a morphism $f : X \to Y$,
-    $\transpose{f} : \1 \to (\expt{X}{Y})$ is shorthand for $\curry{(f \circ \mprojr)}$.
+    evaluation map $(\expt{X}{Y}) \times X \to Y$ and $\curry{f} \colon Z \to (\expt{X}{Y})$
+    for the exponential transpose of $f \colon Z \times X \to Y$. For a morphism $f \colon X \to Y$,
+    $\transpose{f} \colon \1 \to (\expt{X}{Y})$ is shorthand for $\curry{(f \circ \mprojr)}$.
 \end{enum}
 \end{defn}
 
@@ -194,7 +194,7 @@ As an object of $\TOT$ consists of a family of sets (as opposed to a single set)
 \begin{defn} \label{def:glob-el}
 A \emph{global element} of an object $X$ is a morphism $\1 \to X$.
 \end{defn}
-Equivalently, a global element $x : \1 \to X$ is a collection
+Equivalently, a global element $x \colon \1 \to X$ is a collection
 $(x_n)_{n \in \omega}$ such that $x_n \in X_n$ and $r^X_n(x_{n+1}) = x_n$ for all $n \in \omega$. This also makes sense intuitively: $x$ is a sequence of more and more refined approximations, where $x_n$ is our view of the element at time step $n$.
 
 We tend to think of global elements $\1 \to X$ as being real elements. Indeed, they correspond to closed terms of type $X$ in the internal logic; see \cref{def:logic-semantics}.
@@ -202,43 +202,43 @@ We tend to think of global elements $\1 \to X$ as being real elements. Indeed, t
 \begin{ex} \label{ex:morphisms}
 \hfill \vspace{-6pt}
 \begin{enum}
-    \item The infinite stream of natural numbers $\mor{nats} : \1 \to \oStr$ can be defined by $\mor{nats}_n = (0, \ldots, n)$. In general, any infinite
+    \item The infinite stream of natural numbers $\mor{nats} \colon \1 \to \oStr$ can be defined by $\mor{nats}_n = (0, \ldots, n)$. In general, any infinite
     sequence $s \in \N^\omega$ can be represented as the global element
-    $\bar{s} : \1 \to \oStr$, $\bar{s}_n = (s_0, \ldots, s_n)$.
+    $\bar{s} \colon \1 \to \oStr$, $\bar{s}_n = (s_0, \ldots, s_n)$.
 
-    \item The stream function $\mor{inc} : \N^\omega \to \N^\omega, \mor{inc}(s)_n = s_n + 1$ adds one to every element in a stream. This function can also be defined on approximations:
+    \item The stream function $\mor{inc} \colon \N^\omega \to \N^\omega, \mor{inc}(s)_n = s_n + 1$ adds one to every element in a stream. This function can also be defined on approximations:
     we have functions
-    \[ \mor{inc}_n : \oStr_n \to \oStr_n,\ 
+    \[ \mor{inc}_n \colon \oStr_n \to \oStr_n,\ 
        (s_0, \ldots, s_n) \mapsto (s_0 + 1, \ldots, s_n + 1) \]
     for every $n \in \omega$. Since they satisfy $\mor{inc}_n \circ r^{\oStr}_n = r^{\oStr}_n \circ \mor{inc}_{n+1}$, this gives us a morphism
-    $\mor{inc} : \oStr \to \oStr$ in $\TOT$.
+    $\mor{inc} \colon \oStr \to \oStr$ in $\TOT$.
 
     \item One may wonder if it is possible to generalize the previous example to all
-    stream functions $\N^\omega \to \N^\omega$. The answer is no, but it is possible for \emph{causal functions}, that is, functions such that the $n$-th element of the output depends only on the first $n$ elements of the input. Such functions $f : \N^\omega \to \N^\omega$ can be written as $f(s)_n = g_n(s_0, \ldots, s_n)$ for some $g_n : \N^{n+1} \to \N$, and can be represented by
-    \[ \bar{f} : \oStr \to \oStr,\ 
+    stream functions $\N^\omega \to \N^\omega$. The answer is no, but it is possible for \emph{causal functions}, that is, functions such that the $n$-th element of the output depends only on the first $n$ elements of the input. Such functions $f \colon \N^\omega \to \N^\omega$ can be written as $f(s)_n = g_n(s_0, \ldots, s_n)$ for some $g_n \colon \N^{n+1} \to \N$, and can be represented by
+    \[ \bar{f} \colon \oStr \to \oStr,\ 
         \bar{f}_n(s_0, \ldots, s_n) = (g_0(s_0), \ldots, g_n(s_0, \ldots, s_n)) \]
     We shall see in \cref{sec:guarded-rec} how to encode some non-causal functions in $\TOT$.
 
-    \item The \emph{head} function $\mhd : \oStr \to \N$ is given by the components
+    \item The \emph{head} function $\mhd \colon \oStr \to \N$ is given by the components
     $\mhd_n(s_0, \ldots, s_n) = s_0$.
 \end{enum}
 \end{ex}
 
 In programming-motivated examples, we prefer to use the syntax of simply-typed lambda calculus, extended with appropriate type formers, to write terms. These are interpreted in the cartesian closed category $\cat{S}$ as usual~\cite{crole:1993, taylor:1999}.
-In particular, the interpretation of a term $\typed{\Gamma}{t}{A}$ of type $A$ in context $\Gamma$ is a morphism $\sem{t} : \sem{\Gamma} \to \sem{A}$, where $\sem{\Gamma}$ is the product of the interpretations of the types in $\Gamma$, and a closed term of type $A$ is interpreted as a global element of $\sem{A}$. For instance, the term
+In particular, the interpretation of a term $\typed{\Gamma}{t}{A}$ of type $A$ in context $\Gamma$ is a morphism $\sem{t} \colon \sem{\Gamma} \to \sem{A}$, where $\sem{\Gamma}$ is the product of the interpretations of the types in $\Gamma$, and a closed term of type $A$ is interpreted as a global element of $\sem{A}$. For instance, the term
 $\typed{f : \N \to \N}{\lam{x}{\N}{\app{f}{(\app{\suc}{x})}}}{\N \to \N}$ denotes the
-morphism $\curry{(\ev \circ (\id \times \nsuc))} : (\expt{\N}{\N}) \to (\expt{\N}{\N})$, where $\nsuc$ is the successor function on natural numbers. The semantics of lambda terms (among other things) is described in more detail in \cref{sec:internal-logic-def} (\cref{def:logic-semantics}).
+morphism $\curry{(\ev \circ (\id \times \nsuc))} \colon (\expt{\N}{\N}) \to (\expt{\N}{\N})$, where $\nsuc$ is the successor function on natural numbers. The semantics of lambda terms (among other things) is described in more detail in \cref{sec:internal-logic-def} (\cref{def:logic-semantics}).
 
 \subsection{Guarded recursion} \label{sec:guarded-rec}
 
-We have seen in the previous section (\cref{ex:morphisms}) that we can define causal stream functions as morphisms $\oStr \to \oStr$. Unfortunately, causal functions are not enough to work with streams. In particular, one of the defining coalgebraic operations of streams, the \emph{tail function} $\mtl : \N^\omega \to \N^\omega$ (also known as \emph{derivative}~\cite{rutten:2003:tcs}), given by $\mtl(s)_n = s_{n+1}$, is not causal.
+We have seen in the previous section (\cref{ex:morphisms}) that we can define causal stream functions as morphisms $\oStr \to \oStr$. Unfortunately, causal functions are not enough to work with streams. In particular, one of the defining coalgebraic operations of streams, the \emph{tail function} $\mtl \colon \N^\omega \to \N^\omega$ (also known as \emph{derivative}~\cite{rutten:2003:tcs}), given by $\mtl(s)_n = s_{n+1}$, is not causal.
 
 The reason why we cannot have a tail operation in the form of a morphism $\oStr \to \oStr$ is already apparent at level zero: we only have access to the first element of the stream, but the first element of the output should be the second element of the input. To resolve this mismatch, we need something which allows us to shift the step-indices.
 
 This is achieved by introducing a new type former $\Later$, which semantically corresponds to an endofunctor on $\TOT$. Then, intuitively, the type $\Later{X}$ expresses that we will only have access to the underlying value of type $X$ one step later. It turns out that this is also a key idea for implementing \emph{guarded recursion}, that is, recursion on the available number of steps.
 
 \begin{defn} \label{def:later}
-The functor $\Later : \TOT \to \TOT$, called \emph{later}, sends an object $X$ of $\TOT$ to
+The functor $\Later \colon \TOT \to \TOT$, called \emph{later}, sends an object $X$ of $\TOT$ to
 % https://q.uiver.app/?q=WzAsNCxbMCwwLCJcXHsqXFx9Il0sWzIsMCwiWF8xIl0sWzEsMCwiWF8wIl0sWzMsMCwiXFxjZG90cyJdLFsyLDAsIiEiLDJdLFsxLDIsInJeWF8wIiwyXSxbMywxLCJyXlhfMSIsMl1d
 \[\begin{tikzcd}
 	{\{*\}} & {X_0} & {X_1} & \cdots
@@ -247,24 +247,24 @@ The functor $\Later : \TOT \to \TOT$, called \emph{later}, sends an object $X$ o
 	\arrow["{r^X_1}"', from=1-4, to=1-3]
 \end{tikzcd}\]
 That is, $(\Later{X})_0 = \{*\}$, $(\Later{X})_{n+1} = X_n$, $r^{\Later{X}}_0$ is the unique map to a singleton, and $r^{\Later{X}}_{n+1} = r^X_n$.
-The action of $\Later$ on a morphism $f : X \to Y$ is given by
+The action of $\Later$ on a morphism $f \colon X \to Y$ is given by
 $(\Later{f})_0 = \id[\{*\}]$ and $(\Later f)_{n+1} = f_n$.
 \end{defn}
 
 \begin{ex} \label{ex:later}
 \hfill \vspace{-6pt}
 \begin{enum}
-    \item With the help of the $\Later$ functor, we can now define the tail operation as a morphism ${\mtl : \oStr \to \Later{\oStr}}$, given by $\mtl_0(s_0) = *$ and
+    \item With the help of the $\Later$ functor, we can now define the tail operation as a morphism ${\mtl \colon \oStr \to \Later{\oStr}}$, given by $\mtl_0(s_0) = *$ and
     $\mtl_{n+1}(s_0, s_1, \ldots, s_{n+1}) = (s_1, \ldots, s_{n+1})$.
 
-    \item The \emph{cons} operation $\mcons : \N \times \N^\omega \to \N^\omega$ sends $(a, s)$ to the infinite sequence $(a, s_0, s_1, \ldots)$. We could represent this operation as a morphism $\N \times \oStr \to \oStr$ in $\TOT$. However, a better type for $\mcons$ would be $\N \times \Later{\oStr} \to \oStr$. Intuitively, this type expresses that we only need the first $(n-1)$ elements of the input to compute the first $n$ elements of the output. Thus, we define $\mcons : \N \times \Later{\oStr} \to \oStr$ as
+    \item The \emph{cons} operation $\mcons \colon \N \times \N^\omega \to \N^\omega$ sends $(a, s)$ to the infinite sequence $(a, s_0, s_1, \ldots)$. We could represent this operation as a morphism $\N \times \oStr \to \oStr$ in $\TOT$. However, a better type for $\mcons$ would be $\N \times \Later{\oStr} \to \oStr$. Intuitively, this type expresses that we only need the first $(n-1)$ elements of the input to compute the first $n$ elements of the output. Thus, we define $\mcons \colon \N \times \Later{\oStr} \to \oStr$ as
     $\mcons_0(a, *) = a$ and $\mcons_{n+1}(a, (s_0, \ldots, s_n)) =
     (a, s_0, \ldots, s_n)$. We will use the standard $\cons$ notation in programs for this operation.
 \end{enum}
 \end{ex}
 
 \begin{defn} \label{def:next}
-We define the natural transformation $\mnxt : \id[\cat{S}] \to \Later$, whose components $\mnxt_X : X \to \Later{X}$ are given by $(\mnxt_X)_n = r^{\Later{X}}_n$. This is a well-defined family of morphisms in $\TOT$ since $\mnxt_X$ respects the restrictions maps, as shown below:
+We define the natural transformation $\mnxt \colon \id[\cat{S}] \to \Later$, whose components $\mnxt_X \colon X \to \Later{X}$ are given by $(\mnxt_X)_n = r^{\Later{X}}_n$. This is a well-defined family of morphisms in $\TOT$ since $\mnxt_X$ respects the restrictions maps, as shown below:
 % https://q.uiver.app/?q=WzAsOCxbMSwwLCJYXzEiXSxbMiwwLCJYXzIiXSxbMCwwLCJYXzAiXSxbMCwxLCJcXHsqXFx9Il0sWzEsMSwiWF8wIl0sWzIsMSwiWF8xIl0sWzMsMCwiXFxjZG90cyJdLFszLDEsIlxcY2RvdHMiXSxbNiwxLCJyXlhfMiIsMl0sWzEsMCwicl5YXzEiLDJdLFswLDIsInJeWF8wIiwyXSxbNCwzLCIhIl0sWzUsNCwicl5YXzAiXSxbNyw1LCJyXlhfMSJdLFsyLDMsIiEiLDJdLFswLDQsInJeWF8wIiwyXSxbMSw1LCJyXlhfMSIsMl1d
 \[\begin{tikzcd}
 	{X_0} & {X_1} & {X_2} & \cdots \\
@@ -292,14 +292,14 @@ $(\Later{\mprojl}, \Later{\mprojr}) :
 In other words, the functor $\Later$ preserves products.
 \begin{proof}
 Let
-$l_{X,Y} : \Later{X} \times \Later{Y} \to \Later{(X \times Y)}$ be given by
+$l_{X,Y} \colon \Later{X} \times \Later{Y} \to \Later{(X \times Y)}$ be given by
 $l_0(*, *) = *$, $l_{n+1}(x, y) = (x, y)$. This provides an inverse to
 $(\Later{\mprojl}, \Later{\mprojr})$.
 \end{proof}
 \end{prop}
 
 \begin{defn} \label{def:J}
-Define $J_{X, Y} : \Later{(\expt{X}{Y})} \to (\expt{\Later{X}}{\Later{Y}})$
+Define $J_{X, Y} \colon \Later{(\expt{X}{Y})} \to (\expt{\Later{X}}{\Later{Y}})$
 to be the exponential transpose of the composite
 % https://q.uiver.app/?q=WzAsMyxbMCwwLCJcXExhdGVyeyhcXGV4cHR7WH17WX0pfSBcXHRpbWVzIFxcTGF0ZXJ7WH0iXSxbMiwwLCJcXExhdGVyeygoXFxleHB0e1h9e1l9KSBcXHRpbWVzIFgpfSJdLFszLDAsIlxcTGF0ZXJ7WX0iXSxbMCwxLCJsX3tYIFxcdG8gWSwgWH0iXSxbMSwyLCJcXExhdGVye1xcZXZ9Il1d
 \[\begin{tikzcd}
@@ -323,32 +323,32 @@ every morphism $X \to X$ will have a fixed point (e.g. $\0 \to \0$). However, we
 have the following proposition.
 
 \begin{prop} \label{prop:fixpoint}
-Let $f : \Later{X} \to X$ be a morphism of $\TOT$. Then there exists a unique
-$x : \1 \to X$ such that $f \circ \mnxt_X \circ x = x$.
+Let $f \colon \Later{X} \to X$ be a morphism of $\TOT$. Then there exists a unique
+$x \colon \1 \to X$ such that $f \circ \mnxt_X \circ x = x$.
 \begin{proof}
-The global element $x : \1 \to X$ is defined by recursion: $x_0 = f_0(*)$ and $x_{n+1} = f_{n+1}(x_n)$. One can check using induction on $n$ that $x$ is well-defined, that is, $r^X_n(x_{n+1}) = x_n$, and that $f_n((\mnxt_X)_n(x_n)) = x_n$ holds.
+The global element $x \colon \1 \to X$ is defined by recursion: $x_0 = f_0(*)$ and $x_{n+1} = f_{n+1}(x_n)$. One can check using induction on $n$ that $x$ is well-defined, that is, $r^X_n(x_{n+1}) = x_n$, and that $f_n((\mnxt_X)_n(x_n)) = x_n$ holds.
 
-To see the uniqueness of the fixed point, note that if $x : \1 \to X$ is such that
+To see the uniqueness of the fixed point, note that if $x \colon \1 \to X$ is such that
 $f \circ \mnxt_X \circ x = x$, then $x_0 = f_0(r^{\Later{X}}_0(x_0)) = f_0(*)$ and
 $x_{n+1} = f_{n+1}(r^{\Later{X}}_{n+1}(x_{n+1})) =
 f_{n+1}(r^X_n(x_{n+1})) = f_{n+1}(x_n)$. Thus, the definition of $x$ was forced.
 \end{proof}
 \end{prop}
-We will write $\fix{f}$ for the unique fixed point of $f : \Later{X} \to X$. Note that the existence of such fixed points does not compromise consistency, as there is in general no morphism $\Later{X} \to X$. In particular, there is no morphism $\Later{\0} \to \0$, so the above proposition does not give us an inhabitant of the empty type.
+We will write $\fix{f}$ for the unique fixed point of $f \colon \Later{X} \to X$. Note that the existence of such fixed points does not compromise consistency, as there is in general no morphism $\Later{X} \to X$. In particular, there is no morphism $\Later{\0} \to \0$, so the above proposition does not give us an inhabitant of the empty type.
 In contrast, this morphism does exist in the OFE model of Iris~\cite{jung:2018:jfp}. As a result, fixed points in Iris are designed differently: we can take the fixed point of an arbitrary map $X \to X$, provided we can prove that it is \emph{contractive} (see~\cite{jung:2018:jfp}, Section 4.2).
 
 \begin{ex} \label{ex:fixpoint}
-Let $f : \Later{\oStr} \to \oStr$ be the morphism given by the components $f_0(*) = 0$ and
+Let $f \colon \Later{\oStr} \to \oStr$ be the morphism given by the components $f_0(*) = 0$ and
 $f_{n+1}(s_0, \ldots, s_n) = (0, s_1, \ldots, s_n)$. Alternatively, $f$ could also be defined as $f_n(s) = \mcons_n(0, s)$ using $\mcons$ from \cref{ex:later}. Then
-$\fix{f} : \1 \to \oStr$ represents the constant stream with value 0.
+$\fix{f} \colon \1 \to \oStr$ represents the constant stream with value 0.
 \end{ex}
 
 Note that the construction of \cref{prop:fixpoint} is external, meaning that the assignment of the fixed point $\fix{f}$ to the morphism $f$ happens in the metalogic, instead of being an operation in $\TOT$. Thus, it does not correspond to a term of type ($\expt{\Later{X}}{X}) \to X$ in lambda calculus. It turns out, however, that we can \emph{define} such a term using this simple fixed point operator and other existing structure.
 
 \begin{defn} \label{def:fix}
-The morphism $\mor{fix}_X : (\expt{\Later{X}}{X}) \to X$ is defined as follows:
+The morphism $\mor{fix}_X \colon (\expt{\Later{X}}{X}) \to X$ is defined as follows:
 \[ \mor{fix}_X = \ev \circ \mprod{\fix{(\curry{f})} \circ \mterm}{\id} \]
-where $f : \Later{(\expt{(\expt{\Later{X}}{X})}{X})} \times (\expt{\Later{X}}{X}) \to X$ is the middle horizontal composite in the diagram
+where $f \colon \Later{(\expt{(\expt{\Later{X}}{X})}{X})} \times (\expt{\Later{X}}{X}) \to X$ is the middle horizontal composite in the diagram
 % https://q.uiver.app/?q=WzAsNixbMCwxLCJcXExhdGVyeyhcXGV4cHR7KFxcZXhwdHtcXExhdGVye1h9fXtYfSl9e1h9KX0gXFx0aW1lcyAoXFxleHB0e1xcTGF0ZXJ7WH19e1h9KSJdLFswLDIsIihcXGV4cHR7XFxMYXRlcnsoXFxleHB0e1xcTGF0ZXJ7WH19e1h9KX19e1xcTGF0ZXJ7WH19KSBcXHRpbWVzIFxcTGF0ZXJ7KFxcZXhwdHtcXExhdGVye1h9fXtYfSl9Il0sWzEsMiwiXFxMYXRlcntYfSJdLFsxLDAsIlxcZXhwdHtcXExhdGVye1h9fXtYfSJdLFsxLDEsIihcXGV4cHR7XFxMYXRlcntYfX17WH0pIFxcdGltZXMgXFxMYXRlcntYfSJdLFszLDEsIlgiXSxbMSwyLCJcXGV2IiwyXSxbMCwxLCJKIFxcdGltZXMgXFxtb3J7bmV4dH0iLDJdLFswLDMsIlxccGlfMiJdLFswLDQsIiIsMix7InN0eWxlIjp7ImJvZHkiOnsibmFtZSI6ImRhc2hlZCJ9fX1dLFs0LDUsIlxcZXYiXSxbNCwyXSxbNCwzXV0=
 \[\begin{tikzcd}
 	& {\expt{\Later{X}}{X}} \\
@@ -370,14 +370,14 @@ If we write $\rec{x}{\Later{X}}{t}$ for the fixed point of a term $t$ of type $X
 \[ \name{fix}(f) =
     \app{(\rec{g}{\Later{((\Later{X} \to X) \to X)}}{
         \lam{f}{\Later{X} \to X}{\app{f}{(g \ap \nxt{f})}}})} f \]
-To make notation easier, we adopt the fixed point operator of \cref{def:fix} as a primitive in our informal programs, so that we can take fixed points of functions with parameters. Thus, if $\typed{\Gamma, x : \Later{X}}{t}{X}$,
+To make notation easier, we adopt the fixed point operator of \cref{def:fix} as a primitive in our informal programs, so that we can take fixed points of functions with parameters. Thus, if $\typed{\conext{\Gamma}{x}{\Later{X}}}{t}{X}$,
 then $\typed{\Gamma}{\rec{x}{\Later{X}}{t}}{X}$ is interpreted as
 $\mor{fix}_X \circ \curry{t}$.
 
 \begin{ex} \label{ex:guarded-recursion}
 \hfill \vspace{-6pt}
 \begin{enum}
-    \item We show how to capture the morphism $\mor{inc} : \oStr \to \oStr$ from \cref{ex:morphisms} internally in lambda calculus. To this end, we first perform a series of transformations on the original definition.
+    \item We show how to capture the morphism $\mor{inc} \colon \oStr \to \oStr$ from \cref{ex:morphisms} internally in lambda calculus. To this end, we first perform a series of transformations on the original definition.
     
     The components $\mor{inc}_n$ can also be defined by recursion on $n$ as
     \begin{align*}
@@ -414,7 +414,7 @@ $\mor{fix}_X \circ \curry{t}$.
 We refer the reader to~\cite{clouston:2017:lmcs} for many more examples.
 
 \begin{rem} \label{rem:coinductive-types}
-Although the $\Later$ type former enables guarded recursion, it is not sufficient to express true coinductive types. For instance, the object $\obj{Str}$ from \cref{ex:stream} models guarded recursive streams, whereas coinductive streams are given by the constant object $\N^\omega$. Unfortunately, guarded recursive streams are not enough to represent all stream functions. In particular, using the system to be introduced in \cref{sec:internal-logic-def}, we cannot define the function $\mor{even} : \N^\omega \to \N^\omega$ keeping only elements at even indices.
+Although the $\Later$ type former enables guarded recursion, it is not sufficient to express true coinductive types. For instance, the object $\obj{Str}$ from \cref{ex:stream} models guarded recursive streams, whereas coinductive streams are given by the constant object $\N^\omega$. Unfortunately, guarded recursive streams are not enough to represent all stream functions. In particular, using the system to be introduced in \cref{sec:internal-logic-def}, we cannot define the function $\mor{even} \colon \N^\omega \to \N^\omega$ keeping only elements at even indices.
 \end{rem}
 
 \end{ex}
@@ -451,7 +451,7 @@ Semantic entailment $m \vDash n$ is simply defined as the order relation on $\ol
 A slightly different perspective on this idea is to regard natural numbers not as the truth values themselves, but as time steps, and to define when a proposition holds at a certain time step. Thus, a proposition is identified with the set of time steps at which it holds. To be consistent with the previous interpretation, we impose the condition that if a proposition holds at a given step, it should also hold for all smaller time steps. This leads us to the following definition:
 \begin{defn} \label{def:siprop}
 The set of truth values is the set
-\[ S = \setof{A \subs \N}{ \forall i, j \in \N : j \le i \wedge i \in A \To j \in A} \]
+\[ S = \setof{A \subs \N}{ \forall i, j \in \N.\,j \le i \wedge i \in A \To j \in A} \]
 of \emph{downward closed subsets} of $\N$.
 \end{defn}
 The interpretation of the propositional connectives is as follows:
@@ -465,32 +465,32 @@ A \impl B &= \setof{i \in \N}{ \forall j \le i: j \in A \To j \in B}
 It is straightforward to prove that if $A$ and $B$ are downward closed, so are $A \wedge B$ and $A \vee B$; $A \impl B$ is downward closed by definition. Semantic entailment is given by the subset relation.
 
 In a classical metatheory, this model is equivalent to the previous one, in the sense that there is bijection
-$b : \ol{\N} \cong S$ preserving the interpretation of each of the connectives. Specifically,
+$b \colon \ol{\N} \cong S$ preserving the interpretation of each of the connectives. Specifically,
 $b$ sends $n \in \ol{\N}$ to the interval $\fino{n} = \setof{m \in \N}{m < n}$; in
 particular, $b(0) = \nul$ and $b(\omega) = \N$. However, the latter interpretation is more constructive. This becomes clear once we consider quantifiers, which are essentially infinitary versions of conjunction and disjunction. In the first model, they are given by
 \begin{align*}
 \forall P &= \inf_{x \in X}{P(x)} \\
 \exists P &= \sup_{x \in X}{P(x)}
 \end{align*}
-where $X$ is a set (the domain of quantification) and $P : X \to \N$ is a predicate on $X$. Thus, the quantifiers are operations of type $(X \to \N) \to \N$. Unfortunately, if $X$ is infinite, then the above definitions of these operations are uncomputable.
+where $X$ is a set (the domain of quantification) and $P \colon X \to \N$ is a predicate on $X$. Thus, the quantifiers are operations of type $(X \to \N) \to \N$. Unfortunately, if $X$ is infinite, then the above definitions of these operations are uncomputable.
 
 For formalization purposes in a constructive type theory, such as Coq or Agda, it is important that all functions be computable. This can be achieved in the second model, where the interpretation of the quantifiers is
 \begin{align*}
  \forall P &= \bigcap_{x \in X}{P(x)} = \setof{i \in \N}{ \forall x \in X: i \in P(x)} \\
 \exists P &= \bigcup_{x \in X}{P(x)} = \setof{i \in \N}{\exists x \in X: i \in P(x)} 
 \end{align*}
-for $P : X \to S$. These definitions are constructive since, type-theoretically, subsets of $\N$ are given by functions $\N \to \Prop$.
+for $P \colon X \to S$. These definitions are constructive since, type-theoretically, subsets of $\N$ are given by functions $\N \to \Prop$.
 
-So far we have shown that there is model a of intuitionistic first-order logic in which formulas are interpreted as extended natural numbers (or, equivalently, downward closed subsets of $\N$). To end this section, we observe that the model supports an additional operation with meaningful logical content. Namely, it is the successor function $s : \ol{\N} \to \ol{\N}$ sending $n \in \N$ to $n + 1$ and $\omega$ to itself. Under the equivalence $b : \ol{\N} \cong S$, this corresponds to the operation
+So far we have shown that there is model a of intuitionistic first-order logic in which formulas are interpreted as extended natural numbers (or, equivalently, downward closed subsets of $\N$). To end this section, we observe that the model supports an additional operation with meaningful logical content. Namely, it is the successor function $s \colon \ol{\N} \to \ol{\N}$ sending $n \in \N$ to $n + 1$ and $\omega$ to itself. Under the equivalence $b \colon \ol{\N} \cong S$, this corresponds to the operation
 \begin{equation} \label{eq:siprop-later}
-\mlater : S \to S,\ \mlater{(A)} = \setof{i \in \N}{i = 0 \vee (i > 0 \wedge i - 1 \in A)}
+\mlater \colon S \to S,\ \mlater{(A)} = \setof{i \in \N}{i = 0 \vee (i > 0 \wedge i - 1 \in A)}
 \end{equation}
 referred to as the \emph{later} modality. The logical explanation of $\mlater$ is the following: $\mlater{(A)}$ holds at step $n + 1$ iff $A$ holds at step $n$. Thus, $\mlater$ allows us to shift the step-indices.
 
 \subsection{Logic in the topos of trees} \label{sec:logic-definitions}
 
 We now revisit the development in the previous section, but inside the topos of trees.
-Firstly, we need an object $\SOC$ in $\TOT$ analogous to the set of truth values $S$ (\cref{def:siprop}). A naive choice might be the constant object $\Delta S$. However, this does not work. Given a predicate $P : X \to \Delta S$, the compatibility requirement for morphisms implies $P_n = P_0 \circ r^X_{0,n}$ for all $n \in \N$. Thus, $P_0 : X_0 \to S$ determines all other components. Intuitively, this means that a predicate can only use information at level zero, which is too restrictive. The issue is that the step-indexed nature of objects in $\TOT$ is not taken into account.
+Firstly, we need an object $\SOC$ in $\TOT$ analogous to the set of truth values $S$ (\cref{def:siprop}). A naive choice might be the constant object $\Delta S$. However, this does not work. Given a predicate $P \colon X \to \Delta S$, the compatibility requirement for morphisms implies $P_n = P_0 \circ r^X_{0,n}$ for all $n \in \N$. Thus, $P_0 \colon X_0 \to S$ determines all other components. Intuitively, this means that a predicate can only use information at level zero, which is too restrictive. The issue is that the step-indexed nature of objects in $\TOT$ is not taken into account.
 
 Recall that an element $A \in S$ is thought of as the set of time steps at which a proposition holds, and that the $n$-th component of an object represents our view of that object with $n$ available computation steps. This suggests that at level $n$ we should consider time steps only up to $n$; that is, elements of $\SOC_n$ should be subsets of $\fin{n}$. This turns out to be the right idea, justified by the fact that the resulting object is an instance of the categorical notion of a \emph{subobject classifier}, which is the object of truth values in a category.
 
@@ -509,17 +509,17 @@ $\1 \xrightarrow{\mtrue} \SOC$ that picks out the truth value `true', defined be
 \hfill \vspace{-6pt}
 \begin{enum}
     \item We can lift a set-theoretic predicate $A \subs X$ to a morphism
-    $\bar{A} : \Delta X \to \SOC$ given by
+    $\bar{A} \colon \Delta X \to \SOC$ given by
     \[ \bar{A}_n(x) = \begin{cases}
                           \fin{n} & \text{ if $x \in A$} \\
                           \nul & \text{ if $x \notin A$}
                       \end{cases} \]
-    More abstractly, let $\2 = \{\btrue, \bfalse\}$ denote the set of booleans. There is a morphism $c : \2 \to \SOC$ whose $n$-th component sends $\btrue$ to $\fin{n}$ and $\bfalse$ to $\nul$. Assuming a classical metatheory, subsets $A$ of $X$ correspond to \emph{characteristic functions} $\chi_A : X \to \2$. Then $\bar{A}$ is simply described as the composite $X \xrightarrow{\chi_A} \2 \xrightarrow{c} \SOC$.
+    More abstractly, let $\2 = \{\btrue, \bfalse\}$ denote the set of booleans. There is a morphism $c \colon \2 \to \SOC$ whose $n$-th component sends $\btrue$ to $\fin{n}$ and $\bfalse$ to $\nul$. Assuming a classical metatheory, subsets $A$ of $X$ correspond to \emph{characteristic functions} $\chi_A \colon X \to \2$. Then $\bar{A}$ is simply described as the composite $X \xrightarrow{\chi_A} \2 \xrightarrow{c} \SOC$.
     
     Note that the above definition of $\bar{A}$ is nonconstructive: we make a case distinction on whether $x \in A$, which in general is undecidable. A constructive, albeit perhaps less intuitive, definition would be $\bar{A}_n(x) = \setof{i \in \fin{n}}{x \in A}$.
 
     \item As a slightly more interesting example, consider the stream predicate
-    \[ \mor{isZero} : \oStr \to \SOC,\
+    \[ \mor{isZero} \colon \oStr \to \SOC,\
        \mor{isZero}_n(s) = \setof{i \in \fin{n}}{\forall j \le i: s_j = 0} \]
     As the name suggests, $\mor{isZero}$ checks whether its argument stream is the constant zero stream. However, the truth value of the predicate is not a mere true or false, but the set of step-indices $i$ such that the stream is constant zero up to $i$. Intuitively, if the first $n$ elements of a stream are zero, then we can say that it is zero for $n$ time steps.
 \end{enum}
@@ -531,15 +531,15 @@ We can carry over the set-theoretic definitions of the propositional connectives
 The propositional connectives in $\TOT$ are defined as follows:
 \vspace{-6pt}
 \begin{items}
-    \item True: $\mtrue : \1 \to \SOC$,
+    \item True: $\mtrue \colon \1 \to \SOC$,
     $\mtrue_n = \fin{n}$
-    \item False: $\mfalse : \1 \to \SOC$,
+    \item False: $\mfalse \colon \1 \to \SOC$,
     $\mfalse_n = \nul$
-    \item Conjunction: $\mconj : \SOC \times \SOC \to \SOC$, 
+    \item Conjunction: $\mconj \colon \SOC \times \SOC \to \SOC$, 
     $\mconj_n(A, B) = A \cap B$
-    \item Disjunction: $\mdisj : \SOC \times \SOC \to \SOC$,
+    \item Disjunction: $\mdisj \colon \SOC \times \SOC \to \SOC$,
     $\mdisj_n(A, B) = A \cup B$
-    \item Implication: $\mimpl : \SOC \times \SOC \to \SOC$,
+    \item Implication: $\mimpl \colon \SOC \times \SOC \to \SOC$,
     $\mimpl_n(A, B) = \setof{i \in \fin{n}}{ \forall j \le i: j \in A \To j \in B}$
 \end{items}
 \end{defn}
@@ -548,10 +548,10 @@ The quantifiers are a bit trickier: since the domain of quantification is now a 
 
 \begin{defn} \label{def:internal-quantifiers}
 The universal quantifier in $\TOT$ is the morphism
-\[ \mall : (\pow{X}) \to \SOC,\ 
+\[ \mall \colon (\pow{X}) \to \SOC,\ 
    \mall_n(P) = \setof{i \in \fin{n}}{ \forall j \le i,  \forall x \in X_j: j \in P_j(x)} \]
 The existential quantifier in $\TOT$ is the morphism
-\[ \mex : (\pow{X}) \to \SOC,\ 
+\[ \mex \colon (\pow{X}) \to \SOC,\ 
    \mex_n(P) = \setof{i \in \fin{n}}{\exists x \in X_i: i \in P_i(x)} \]
 \end{defn}
 
@@ -560,19 +560,19 @@ In the case of $\mall$, we need to quantify over the components at all lower ste
 The later modality of \cref{sec:siprop} (\cref{eq:siprop-later}) also has an analogue in $\TOT$ as a morphism $\SOC \to \SOC$. However, similarly to $\mcons$ (\cref{ex:later}), we can give it the stronger type $\Later{\SOC} \to \SOC$, which is necessary for the definition of guarded recursive predicates. We use the name $\mlift$ for the stronger version, and reserve $\mlater$ for the original operation, following tradition.
 
 \begin{defn} \label{def:lift-later}
-We define the morphism $\mlift : \Later{\SOC} \to \SOC$, by
+We define the morphism $\mlift \colon \Later{\SOC} \to \SOC$, by
 \begin{align*}
 \mlift_{0}(*) &= \{0\} \\
 \mlift_{n}(A) &= \setof{i \in \fin{n}}{i = 0 \vee (i > 0 \wedge i-1 \in A)}
     \quad (n > 0)
 \end{align*}
-Furthermore, $\mlater : \SOC \to \SOC$ is defined as $\mlater = \mlift \circ \mnxt$.
+Furthermore, $\mlater \colon \SOC \to \SOC$ is defined as $\mlater = \mlift \circ \mnxt$.
 \end{defn}
 
 Finally, to prove properties of programs, we need an appropriate notion of equality in $\TOT$.
 
 \begin{defn} \label{def:equality}
-The \emph{step-indexed equality} predicate $\meq : X \times X \to \SOC$ is given by
+The \emph{step-indexed equality} predicate $\meq \colon X \times X \to \SOC$ is given by
 \[ \meq_n(x, y) = \setof{i \in \fin{n}}{\restr{x}{i} = \restr{y}{i}} \]
 \end{defn}
 
@@ -606,7 +606,7 @@ t ::=\ &x \sep f \sep \unit \sep \pair{t}{t} \sep \projl{t} \sep \projr{t} \sep
 \end{align*}
 where $x$ ranges over a countable set of variables, and $f$ ranges over the morphisms in $\TOT$. The $\name{case}$ construct binds the variable $x$ in the term following the dot, as do $\lambda$ and $\mu$-abstraction, and the quantifiers. Just like in the case of types, the inclusion of morphisms in $\TOT$ as term constants gives rise to duplicates in the syntax; these duplicates are identified.
 
-A typing context is a finite list of distinct typed variables, written as $x_1 : A_1, \ldots, x_n: A_n$. The extension of $\Gamma$ by a fresh variable $x$ of type $A$ is denoted by $\Gamma, x : A$. The typing judgment takes the form $\typed{\Gamma}{t}{A}$, where $\Gamma$ is a typing context, $t$ is a term, and $A$ is a type. Its inference rules are the standard ones from the simply typed lambda calculus, extended with additional rules for the applicative structure of $\Later$, the fixed point operator $\rec{x}{A}{t}$, and propositions in the expected way. They are displayed in the appendix (\cref{fig:logic-typing-rules}).
+A typing context is a finite list of distinct typed variables, written as $x_1 : A_1, \ldots, x_n : A_n$. The extension of $\Gamma$ by a fresh variable $x$ of type $A$ is denoted by $\conext{\Gamma}{x}{A}$. The typing judgment takes the form $\typed{\Gamma}{t}{A}$, where $\Gamma$ is a typing context, $t$ is a term, and $A$ is a type. Its inference rules are the standard ones from the simply typed lambda calculus, extended with additional rules for the applicative structure of $\Later$, the fixed point operator $\rec{x}{A}{t}$, and propositions in the expected way. They are displayed in the appendix (\cref{fig:logic-typing-rules}).
 
 The entailment relation of $\lang$ is given by a judgment $\entails{\Gamma}{P}{Q}$, where $\Gamma$ is a typing context and $\typed{\Gamma}{P, Q}{\Prop}$. This expresses that we can prove $Q$ from the hypothesis $P$. We write $\valid{\Gamma}{P}$ for $\entails{\Gamma}{\true}{P}$, and $\equiv{\Gamma}{P}{Q}$ to mean $\entails{\Gamma}{P}{Q}$ and $\entails{\Gamma}{Q}{P}$. It includes standard structural rules, equality rules, and logical rules for the propositional connectives and quantifiers. The complete set of inference rules can be found in \cref{fig:structural-logical-rules,fig:logic-equalities} in the appendix.
 \end{defn}
@@ -623,7 +623,7 @@ The entailment relation of $\lang$ is given by a judgment $\entails{\Gamma}{P}{Q
     {\equals[\Later{C}]{\Gamma}{f \ap (g \ap t)}{\nxt{\name{comp}} \ap f \ap g \ap t}}
 \and
 \inferrule[fix-$\beta$]
-    {\typed{\Gamma, x : \Later{A}}{t}{A}}
+    {\typed{\conext{\Gamma}{x}{\Later{A}}}{t}{A}}
     {\equals[A]{\Gamma}{\rec{x}{\Later{A}}{t}}{\subst{t}{x}{\nxt{(\rec{x}{\Later{A}}{t})}}}}
 \end{mathpar}
 \caption{Term equalities for $\Later$. $\name{comp} : (B \to C) \to (A \to B) \to A \to C$ is function composition.}
@@ -699,13 +699,13 @@ is an isomorphism.
 \end{prop}
 
 \begin{defn} \label{def:logic-semantics}
-We interpret types $A$ as objects $\sem{A}$ of $\TOT$ in the obvious way, using the structure of $\TOT$ described in the previous sections to interpret the type formers. The interpretation of typing contexts $\Gamma = x_1 : A_1, \ldots, x_n : A_n$ is defined as $\sem{\Gamma} = \sem{A_1} \times \cdots \times \sem{A_n}$, associated to the left. In particular, the interpretation of the empty context is $\1$.
+We interpret types $A$ as objects $\sem{A}$ of $\TOT$ in the standard way, using the structure of $\TOT$ described in the previous sections to interpret the type formers. The interpretation of typing contexts $\Gamma = x_1 : A_1, \ldots, x_n : A_n$ is defined as $\sem{\Gamma} = \sem{A_1} \times \cdots \times \sem{A_n}$, associated to the left. In particular, the interpretation of the empty context is $\1$.
 
 Terms $\typed{\Gamma}{t}{A}$ of type $A$ in context $\Gamma$ are interpreted as morphisms $\sem{\Gamma} \to \sem{A}$. In particular, closed terms of type $A$ are interpreted as global elements of $\sem{A}$. The clauses of the interpretation are as follows (dropping the contexts and the types from the notation):
 \begin{items}
     \item If $\Gamma = x_1 : A_1, \ldots, x_n : A_n$, $\sem{x_i}$ is the $i$-th projection $\sem{\Gamma} \to \sem{A_i}$ corresponding to the variable $(x_i : A_i) \in \Gamma$;
-    \item For a morphism $f : A \to B$ in $\TOT$, $\sem{f}$ is $\sem{\Gamma} \to \1 \xrightarrow{\transpose{f}} (\expt{\sem{A}}{\sem{B}})$;
-    \item $\sem{\unit} = \mterm : \sem{\Gamma} \to \1$;
+    \item For a morphism $f \colon A \to B$ in $\TOT$, $\sem{f}$ is $\sem{\Gamma} \to \1 \xrightarrow{\transpose{f}} (\expt{\sem{A}}{\sem{B}})$;
+    \item $\sem{\unit} = \mterm \colon \sem{\Gamma} \to \1$;
     \item $\sem{\true}$ is $\sem{\Gamma} \to \1 \xrightarrow{\mtrue} \SOC$; similarly for $\sem{\false}$ using $\mfalse$;
     \item The unary operators $\projl, \projr, \abort, \inl, \inr, \nxt$, and $\later$ are interpreted via postcomposition with $\mprojl, \mprojr, \minit, \minl, \minr, \mnxt$, and $\mlater$, respectively;
     \item $\sem{\pair{t}{u}} = \mprod{\sem{t}}{\sem{u}}$;
@@ -826,13 +826,13 @@ An object $X$ of $\TOT$ is \emph{total and inhabited} if it is total and inhabit
 
 Thus, the rule \textsc{$\later$-$\exists$-comm} holds for total and inhabited $X$. It turns out that we can characterize this property in the internal logic.
 \begin{prop} \label{prop:total-inhabited-internal}
-An object $X$ of $\TOT$ is total and inhabited iff $\mnxt : X \to \Later{X}$ is internally surjective, that is, iff the formula
+An object $X$ of $\TOT$ is total and inhabited iff $\mnxt \colon X \to \Later{X}$ is internally surjective, that is, iff the formula
 \[ \name{TI}(X) := \all{y}{\Later{X}}{\exi{x}{X}{\nxt{x} =_{\Later{X}} y}} \]
 holds in $\TOT$.
 \begin{proof}
 We have
 \[ \force{n}{\name{TI}(X)} \iff \forall m \le n, \forall y \in (\Later{X})_m, \exists x \in X_m: \mnxt_m(x) = y \]
-Hence, $\name{TI}(X)$ holds in $\TOT$ iff all components of $\mnxt : X \to \Later{X}$ are surjective. Since $\mnxt_{n+1} = r^X_n$, and $\mnxt_0 : X_0 \to \{*\}$ is surjective iff $X_0$ is inhabited, the claim follows.
+Hence, $\name{TI}(X)$ holds in $\TOT$ iff all components of $\mnxt \colon X \to \Later{X}$ are surjective. Since $\mnxt_{n+1} = r^X_n$, and $\mnxt_0 \colon X_0 \to \{*\}$ is surjective iff $X_0$ is inhabited, the claim follows.
 \end{proof}
 \end{prop}
 
@@ -848,7 +848,7 @@ We have thus shown the soundness of the following rules:
 \end{mathpar}
 It would be nice if we could derive these rules in the system $\lang$. Unfortunately, this does not seem to be possible. Hence, there arises a natural question: is there a more general rule, working uniformly for all types $A$, from which \textsc{$\later$-$\exists$-comm-ti} and \textsc{$\later$-$\forall$-comm-ti} could be derived? We make two observations that will lead us to answer this question.
 
-Firstly, as noted earlier (\cref{def:lift-later}), we can decompose the later modality as the composite $\mlater = \mlift \circ \mnxt$. This suggests that we could study the interaction of the quantifiers with $\mlift$ and $\mnxt$ separately. In fact, the homomorphism property of $\mnxt$ implies that $\mnxt$ commutes with the quantifiers. More precisely, let $\mex, \mall : (\pow{X}) \to \SOC$ be the morphisms from \cref{def:internal-quantifiers}, which can be defined internally as
+Firstly, as noted earlier (\cref{def:lift-later}), we can decompose the later modality as the composite $\mlater = \mlift \circ \mnxt$. This suggests that we could study the interaction of the quantifiers with $\mlift$ and $\mnxt$ separately. In fact, the homomorphism property of $\mnxt$ implies that $\mnxt$ commutes with the quantifiers. More precisely, let $\mex, \mall \colon (\pow{X}) \to \SOC$ be the morphisms from \cref{def:internal-quantifiers}, which can be defined internally as
 \[ \mex = \lam{P}{\pow{X}}{\exi{x}{X}{\app{P}{x}}},\ \text{ and }\ 
    \mall = \lam{P}{\pow{X}}{\all{x}{X}{\app{P}{x}}} \]
 Then, by \textsc{$\ap$-next}, we have
@@ -1015,7 +1015,7 @@ Here, \coqi{⟦h⟧} is notation for \coqi{{| morph := h; morph_natural := _ |}}
 
 \subsection{Exponentials} \label{sec:coq-exp}
 
-Given \coqi{X Y : Object}, we may construct the exponential \coqi{Exp X Y}, denoted by \coqi{X ⇒ Y}, based on \cref{def:tot-struct}. There, we have seen that the $n$-th component of the exponential $\expt{X}{Y}$ is the collection of $(n+1)$-tuples $(f_i : X_i \to Y_i)_{i \in \fin{n}}$ commuting with the restriction maps. Therefore, similarly to \coqi{/\textcolor{black}{Morphism}/}, we define the \coqi{n}-th component of \coqi{Exp X Y} as a record:
+Given \coqi{X Y : Object}, we may construct the exponential \coqi{Exp X Y}, denoted by \coqi{X ⇒ Y}, based on \cref{def:tot-struct}. There, we have seen that the $n$-th component of the exponential $\expt{X}{Y}$ is the collection of $(n+1)$-tuples $(f_i \colon X_i \to Y_i)_{i \in \fin{n}}$ commuting with the restriction maps. Therefore, similarly to \coqi{/\textcolor{black}{Morphism}/}, we define the \coqi{n}-th component of \coqi{Exp X Y} as a record:
 \begin{coqc}
 Record Exp_obj (X Y : Object) (n : nat) : Type :=
   { Exp_morph :> ∀ i : [0..n], X i → Y i

@@ -514,7 +514,7 @@ $\1 \xrightarrow{\mtrue} \SOC$ that picks out the truth value `true', defined be
                           \fin{n} & \text{ if $x \in A$} \\
                           \nul & \text{ if $x \notin A$}
                       \end{cases} \]
-    More abstractly, let $\2 = \{\btrue, \bfalse\}$ denote the set of booleans. There is a morphism $b : \2 \to \SOC$ whose $n$-th component sends $\btrue$ to $\fin{n}$ and $\bfalse$ to $\nul$. Assuming a classical metatheory, subsets $A$ of $X$ correspond to \emph{characteristic functions} $\chi_A : X \to \2$. Then $\bar{A}$ is simply described as the composite $X \xrightarrow{\chi_A} \2 \xrightarrow{b} \SOC$.
+    More abstractly, let $\2 = \{\btrue, \bfalse\}$ denote the set of booleans. There is a morphism $c : \2 \to \SOC$ whose $n$-th component sends $\btrue$ to $\fin{n}$ and $\bfalse$ to $\nul$. Assuming a classical metatheory, subsets $A$ of $X$ correspond to \emph{characteristic functions} $\chi_A : X \to \2$. Then $\bar{A}$ is simply described as the composite $X \xrightarrow{\chi_A} \2 \xrightarrow{c} \SOC$.
     
     Note that the above definition of $\bar{A}$ is nonconstructive: we make a case distinction on whether $x \in A$, which in general is undecidable. A constructive, albeit perhaps less intuitive, definition would be $\bar{A}_n(x) = \setof{i \in \fin{n}}{x \in A}$.
 

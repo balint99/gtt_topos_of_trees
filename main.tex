@@ -24,7 +24,7 @@ Step-indexing is a semantic tool for stratifying circular, non-wellfounded defin
 
 The idea of step-indexing can be formalised in a logical, or type-theoretical, setting, by introducing a modality, called later, which allows us to talk about the next computation step.
 
-In this work, we give an introduction to the logic of step-indexing, with a particular emphasis on its semantics in the topos of trees. We investigate sound rules in the internal logic of the topos of trees for commuting the later modality with quantifiers. Furthermore, we provide a Coq mechanisation of the topos of trees, along with a shallow embedding of its internal logic.
+In this work, we give an introduction to the logic of step-indexing, with a particular emphasis on its semantics in the topos of trees. We investigate sound rules in the internal logic of the topos of trees for commuting the later modality with quantifiers. Furthermore, we provide a Rocq mechanisation of the topos of trees, along with a shallow embedding of its internal logic.
 \end{abstract}
 
 \tableofcontents
@@ -72,7 +72,7 @@ For this purpose, we propose a novel rule for step-indexed logics, from which pr
 It seems that not much of the structure of the topos of trees has been formalised in the literature. To fill this hole, we formalise most constructions, definitions, and propositions in the present report. The original goal of the formalisation was to experiment with a model of Iris constructed using the internal logic of the topos of trees, as alluded to in \cref{sec:intro-guarded-rec}. This is however left to future work.
 
 An important insight gained from the formalisation concerns the representation of finite types.
-Our experiments have shown that the traditional inductive representation of the natural number indexed family \coqi{fin n} of finite types seemed to entail messy type coercions. Representing elements of \coqi{fin n} as natural numbers equipped with a proof that they are less than $n$ proved to be more fruitful. The details are given in \cref{sec:finite-types}.
+Our experiments have shown that the traditional inductive representation of the natural number indexed family \rocqi{fin n} of finite types seemed to entail messy type coercions. Representing elements of \rocqi{fin n} as natural numbers equipped with a proof that they are less than $n$ proved to be more fruitful. The details are given in \cref{sec:finite-types}.
 
 \subsection{Contributions} \label{sec:contributions}
 
@@ -82,10 +82,10 @@ Our contributions are the following:
 
     \item We present a novel axiom from which previously known inference rules exchanging the $\later$ modality with a quantifier can be derived. Our axiom relies on the observation that we can decompose the $\later$ modality into two components, and then study the interaction between the quantifiers and the two components separately.
 
-    \item Finally, we have formalised the topos of trees in the Coq theorem prover~\cite{coq}, including a shallow embedding of its internal logic. We provide details and technical insights in the report.
+    \item Finally, we have formalised the topos of trees in the Rocq theorem prover~\cite{rocq}, including a shallow embedding of its internal logic. We provide details and technical insights in the report.
 \end{items}
 
-In \cref{sec:tot}, we review the main semantic definitions in the topos of trees. Then we study its internal logic in \cref{sec:internal-logic}. In \cref{sec:coq}, we elaborate on some design choices and technical challenges of our Coq formalisation. Related work is discussed in \cref{sec:related}. Finally, \cref{sec:conclusion} concludes with a summary and future directions.
+In \cref{sec:tot}, we review the main semantic definitions in the topos of trees. Then we study its internal logic in \cref{sec:internal-logic}. In \cref{sec:rocq}, we elaborate on some design choices and technical challenges of our Rocq formalisation. Related work is discussed in \cref{sec:related}. Finally, \cref{sec:conclusion} concludes with a summary and future directions.
 
 \section{The topos of trees} \label{sec:tot}
 
@@ -464,7 +464,7 @@ particular, $b(0) = \nul$ and $b(\omega) = \N$. However, the latter interpretati
 \end{align*}
 where $X$ is a set (the domain of quantification) and $P \colon X \to \N$ is a predicate on $X$. Thus, the quantifiers are operations of type $(X \to \N) \to \N$. Unfortunately, if $X$ is infinite, then the above definitions of these operations are uncomputable.
 
-For formalisation purposes in a constructive type theory such as Coq or Agda, it is crucial that all functions be computable. This can be achieved in the second model, where the interpretation of the quantifiers is given by
+For formalisation purposes in a constructive type theory such as Rocq or Agda, it is crucial that all functions be computable. This can be achieved in the second model, where the interpretation of the quantifiers is given by
 \begin{align*}
  \forall P &= \bigcap_{x \in X}{P(x)} = \setof{i \in \N}{\forall x \in X.\,i \in P(x)}, \\
 \exists P &= \bigcup_{x \in X}{P(x)} = \setof{i \in \N}{\exists x \in X.\,i \in P(x)},
@@ -875,214 +875,214 @@ using \textsc{$\ap$-next}, so we are done.
 
 The generality of the new rules (\textsc{lift-$\exists$-comm} and \textsc{lift-$\forall$-comm}) indicates that $\mlift$ should be taken as the primitive logical connective, with $\later{P} = \lift{(\nxt{P})}$ being a defined connective. This claim is also supported by the necessity of $\mlift$ for defining guarded recursive predicates (\cref{ex:predicate-programs}). However, it is not yet clear what the analogues of e.g. monotonicity or Löb induction would be, or if such analogues exist. This question is further discussed in \cref{sec:conclusion}.
 
-\section{Coq formalisation} \label{sec:coq}
+\section{Rocq formalisation} \label{sec:rocq}
 
-We have formalised the topos of trees, along with the associated structure introduced so far, in the Coq proof assistant~\cite{coq}. More specifically, the formalisation encompasses the basic categorical structure (\cref{sec:basic-struct}), the definitions necessary for guarded recursion (\cref{sec:guarded-rec}), and the logical components of \cref{sec:logic-definitions}. Moreover, we have verified semantically some of the inference rules of the internal logic, in particular the novel rules of \cref{sec:later-quantifiers}.
+We have formalised the topos of trees, along with the associated structure introduced so far, in the Rocq proof assistant~\cite{rocq}. More specifically, the formalisation encompasses the basic categorical structure (\cref{sec:basic-struct}), the definitions necessary for guarded recursion (\cref{sec:guarded-rec}), and the logical components of \cref{sec:logic-definitions}. Moreover, we have verified semantically some of the inference rules of the internal logic, in particular the novel rules of \cref{sec:later-quantifiers}.
 
 The formalisation does not contain the examples in this report. It is important to note that we do not define a syntax for the internal logic, as we did in \cref{sec:internal-logic-def}. Instead, we work with the semantics directly, and use combinators to construct terms. The inference rules of the logic are then stated and proved as lemmas. In other words, we use a \emph{shallow embedding}~\cite{wildmoser:2004:tphols} of the internal logic. This contrasts with a \emph{deep embedding}~\cite{wildmoser:2004:tphols} of the syntax as an inductive definition, together with an interpretation function to show soundness, as was done in \cref{def:logic-semantics}.
 
-In the following, we discuss some interesting aspects of the formalisation, including some of the design choices and technical challenges. \Cref{sec:finite-types} motivates our definition of finite types. \Cref{sec:proof-irrelevance} shows how we work with proof-irrelevant propositions. \Cref{sec:coq-obj-mor,sec:coq-exp} explain some general techniques we used in our formalisation via the examples of objects, morphisms, and exponentials. \Cref{sec:coq-logic} expands on the concept of a shallow embedding and how we applied it to formalise the internal logic. Finally, \cref{sec:coq-axioms} touches on the axioms we relied on and how their use could be eliminated.
+In the following, we discuss some interesting aspects of the formalisation, including some of the design choices and technical challenges. \Cref{sec:finite-types} motivates our definition of finite types. \Cref{sec:proof-irrelevance} shows how we work with proof-irrelevant propositions. \Cref{sec:rocq-obj-mor,sec:rocq-exp} explain some general techniques we used in our formalisation via the examples of objects, morphisms, and exponentials. \Cref{sec:rocq-logic} expands on the concept of a shallow embedding and how we applied it to formalise the internal logic. Finally, \cref{sec:rocq-axioms} touches on the axioms we relied on and how their use could be eliminated.
 
 \subsection{Finite types} \label{sec:finite-types}
 
-The definition of the subobject classifier (\cref{def:subobject-classifier}) refers to the set $\fin{n}$ of natural numbers from 0 to $n$. Therefore, we need to represent such finite sets. For this purpose, the Coq standard library defines an inductive family of types as follows.
-\begin{coqc}
+The definition of the subobject classifier (\cref{def:subobject-classifier}) refers to the set $\fin{n}$ of natural numbers from 0 to $n$. Therefore, we need to represent such finite sets. For this purpose, the Rocq standard library defines an inductive family of types as follows.
+\begin{rocqc}
 Inductive fin : nat → Type :=
   | FZ {n} : fin (S n)
   | FS {n} : fin n → fin (S n).
-\end{coqc}
-Then, \coqi{fin n} corresponds to the finite set $\fino{n} = \{0, \ldots, n-1\}$: the indices in the types of the constructors ensure that \coqi{fin n} has exactly $n$ canonical inhabitants.
+\end{rocqc}
+Then, \rocqi{fin n} corresponds to the finite set $\fino{n} = \{0, \ldots, n-1\}$: the indices in the types of the constructors ensure that \rocqi{fin n} has exactly $n$ canonical inhabitants.
 
-Given \coqi{k : fin n}, we often need to treat \coqi{k} as a natural number, or as being an element of a bigger finite type, e.g. \coqi{fin (S n)}. In set theory, we can do this since $\fino{n} \subs \fino{n+1} \subs \N$; in Coq, however, every term has at most one type. Thus, we need conversion functions
-\begin{coqc}
+Given \rocqi{k : fin n}, we often need to treat \rocqi{k} as a natural number, or as being an element of a bigger finite type, e.g. \rocqi{fin (S n)}. In set theory, we can do this since $\fino{n} \subs \fino{n+1} \subs \N$; in Rocq, however, every term has at most one type. Thus, we need conversion functions
+\begin{rocqc}
 fin_to_nat : ∀ {n}, fin n → nat
 FW : ∀ {n}, fin n → fin (S n) 
-\end{coqc}
-defined using the eliminator of the type family \coqi{fin}. But then it is not immediately clear that \coqi{FW k} and \coqi{k} represent the same natural number. In particular, equations such as
+\end{rocqc}
+defined using the eliminator of the type family \rocqi{fin}. But then it is not immediately clear that \rocqi{FW k} and \rocqi{k} represent the same natural number. In particular, equations such as
 \begin{equation} \label{eq:fw-lemma}
-\mbox{\coqi{fin_to_nat (FW k) = fin_to_nat k}}
+\mbox{\rocqi{fin_to_nat (FW k) = fin_to_nat k}}
 \end{equation}
-do not hold by definition and need to be proven by induction on \coqi{k}. Even worse, such lemmas are necessary to type certain simple expressions, an example of which is given in \cref{sec:coq-exp}. This is extremely inconvenient and can become quite messy.
+do not hold by definition and need to be proven by induction on \rocqi{k}. Even worse, such lemmas are necessary to type certain simple expressions, an example of which is given in \cref{sec:rocq-exp}. This is extremely inconvenient and can become quite messy.
 
-Our solution is to define \coqi{fin n} as the sigma type \coqi{{m : nat | m < n}}. This closely resembles the set-theoretic definition: \coqi{fin n} is the \emph{subtype} of \coqi{nat} consisting of the natural numbers less than \coqi{n}. The main advantage of this representation is that \coqi{FW} only changes the second component, and \coqi{fin_to_nat} is simply the first projection. Thus, \cref{eq:fw-lemma} holds by definition.
+Our solution is to define \rocqi{fin n} as the sigma type \rocqi{{m : nat | m < n}}. This closely resembles the set-theoretic definition: \rocqi{fin n} is the \emph{subtype} of \rocqi{nat} consisting of the natural numbers less than \rocqi{n}. The main advantage of this representation is that \rocqi{FW} only changes the second component, and \rocqi{fin_to_nat} is simply the first projection. Thus, \cref{eq:fw-lemma} holds by definition.
 
-To make working with finite types more convenient, we employ Coq's \emph{definitionally proof-irrelevant} sort \coqi{SProp} of propositions~\cite{gilbert:2019:popl}. Definitional proof-irrelevance means that if \coqi{A : SProp}, then any two inhabitants of \coqi{A} are definitionally equal. In the definition of \coqi{fin}, we replace the less-than relation \coqi{<} by its proof-irrelevant counterpart (see \cref{sec:proof-irrelevance}). The effect of this change is that two terms of type \coqi{fin n} are now convertible iff their first projections are convertible. Thus, once we define helper functions \coqi{FZ} for zero and \coqi{FS} for successor, we can treat elements of finite types as if they were natural numbers, with some additional type information.
+To make working with finite types more convenient, we employ Rocq's \emph{definitionally proof-irrelevant} sort \rocqi{SProp} of propositions~\cite{gilbert:2019:popl}. Definitional proof-irrelevance means that if \rocqi{A : SProp}, then any two inhabitants of \rocqi{A} are definitionally equal. In the definition of \rocqi{fin}, we replace the less-than relation \rocqi{<} by its proof-irrelevant counterpart (see \cref{sec:proof-irrelevance}). The effect of this change is that two terms of type \rocqi{fin n} are now convertible iff their first projections are convertible. Thus, once we define helper functions \rocqi{FZ} for zero and \rocqi{FS} for successor, we can treat elements of finite types as if they were natural numbers, with some additional type information.
 
-We can further enhance the situation by declaring the function \coqi{fin_to_nat} as a Coq coercion:
-\begin{coqc}
+We can further enhance the situation by declaring the function \rocqi{fin_to_nat} as a Rocq coercion:
+\begin{rocqc}
 Coercion fin_to_nat : fin >-> nat.
-\end{coqc}
-This lets us leave applications of \coqi{fin_to_nat} implicit.
+\end{rocqc}
+This lets us leave applications of \rocqi{fin_to_nat} implicit.
 
 \subsection{Proof-irrelevant order relations} \label{sec:proof-irrelevance}
 
-To avoid defining custom order relations, we implement the proof-irrelevant versions of \coqi{≤} and \coqi{<}, denoted by \coqi{⪯} and \coqi{≺} respectively, using \emph{propositional truncation}~\cite[Section 3.7]{hottbook}, called \coqi{Squash} in Coq. That is, \coqi{x ⪯ y} stands for \coqi{Squash (x ≤ y)}, and \coqi{x ≺ y} means \coqi{S x ⪯ y} (which is the same as \coqi{Squash (x < y)}). Thus, we can easily prove lemmas such as
-\begin{coqc}
+To avoid defining custom order relations, we implement the proof-irrelevant versions of \rocqi{≤} and \rocqi{<}, denoted by \rocqi{⪯} and \rocqi{≺} respectively, using \emph{propositional truncation}~\cite[Section 3.7]{hottbook}, called \rocqi{Squash} in Rocq. That is, \rocqi{x ⪯ y} stands for \rocqi{Squash (x ≤ y)}, and \rocqi{x ≺ y} means \rocqi{S x ⪯ y} (which is the same as \rocqi{Squash (x < y)}). Thus, we can easily prove lemmas such as
+\begin{rocqc}
 Sle_n : ∀ n, n ⪯ n
 Sle_S : ∀ {n m}, n ⪯ m → n ⪯ S m
 Sle_S_n : ∀ {n m}, S n ⪯ S m → n ⪯ m
-\end{coqc}
-by eliminating and introducing \coqi{Squash} and using the corresponding lemmas for \coqi{≤}. Unfortunately, this method still requires some boilerplate, as we need to create a new lemma for every lemma we wish to use. It might be possible to derive such lemmas automatically by some form of tactic metaprogramming; we have not tried to do so.
+\end{rocqc}
+by eliminating and introducing \rocqi{Squash} and using the corresponding lemmas for \rocqi{≤}. Unfortunately, this method still requires some boilerplate, as we need to create a new lemma for every lemma we wish to use. It might be possible to derive such lemmas automatically by some form of tactic metaprogramming; we have not tried to do so.
 
-In the next section, we will make use of the following large elimination principle for \coqi{⪯}:
-\begin{coqc}
+In the next section, we will make use of the following large elimination principle for \rocqi{⪯}:
+\begin{rocqc}
 Sle_rect : ∀ n m (P : ∀ m, n ⪯ m → Type),
   P n (Sle_n n) → (∀ m (H : n ⪯ m), P m H → P (S m) (Sle_S H)) →
   ∀ H : n ⪯ m, P m H
-\end{coqc}
-Due to restrictions on how types in \coqi{SProp} can be eliminated, we have to define \coqi{Sle_rect} manually by recursion on \coqi{m} and \coqi{n}.
+\end{rocqc}
+Due to restrictions on how types in \rocqi{SProp} can be eliminated, we have to define \rocqi{Sle_rect} manually by recursion on \rocqi{m} and \rocqi{n}.
 \begin{rem} \label{rem:sprop-large-elim}
-The necessity of defining large elimination for the order relation is not the consequence of using \coqi{SProp} instead of \coqi{Prop}. Since \coqi{Prop} cannot be eliminated into \coqi{Type} either, we would need to act similarly if we used \coqi{≤}.
+The necessity of defining large elimination for the order relation is not the consequence of using \rocqi{SProp} instead of \rocqi{Prop}. Since \rocqi{Prop} cannot be eliminated into \rocqi{Type} either, we would need to act similarly if we used \rocqi{≤}.
 \end{rem}
 
-\subsection{Objects and morphisms} \label{sec:coq-obj-mor}
+\subsection{Objects and morphisms} \label{sec:rocq-obj-mor}
 
 In the previous sections, many definitions about the topos of trees were presented as one or more components satisfying certain properties. For instance, objects are families of types together with restriction functions; morphisms are families of functions satisfying a naturality condition. 
 
-In Coq, we can conveniently package up such definitions as record declarations. The type of objects is defined as follows.
-\begin{coqc}
+In Rocq, we can conveniently package up such definitions as record declarations. The type of objects is defined as follows.
+\begin{rocqc}
 Record Object : Type := 
   { obj :> nat → Type
   ; restr : ∀ n, obj (S n) → obj n
   }.
-\end{coqc}
+\end{rocqc}
 This creates a new record type along with the two corresponding record projections below.
-\begin{coqc}
+\begin{rocqc}
 obj : Object → nat → Type
 restr : ∀ (X : Object) n, obj X (S n) → obj X n
-\end{coqc}
-The notation \coqi{obj :> nat → Type} automatically declares the record projection \coqi{obj} as a coercion. This allows us to write \coqi{X n} instead of \coqi{obj X n} for the \coqi{n}-th component of an object \coqi{X}. For readability, we keep the first argument of \coqi{restr} implicit.
+\end{rocqc}
+The notation \rocqi{obj :> nat → Type} automatically declares the record projection \rocqi{obj} as a coercion. This allows us to write \rocqi{X n} instead of \rocqi{obj X n} for the \rocqi{n}-th component of an object \rocqi{X}. For readability, we keep the first argument of \rocqi{restr} implicit.
 
-We define the more general restriction operations $r^X_{n,m}$ (see \cref{def:tot}) using the elimination principle \coqi{Sle_rect} mentioned above.
-\begin{coqc}
+We define the more general restriction operations $r^X_{n,m}$ (see \cref{def:tot}) using the elimination principle \rocqi{Sle_rect} mentioned above.
+\begin{rocqc}
 Definition restr' {X : Object} {m n} : n ⪯ m → X m → X n :=
   Sle_rect n m (λ m _, X m → X n) id (λ m _ f, f ∘ restr m).
-\end{coqc}
-As a special case of \coqi{restr'}, we also have
-\begin{coqc}
+\end{rocqc}
+As a special case of \rocqi{restr'}, we also have
+\begin{rocqc}
 Definition restrTo {X : Object} {n} (i : [0..n]) (x : X n) : X i :=
   restr' (Sle_S_n (Spr2 i)) x.
-\end{coqc}
-Here, \coqi{[0..n]} is notation for \coqi{fin (S n)}, and \coqi{Spr2 i} is proof that \coqi{i ≺ S n} (recall that \coqi{fin n} is defined as a sigma type). This corresponds to the notation $\restr{x}{i}$ introduced in \cref{def:tot}. This use case explains why we need to use \coqi{⪯} instead of the ordinary \coqi{≤} for \coqi{restr'}.
+\end{rocqc}
+Here, \rocqi{[0..n]} is notation for \rocqi{fin (S n)}, and \rocqi{Spr2 i} is proof that \rocqi{i ≺ S n} (recall that \rocqi{fin n} is defined as a sigma type). This corresponds to the notation $\restr{x}{i}$ introduced in \cref{def:tot}. This use case explains why we need to use \rocqi{⪯} instead of the ordinary \rocqi{≤} for \rocqi{restr'}.
 
 Similarly to objects, morphisms are also defined as a record.
-\begin{coqc}
+\begin{rocqc}
 Record /\textcolor{black}{Morphism}/ (X Y : Object) : Type :=
   { morph :> ∀ n, X n → Y n
   ; morph_natural : ∀ n (x : X (S n)),
       morph n (restr n x) = restr n (morph (S n) x)
   }.
 
-/\textcolor{coqkw}{Infix}/ "⟶" := /\textcolor{black}{Morphism}/.
-\end{coqc}
+/\textcolor{rocqkw}{Infix}/ "⟶" := /\textcolor{black}{Morphism}/.
+\end{rocqc}
 Notice how the formal definitions of both objects and morphisms follow closely the definitions given in the current report.
 
-An important difference between objects and morphisms is that morphisms also contain a proof component. That is, whenever we want to construct a morphism \coqi{X ⟶ Y} (which is a family of maps \coqi{X n → Y n} for all \coqi{n}), we have the obligation to show that it satisfies the naturality condition \coqi{morph_natural}. Typically, we wish to carry out such verifications using Coq's tactic language instead of constructing proof terms by hand.
+An important difference between objects and morphisms is that morphisms also contain a proof component. That is, whenever we want to construct a morphism \rocqi{X ⟶ Y} (which is a family of maps \rocqi{X n → Y n} for all \rocqi{n}), we have the obligation to show that it satisfies the naturality condition \rocqi{morph_natural}. Typically, we wish to carry out such verifications using Rocq's tactic language instead of constructing proof terms by hand.
 
-A convenient way to achieve this is provided by Coq's \coqi{/\textcolor{coqkw}{Program}/} facilities, originally proposed by Sozeau~\cite{sozeau:2008:phd}. The \coqi{/\textcolor{coqkw}{Program}/ Definition} command allows us to leave holes in a definition, which can then be filled in using Coq's proof mode. As an example, consider the following definition.
-\begin{coqc}
-/\textcolor{coqkw}{Program}/ Definition mcomp {X Y Z} (f : Y ⟶ Z) (g : X ⟶ Y) : X ⟶ Z :=
+A convenient way to achieve this is provided by Rocq's \rocqi{/\textcolor{rocqkw}{Program}/} facilities, originally proposed by Sozeau~\cite{sozeau:2008:phd}. The \rocqi{/\textcolor{rocqkw}{Program}/ Definition} command allows us to leave holes in a definition, which can then be filled in using Rocq's proof mode. As an example, consider the following definition.
+\begin{rocqc}
+/\textcolor{rocqkw}{Program}/ Definition mcomp {X Y Z} (f : Y ⟶ Z) (g : X ⟶ Y) : X ⟶ Z :=
   ⟦λ n, f n ∘ g n⟧.
-/\textcolor{coqkw}{Next Obligation}/. ... Qed.
-\end{coqc}
-Here, \coqi{⟦h⟧} is notation for \coqi{{| morph := h; morph_natural := _ |}}, which is Coq syntax for constructing a record by listing its fields. The underscore is used to defer the proof of naturality, which is then provided using the \coqi{/\textcolor{coqkw}{Next Obligation}/} command. If there are multiple holes, they can be solved one-by-one with consecutive applications of \coqi{/\textcolor{coqkw}{Next Obligation}/}. We make extensive use of this pattern throughout the formalisation.
+/\textcolor{rocqkw}{Next Obligation}/. ... Qed.
+\end{rocqc}
+Here, \rocqi{⟦h⟧} is notation for \rocqi{{| morph := h; morph_natural := _ |}}, which is Rocq syntax for constructing a record by listing its fields. The underscore is used to defer the proof of naturality, which is then provided using the \rocqi{/\textcolor{rocqkw}{Next Obligation}/} command. If there are multiple holes, they can be solved one-by-one with consecutive applications of \rocqi{/\textcolor{rocqkw}{Next Obligation}/}. We make extensive use of this pattern throughout the formalisation.
 
-\subsection{Exponentials} \label{sec:coq-exp}
+\subsection{Exponentials} \label{sec:rocq-exp}
 
-Given \coqi{X Y : Object}, we may construct the exponential \coqi{Exp X Y}, denoted by \coqi{X ⇒ Y}, based on \cref{def:tot-struct}. There, we have seen that the $n$-th component of the exponential $\expt{X}{Y}$ is the collection of $(n+1)$-tuples $(f_i \colon X_i \to Y_i)_{i \in \fin{n}}$ commuting with the restriction maps. Therefore, similarly to \coqi{/\textcolor{black}{Morphism}/}, we define the \coqi{n}-th component of \coqi{Exp X Y} as a record.
-\begin{coqc}
+Given \rocqi{X Y : Object}, we may construct the exponential \rocqi{Exp X Y}, denoted by \rocqi{X ⇒ Y}, based on \cref{def:tot-struct}. There, we have seen that the $n$-th component of the exponential $\expt{X}{Y}$ is the collection of $(n+1)$-tuples $(f_i \colon X_i \to Y_i)_{i \in \fin{n}}$ commuting with the restriction maps. Therefore, similarly to \rocqi{/\textcolor{black}{Morphism}/}, we define the \rocqi{n}-th component of \rocqi{Exp X Y} as a record.
+\begin{rocqc}
 Record Exp_obj (X Y : Object) (n : nat) : Type :=
   { Exp_morph :> ∀ i : [0..n], X i → Y i
   ; Exp_morph_natural : ∀ (i : [0..n|]) (x : X (S i)),
       Exp_morph (FW i) (restr i x) = restr i (Exp_morph (FS i) x)
   }.
-\end{coqc}
-Here, \coqi{[0..n|]} and \coqi{[0..n]} are notations for \coqi{fin n} and \coqi{fin (S n)}, respectively.
+\end{rocqc}
+Here, \rocqi{[0..n|]} and \rocqi{[0..n]} are notations for \rocqi{fin n} and \rocqi{fin (S n)}, respectively.
 
-It is worth noting a subtle but important point regarding the definition of \coqi{Exp_obj}. In the expression \coqi{Exp_morph (FW i) (restr i x)} in the type of \coqi{Exp_morph_natural}, the second argument of \coqi{Exp_morph} is supposed to have type \coqi{X (fin_to_nat (FW i))}. However, \coqi{restr i x} has type \coqi{X (fin_to_nat i)}. Thus, the well-typedness of this expression crucially depends on \cref{eq:fw-lemma} in \cref{sec:finite-types} holding definitionally. Had we chosen the alternative representation of \coqi{fin} as an inductive family, it would be necessary to transport along this equation explicitly. This would make reasoning with \coqi{Exp_morph_natural} (and in general, \coqi{Exp_morph}) much more difficult.
+It is worth noting a subtle but important point regarding the definition of \rocqi{Exp_obj}. In the expression \rocqi{Exp_morph (FW i) (restr i x)} in the type of \rocqi{Exp_morph_natural}, the second argument of \rocqi{Exp_morph} is supposed to have type \rocqi{X (fin_to_nat (FW i))}. However, \rocqi{restr i x} has type \rocqi{X (fin_to_nat i)}. Thus, the well-typedness of this expression crucially depends on \cref{eq:fw-lemma} in \cref{sec:finite-types} holding definitionally. Had we chosen the alternative representation of \rocqi{fin} as an inductive family, it would be necessary to transport along this equation explicitly. This would make reasoning with \rocqi{Exp_morph_natural} (and in general, \rocqi{Exp_morph}) much more difficult.
 
-Similarly, the type of \coqi{x} in \coqi{Exp_morph (FS i) x} is \coqi{X (S (fin_to_nat i))}, but its expected type is \coqi{X (fin_to_nat (FS i))}. Thus, the expression is well-typed only because the equation
+Similarly, the type of \rocqi{x} in \rocqi{Exp_morph (FS i) x} is \rocqi{X (S (fin_to_nat i))}, but its expected type is \rocqi{X (fin_to_nat (FS i))}. Thus, the expression is well-typed only because the equation
 \begin{equation} \label{eq:fs-lemma}
-\mbox{\coqi{fin_to_nat (FS i) = S (fin_to_nat i)}}
+\mbox{\rocqi{fin_to_nat (FS i) = S (fin_to_nat i)}}
 \end{equation}
-holds definitionally. However, this would also be the case with the inductive definition of \coqi{fin}, where \cref{eq:fs-lemma} would be one of the defining equations for \coqi{fin_to_nat}.
+holds definitionally. However, this would also be the case with the inductive definition of \rocqi{fin}, where \cref{eq:fs-lemma} would be one of the defining equations for \rocqi{fin_to_nat}.
 
-\subsection{Logic} \label{sec:coq-logic}
+\subsection{Logic} \label{sec:rocq-logic}
 
-As stated in \cref{def:subobject-classifier}, the $n$-th component of the subobject classifier is the collection of downward closed subsets of $\fin{n}$. In type theory, subsets $A$ of a set $X$ are usually formalised as predicates \coqi{A : X → Prop}, where $x \in A$ iff \coqi{A x} holds. Hence, a reasonable formalisation of $\SOC_n$ would be the following record type.
-\begin{coqc}
+As stated in \cref{def:subobject-classifier}, the $n$-th component of the subobject classifier is the collection of downward closed subsets of $\fin{n}$. In type theory, subsets $A$ of a set $X$ are usually formalised as predicates \rocqi{A : X → Prop}, where $x \in A$ iff \rocqi{A x} holds. Hence, a reasonable formalisation of $\SOC_n$ would be the following record type.
+\begin{rocqc}
 Record SOC_obj (n : nat) :=
   { SOC_pred :> [0..n] → Prop
   ; SOC_pred_closed' : ∀ (j i : [0..n]), j ⪯ i → SOC_pred i → SOC_pred j
   }.
-\end{coqc}
-However, we can exploit the order structure on the natural numbers to simplify the closedness requirement. We replace the field \coqi{SOC_pred_closed'} by
-\begin{coqc}
+\end{rocqc}
+However, we can exploit the order structure on the natural numbers to simplify the closedness requirement. We replace the field \rocqi{SOC_pred_closed'} by
+\begin{rocqc}
 SOC_pred_closed : ∀ i : [0..n|], SOC_pred (FS i) → SOC_pred (FW i)
-\end{coqc}
-That is, we only require $n + 1 \in A \To n \in A$ for $A \in \SOC_n$. The stronger condition \coqi{SOC_pred_closed'} then follows by induction on the proof of \coqi{j ⪯ i} (using \coqi{Sle_rect}).
+\end{rocqc}
+That is, we only require $n + 1 \in A \To n \in A$ for $A \in \SOC_n$. The stronger condition \rocqi{SOC_pred_closed'} then follows by induction on the proof of \rocqi{j ⪯ i} (using \rocqi{Sle_rect}).
 
-As mentioned in the introduction to this section, we use a shallow embedding to formalise the internal logic of $\TOT$ in Coq. This means that we use the semantics of the logic in $\TOT$ to represent types, terms, and proof derivations. That is, types are objects, (well-typed) terms are morphisms from their typing context to their type, and proof derivations are metatheoretic (Coq) proofs. The definitions of term constructors are then given by their interpretations according to \cref{def:logic-semantics}, whereas the inference rules are verified as lemmas using semantic entailment. In this way, we obtain a small combinator library with which we can construct and reason about terms and formulas as if they were syntactic objects.
+As mentioned in the introduction to this section, we use a shallow embedding to formalise the internal logic of $\TOT$ in Rocq. This means that we use the semantics of the logic in $\TOT$ to represent types, terms, and proof derivations. That is, types are objects, (well-typed) terms are morphisms from their typing context to their type, and proof derivations are metatheoretic (Rocq) proofs. The definitions of term constructors are then given by their interpretations according to \cref{def:logic-semantics}, whereas the inference rules are verified as lemmas using semantic entailment. In this way, we obtain a small combinator library with which we can construct and reason about terms and formulas as if they were syntactic objects.
 
 For instance, we have the internal conjunction 
-\begin{coqc}
+\begin{rocqc}
 conjI : Ω × Ω ⟶ Ω
-\end{coqc}
-introduced in \cref{def:internal-heyting}, where \coqi{Ω : Object} is the subobject classifier. We can define the respective term former as follows.
-\begin{coqc}
+\end{rocqc}
+introduced in \cref{def:internal-heyting}, where \rocqi{Ω : Object} is the subobject classifier. We can define the respective term former as follows.
+\begin{rocqc}
 Definition conj {Γ} (P Q : Γ ⟶ Ω) : Γ ⟶ Ω := conjI ∘ ⟨P, Q⟩.
-\end{coqc}
-Here, \coqi{⟨P, Q⟩} denotes categorical pairing. Note that \coqi{conj} corresponds to the typing rule \textsc{conj} (\cref{fig:logic-typing-rules}): given two \emph{semantic} terms \coqi{P} and \coqi{Q} of type \coqi{Ω} (i.e. propositions) in context \coqi{Γ}, it constructs another proposition in the same context. Also note that its definition follows closely the semantics given in \cref{def:logic-semantics}.
+\end{rocqc}
+Here, \rocqi{⟨P, Q⟩} denotes categorical pairing. Note that \rocqi{conj} corresponds to the typing rule \textsc{conj} (\cref{fig:logic-typing-rules}): given two \emph{semantic} terms \rocqi{P} and \rocqi{Q} of type \rocqi{Ω} (i.e. propositions) in context \rocqi{Γ}, it constructs another proposition in the same context. Also note that its definition follows closely the semantics given in \cref{def:logic-semantics}.
 
 As another example, consider the universal quantifier, corresponding to the typing rule \textsc{forall}:
-\begin{coqc}
+\begin{rocqc}
 allI : ∀ {X}, (X ⇒ Ω) ⟶ Ω
 Definition all {Γ} A (P : Γ × A ⟶ Ω) : Γ ⟶ Ω := allI ∘ λ(P).
-\end{coqc}
-where \coqi{λ(P)} is the exponential transpose of \coqi{P}. Here, \coqi{P} is a semantic proposition in context \coqi{Γ × A}, that is, \coqi{Γ} extended with a new variable of type \coqi{A}.
+\end{rocqc}
+where \rocqi{λ(P)} is the exponential transpose of \rocqi{P}. Here, \rocqi{P} is a semantic proposition in context \rocqi{Γ × A}, that is, \rocqi{Γ} extended with a new variable of type \rocqi{A}.
 
-Given the embedding of our term language into Coq, all we have left to do in order to complete the shallow embedding is to verify semantically the inference rules of the logic. First, recall the semantic provability relation $\sementails{\Gamma}{P}{Q}$ from \cref{def:logic-semantics}.
-\begin{coqc}
+Given the embedding of our term language into Rocq, all we have left to do in order to complete the shallow embedding is to verify semantically the inference rules of the logic. First, recall the semantic provability relation $\sementails{\Gamma}{P}{Q}$ from \cref{def:logic-semantics}.
+\begin{rocqc}
 Definition entails {Γ} (P Q : Γ ⟶ Ω) : Prop :=
   ∀ n γ, P n γ n → Q n γ n.
-\end{coqc}
+\end{rocqc}
 The inference rules of the logic (\cref{fig:structural-logical-rules,fig:logic-equalities}) can then be proved as separate lemmas. For example, the following lemma states conjunction introduction (\textsc{$\wedge$-intro}).
-\begin{coqc}
+\begin{rocqc}
 Lemma conj_intro {Γ} {R P Q : Γ ⟶ Ω} :
   R ⊢ P →
   R ⊢ Q →
   R ⊢ conj P Q.
-\end{coqc}
-Perhaps a bit confusingly, we use the \coqi{⊢} symbol for provability in the formalisation. This is because we would like to treat the shallow embedding of the internal language as a combinator calculus, so we prefer to use syntactic notations.
+\end{rocqc}
+Perhaps a bit confusingly, we use the \rocqi{⊢} symbol for provability in the formalisation. This is because we would like to treat the shallow embedding of the internal language as a combinator calculus, so we prefer to use syntactic notations.
 
 An interesting aspect of our shallow embedding is that there are no variable names: we work with purely categorical combinators. Since terms are represented as morphisms from their context to their type, substitution can simply be implemented by precomposition. For instance, the rule \textsc{$\forall$-intro} is formalised as follows.
-\begin{coqc}
+\begin{rocqc}
 Lemma all_intro {Γ A} (R : Γ ⟶ Ω) (P : Γ × A ⟶ Ω) :
   R ∘ π₁ ⊢ P →
   R ⊢ all A P.
-\end{coqc}
-Here, the first projection \coqi{π₁} on the left hand side of the premise is a weakening substitution. It is necessary to bring \coqi{R} into the same context as \coqi{P}, which has an additional free variable of type \coqi{A}. Another example is the rule \textsc{$\forall$-elim} below.
-\begin{coqc}
+\end{rocqc}
+Here, the first projection \rocqi{π₁} on the left hand side of the premise is a weakening substitution. It is necessary to bring \rocqi{R} into the same context as \rocqi{P}, which has an additional free variable of type \rocqi{A}. Another example is the rule \textsc{$\forall$-elim} below.
+\begin{rocqc}
 Lemma all_elim {Γ A} (P : Γ × A ⟶ Ω) (t : Γ ⟶ A) :
   all A P ⊢ P ∘ ⟨mid, t⟩.
-\end{coqc}
-Here, \coqi{mid : ∀ {X}, X ⟶ X} is the identity morphism. In the conclusion, the expression \coqi{⟨mid, t⟩} is the categorical version of the substitution $\subst{}{x}{t}$, mapping the last variable to \coqi{t} and leaving all other variables unchanged.
+\end{rocqc}
+Here, \rocqi{mid : ∀ {X}, X ⟶ X} is the identity morphism. In the conclusion, the expression \rocqi{⟨mid, t⟩} is the categorical version of the substitution $\subst{}{x}{t}$, mapping the last variable to \rocqi{t} and leaving all other variables unchanged.
 
-\subsection{Axioms} \label{sec:coq-axioms}
+\subsection{Axioms} \label{sec:rocq-axioms}
 
-In our formalisation, we often have to show equality of morphisms, e.g. when proving categorical laws. Since morphisms are essentially families of functions, this involves showing equality of Coq functions. In most cases, such equalities do not hold by definition. Hence, we make use of the axiom of \emph{function extensionality}, stating that two functions are equal iff they are equal at every input. This allows us for example to perform case distinction or induction on the input to show equality of the outputs.
+In our formalisation, we often have to show equality of morphisms, e.g. when proving categorical laws. Since morphisms are essentially families of functions, this involves showing equality of Rocq functions. In most cases, such equalities do not hold by definition. Hence, we make use of the axiom of \emph{function extensionality}, stating that two functions are equal iff they are equal at every input. This allows us for example to perform case distinction or induction on the input to show equality of the outputs.
 
-In \cref{sec:coq-obj-mor}, we have seen that a morphism is actually a record, containing a family of functions \emph{together with} a proof of their naturality. This means that proving equality of morphisms requires proving equality of both components, thus in particular, of equality proofs. Such higher equalities are notoriously difficult to deal with in constructive type theory. To simplify matters, we assume the \emph{proof-irrelevance} axiom, which states that any two proofs of the same proposition are equal. This way, we can prove the following lemma, expressing that equality of morphisms follows from equality of their underlying families of functions.
-\begin{coqc}
+In \cref{sec:rocq-obj-mor}, we have seen that a morphism is actually a record, containing a family of functions \emph{together with} a proof of their naturality. This means that proving equality of morphisms requires proving equality of both components, thus in particular, of equality proofs. Such higher equalities are notoriously difficult to deal with in constructive type theory. To simplify matters, we assume the \emph{proof-irrelevance} axiom, which states that any two proofs of the same proposition are equal. This way, we can prove the following lemma, expressing that equality of morphisms follows from equality of their underlying families of functions.
+\begin{rocqc}
 Lemma morph_inj {X Y} {f g : X ⟶ Y} (e : morph f = morph g) : f = g.
-\end{coqc}
+\end{rocqc}
 
-The above two considerations also apply to the other record types, namely \coqi{Exp_obj} and \coqi{SOC_obj}. The first component of the latter is a function with codomain \coqi{Prop}. Thus, to prove equality of inhabitants of \coqi{SOC_obj} (necessary for e.g. naturality proofs of logical connectives), we need to prove equality of Coq propositions. For this, we use the \emph{propositional extensionality} axiom, stating that two propositions are equal iff they imply each other.
+The above two considerations also apply to the other record types, namely \rocqi{Exp_obj} and \rocqi{SOC_obj}. The first component of the latter is a function with codomain \rocqi{Prop}. Thus, to prove equality of inhabitants of \rocqi{SOC_obj} (necessary for e.g. naturality proofs of logical connectives), we need to prove equality of Rocq propositions. For this, we use the \emph{propositional extensionality} axiom, stating that two propositions are equal iff they imply each other.
 
-Some might not be satisfied with our Coq assumptions. All uses of additional axioms in our formalisation arise from the need to prove \emph{propositional equality} of various Coq objects. A standard way to remedy this situation is to replace sets/types with \emph{setoids}~\cite{barthe:2003:jfp}, also called \emph{Bishop sets}. The main idea is to equip types with an equivalence relation, which we think of as a customised notion of equality. Then, instead of proving propositional equality of elements, we only prove that they are related by the relation corresponding to their type. Thus, by giving appropriate equivalence relations for \coqi{/\textcolor{black}{Morphism}/}, \coqi{Exp_obj}, and \coqi{SOC_obj}, we can eliminate our reliance on the axioms mentioned so far.
+Some might not be satisfied with our Rocq assumptions. All uses of additional axioms in our formalisation arise from the need to prove \emph{propositional equality} of various Rocq objects. A standard way to remedy this situation is to replace sets/types with \emph{setoids}~\cite{barthe:2003:jfp}, also called \emph{Bishop sets}. The main idea is to equip types with an equivalence relation, which we think of as a customised notion of equality. Then, instead of proving propositional equality of elements, we only prove that they are related by the relation corresponding to their type. Thus, by giving appropriate equivalence relations for \rocqi{/\textcolor{black}{Morphism}/}, \rocqi{Exp_obj}, and \rocqi{SOC_obj}, we can eliminate our reliance on the axioms mentioned so far.
 
-A downside of this approach is that we would also need to show that functions preserve the respective equivalence relations, resulting in a longer and more complicated formalisation. For instance, the \coqi{Object} type defined in \cref{sec:coq-obj-mor} would become the following record.
-\begin{coqc}
+A downside of this approach is that we would also need to show that functions preserve the respective equivalence relations, resulting in a longer and more complicated formalisation. For instance, the \rocqi{Object} type defined in \cref{sec:rocq-obj-mor} would become the following record.
+\begin{rocqc}
 Record Object : Type := 
   { obj : nat → Type
   ; obj_eq : ∀ n, obj n → obj n → Prop
@@ -1090,16 +1090,16 @@ Record Object : Type :=
   ; restr : ∀ n, obj (S n) → obj n
   ; restr_resp : ∀ n x y, obj_eq (S n) x y → obj_eq n (restr n x) (restr n y)
   }.
-\end{coqc}
-Here, \coqi{Equivalence (obj_eq n)} states that \coqi{obj_eq n} is an equivalence relation. The first three fields together express that we have a family of setoids indexed by the natural numbers. The field \coqi{restr_resp} witnesses the fact that restriction respects the equivalence relations. We would need to provide proofs of similar statements for most, if not all, of the operations, including the components of morphisms. To keep the formalisation simple, we have decided to stick with the axioms.
+\end{rocqc}
+Here, \rocqi{Equivalence (obj_eq n)} states that \rocqi{obj_eq n} is an equivalence relation. The first three fields together express that we have a family of setoids indexed by the natural numbers. The field \rocqi{restr_resp} witnesses the fact that restriction respects the equivalence relations. We would need to provide proofs of similar statements for most, if not all, of the operations, including the components of morphisms. To keep the formalisation simple, we have decided to stick with the axioms.
 
-We could get rid of the dependence on the proof-irrelevance axiom by using an \coqi{SProp} version of the equality type in \coqi{/\textcolor{black}{Morphism}/}, \coqi{Exp_obj}, and \coqi{SOC_obj}. Since we do not rely on definitional equalities between these objects, doing so would not improve the ease of formalisation. It would, however, require some boilerplate for proving various lemmas for the new equality type not present in the Coq standard library. For these reasons, we stick with the proof-irrelevance axiom.
+We could get rid of the dependence on the proof-irrelevance axiom by using an \rocqi{SProp} version of the equality type in \rocqi{/\textcolor{black}{Morphism}/}, \rocqi{Exp_obj}, and \rocqi{SOC_obj}. Since we do not rely on definitional equalities between these objects, doing so would not improve the ease of formalisation. It would, however, require some boilerplate for proving various lemmas for the new equality type not present in the Rocq standard library. For these reasons, we stick with the proof-irrelevance axiom.
 
 \section{Related work} \label{sec:related}
 
-Sieczkowski et al. created the ModuRes Coq library~\cite{sieczkowski:2015:itp}, which provides a general framework for solving recursive domain equations, and can be used to build models of complex programming languages and program logics. The mathematical context for their library is given by ordered families of equivalences (OFEs)~\cite{gianantonio:2002:types} and $\mathcal{M}$-categories~\cite{birkedal:2010:tcs}. They showed that the topos of trees is an $\mathcal{M}$-category, meaning that it provides an appropriate setting for solving recursive domain equations. For this purpose, they only needed a small portion of the structure of the topos of trees. Hence, our formalisation of the topos of trees and its logic is more extensive in this regard. However, they also showed the existence of unique fixed points for locally contractive functors, allowing them to model guarded recursive types missing from our formalisation. Furthermore, they avoid axioms by using setoids (cf. \cref{sec:coq-axioms}).
+Sieczkowski et al. created the ModuRes Rocq library~\cite{sieczkowski:2015:itp}, which provides a general framework for solving recursive domain equations, and can be used to build models of complex programming languages and program logics. The mathematical context for their library is given by ordered families of equivalences (OFEs)~\cite{gianantonio:2002:types} and $\mathcal{M}$-categories~\cite{birkedal:2010:tcs}. They showed that the topos of trees is an $\mathcal{M}$-category, meaning that it provides an appropriate setting for solving recursive domain equations. For this purpose, they only needed a small portion of the structure of the topos of trees. Hence, our formalisation of the topos of trees and its logic is more extensive in this regard. However, they also showed the existence of unique fixed points for locally contractive functors, allowing them to model guarded recursive types missing from our formalisation. Furthermore, they avoid axioms by using setoids (cf. \cref{sec:rocq-axioms}).
 
-Bergwerf~\cite{bergwerf:2022:internship} proved a completeness result for propositional logic with the later modality with respect to the simple step-indexed model of \cref{sec:siprop}. In addition to the rules presented in this report, his completeness theorem depends on an extra axiom, called the comparison rule, which carries a classical flavour. In particular, his calculus does not satisfy the disjunction property, a traditional intuitionistic principle. He also formalised his results in Coq, using a deep embedding for the syntax of the logic.
+Bergwerf~\cite{bergwerf:2022:internship} proved a completeness result for propositional logic with the later modality with respect to the simple step-indexed model of \cref{sec:siprop}. In addition to the rules presented in this report, his completeness theorem depends on an extra axiom, called the comparison rule, which carries a classical flavour. In particular, his calculus does not satisfy the disjunction property, a traditional intuitionistic principle. He also formalised his results in Rocq, using a deep embedding for the syntax of the logic.
 
 The use of the topos of trees as denotational semantics for guarded recursion was first suggested by Birkedal et al~\cite{birkedal:2011:lics,birkedal:2012:lmcs}. They considered not only guarded recursive functions, but also guarded recursive types, for which they generalised the results of Birkedal, St{\o}vring, and Thamsborg~\cite{birkedal:2010:tcs}. Subsequently, Birkedal and M{\o}gelberg~\cite{birkedal:2013:lics} showed that guarded recursive types could be constructed internally by taking fixed points of functions on universes.
 
@@ -1109,7 +1109,7 @@ Bizjak et al.~\cite{bizjak:2016:fossacs} presented guarded dependent type theory
 
 \section{Conclusion and future work} \label{sec:conclusion}
 
-We have provided an in-depth exposition of the topos of trees, including how it can be used to model guarded recursive functions, as well as its internal logic. We have argued that the $\mlift$ connective should replace the $\later$ modality as a primitive connective, due to its necessity for defining guarded recursive predicates and generalizing earlier axioms involving $\later$ and quantifiers. Finally, we have formalised most constructions and rules presented in the report in the Coq proof assistant, discussing technical insights and design choices.
+We have provided an in-depth exposition of the topos of trees, including how it can be used to model guarded recursive functions, as well as its internal logic. We have argued that the $\mlift$ connective should replace the $\later$ modality as a primitive connective, due to its necessity for defining guarded recursive predicates and generalizing earlier axioms involving $\later$ and quantifiers. Finally, we have formalised most constructions and rules presented in the report in the Rocq proof assistant, discussing technical insights and design choices.
 
 The study of the $\mlift$ connective is far from complete. If $\mlift$ is to replace the $\later$ modality, then the original rules involving $\later$ must be generalised to use $\mlift$ as well. However, it is not clear how this can be achieved. For instance, the monotonicity rule (\textsc{$\later$-mono}) should be replaced by a rule similar to the following.
 \begin{mathpar}
@@ -1122,7 +1122,7 @@ The issue is that $P$ and $Q$ have type $\Later{\Prop}$ instead of $\Prop$, so t
 As alluded to in the introduction, step-indexed logics can be used to construct models of programming languages and program logics with self-referential features, such as Iris~\cite{jung:2018:jfp}. It would be worthwhile to attempt to formalise a model of Iris in the internal logic of the topos of trees. It would be especially interesting to carry out the formalisation in a proof assistant which implements guarded recursion natively, such as guarded cubical type theory~\cite{birkedal:2019:jar}.
 
 \paragraph{Acknowledgements.}
-I am grateful to Robbert Krebbers for his patience and kindness, for his feedback and helpful suggestions on this report, for the interesting discussions during our meetings, and for sharing his Coq expertise.
+I am grateful to Robbert Krebbers for his patience and kindness, for his feedback and helpful suggestions on this report, for the interesting discussions during our meetings, and for sharing his Rocq expertise.
 
 \bibliographystyle{plain}
 \bibliography{refs}

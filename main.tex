@@ -82,7 +82,7 @@ Our contributions are the following:
 
     \item We present a novel axiom from which previously known inference rules exchanging the $\later$ modality with a quantifier can be derived. Our axiom relies on the observation that we can decompose the $\later$ modality into two components, and then study the interaction between the quantifiers and the two components separately.
 
-    \item Finally, we have formalised the topos of trees in the Rocq theorem prover~\cite{rocq}, including a shallow embedding of its internal logic. We provide details and technical insights in the report.
+    \item Finally, we have formalised the topos of trees in the Rocq theorem prover~\cite{rocq}, including a shallow embedding of its internal logic. We discuss details and technical insights in the report.
 \end{items}
 
 In \cref{sec:tot}, we review the main semantic definitions in the topos of trees. Then we study its internal logic in \cref{sec:internal-logic}. In \cref{sec:rocq}, we elaborate on some design choices and technical challenges of our Rocq formalisation. Related work is discussed in \cref{sec:related}. Finally, \cref{sec:conclusion} concludes with a summary and future directions.
@@ -594,16 +594,16 @@ The entailment relation of $\lang$ is given by a judgment $\entails{\Gamma}{P}{Q
 Besides logical rules, we also have the familiar $\beta \eta$-laws for functions, products, and sums. These are complemented by equalities concerning the new type former $\Later$ and its associated constructs, some of which are shown in \cref{fig:Later-rules}. The first two equations are the homomorphism and composition laws for applicative functors~\cite{mcbride:2008:jfp}, while the third one establishes that $\rec{x}{\Later{A}}{t}$ is indeed a fixed point of $t$. There is also an $\eta$ rule for fixed points expressing uniqueness; see the appendix.
 \begin{figure}
 \begin{mathpar}
-\inferrule[$\ap$-next]
+\inferhref{$\ap$-next}{rule:ap-next}
     {\typed{\Gamma}{t}{A \to B} \and \typed{\Gamma}{u}{A}}
     {\equals[\Later{B}]{\Gamma}{\nxt{t} \ap \nxt{u}}{\nxt{(\app{t}{u})}}}
 \and
-\inferrule[$\ap$-comp]
+\inferhref{$\ap$-comp}{rule:ap-comp}
     {\typed{\Gamma}{f}{\Later{(B \to C)}} \and \typed{\Gamma}{g}{\Later{(A \to B)}} \and
      \typed{\Gamma}{t}{\Later{A}}}
     {\equals[\Later{C}]{\Gamma}{f \ap (g \ap t)}{\nxt{\name{comp}} \ap f \ap g \ap t}}
 \and
-\inferrule[fix-$\beta$]
+\inferhref{fix-$\beta$}{rule:fix-beta}
     {\typed{\conext{\Gamma}{x}{\Later{A}}}{t}{A}}
     {\equals[A]{\Gamma}{\rec{x}{\Later{A}}{t}}{\subst{t}{x}{\nxt{(\rec{x}{\Later{A}}{t})}}}}
 \end{mathpar}
@@ -611,57 +611,57 @@ Besides logical rules, we also have the familiar $\beta \eta$-laws for functions
 \label{fig:Later-rules}
 \end{figure}
 
-\Cref{fig:later-rules} lists some important inference rules for the $\later$ modality. Of particular interest is the rule \textsc{löb}, called \emph{Löb induction}. This principle internalises the technique of induction on the step-index, and it is the main tool for proving properties of guarded recursively defined programs. Note the formal similarity between \textsc{löb} and the fixed point operator of \cref{prop:fixpoint}. Another important rule is \textsc{$\later$-eq}, which establishes a strong connection between the $\later$ modality and the $\Later$ type former.
+\Cref{fig:later-rules} lists some important inference rules for the $\later$ modality. Of particular interest is the rule \ruleref{rule:löb}, called \emph{Löb induction}. This principle internalises the technique of induction on the step-index, and it is the main tool for proving properties of guarded recursively defined programs. Note the formal similarity between \ruleref{rule:löb} and the fixed point operator of \cref{prop:fixpoint}. Another important rule is \ruleref{rule:later-eq}, which establishes a strong connection between the $\later$ modality and the $\Later$ type former.
 \begin{figure}
 \begin{mathpar}
-\inferrule[$\later$-intro]{}{\entails{\Gamma}{P}{\later{P}}}
+\inferhref{$\later$-intro}{rule:later-intro}{}{\entails{\Gamma}{P}{\later{P}}}
 \and
-\inferrule[$\later$-mono]
+\inferhref{$\later$-mono}{rule:later-mono}
     {\entails{\Gamma}{P}{Q}}
     {\entails{\Gamma}{\later{P}}{\later{Q}}}
 \and
-\inferrule[löb]
+\inferhref{löb}{rule:löb}
     {\entails{\Gamma}{\later{P}}{P}}
     {\valid{\Gamma}{P}}
 \and
-\inferrule[$\wedge$-$\later$]{}
+\inferhref{$\wedge$-$\later$}{rule:and-later}{}
     {\entails{\Gamma}{\later{P} \wedge \later{Q}}{\later{(P \wedge Q)}}}
 \\
-\inferrule[$\later$-$\vee$]{}
+\inferhref{$\later$-$\vee$}{rule:later-or}{}
     {\entails{\Gamma}{\later{(P \vee Q)}}{\later{P} \vee \later{Q}}}
 \and
-\inferrule[$\impl$-$\later$]{}
+\inferhref{$\impl$-$\later$}{rule:impl-later}{}
     {\entails{\Gamma}{\later{P} \impl \later{Q}}{\later{(P \impl Q)}}}
 \and
-\inferrule[$\later$-eq]{}
+\inferhref{$\later$-eq}{rule:later-eq}{}
     {\equiv{\Gamma}{\later{(t =_A u)}}{\nxt{t} =_{\Later{A}} \nxt{u}}}
 \end{mathpar}
 \caption{Inference rules for $\later$}
 \label{fig:later-rules}
 \end{figure}
 
-It is worth mentioning that $\lang$ also contains an inference rule corresponding to the principle of \emph{propositional extensionality} (\cref{fig:logic-equalities}), asserting that if two propositions entail each other, then they are equal. Furthermore, the principle of \emph{function extensionality}, i.e. that two functions are equal whenever their values are equal for every argument, is a consequence of the $\eta$ law for functions.
+It is worth mentioning that $\lang$ also contains an inference rule corresponding to the principle of \emph{propositional extensionality} (\ruleref{rule:propext}), asserting that if two propositions entail each other, then they are equal. Furthermore, the principle of \emph{function extensionality}, i.e. that two functions are equal whenever their values are equal for every argument, is a consequence of the $\eta$ law for functions.
 
 From the basic inference rules of $\lang$, we can derive further sound reasoning principles. Some of these are presented in \cref{fig:derived-rules}.
 The rules commuting $\later$ with the various connectives can easily be proved using the monotonicity of $\later$ and the introduction and elimination principles of the connectives.
-The proof of \textsc{strong-löb} is less trivial, but it closely resembles the construction of the internal fixed point operator of \cref{def:fix} from the external one.
+The proof of \ruleref{rule:strong-löb} is less trivial, but it closely resembles the construction of the internal fixed point operator of \cref{def:fix} from the external one.
 \begin{figure}
 \begin{mathpar}
-\inferrule[strong-löb]{}{\entails{\Gamma}{\later{P} \impl P}{P}}
+\inferhref{strong-löb}{rule:strong-löb}{}{\entails{\Gamma}{\later{P} \impl P}{P}}
 \and
-\inferrule[$\later$-$\wedge$]{}
+\inferhref{$\later$-$\wedge$}{rule:later-and}{}
     {\entails{\Gamma}{\later{(P \wedge Q)}}{\later{P} \wedge \later{Q}}}
 \and
-\inferrule[$\vee$-$\later$]{}
+\inferhref{$\vee$-$\later$}{rule:or-later}{}
     {\entails{\Gamma}{\later{P} \vee \later{Q}}{\later{(P \vee Q)}}}
 \\
-\inferrule[$\later$-$\impl$]{}
+\inferhref{$\later$-$\impl$}{rule:later-impl}{}
     {\entails{\Gamma}{\later{(P \impl Q)}}{\later{P} \impl \later{Q}}}
 \and
-\inferrule[$\exists$-$\later$]{}
+\inferhref{$\exists$-$\later$}{rule:exists-later}{}
     {\entails{\Gamma}{\exi{x}{A}{\later{P}}}{\later{(\exi{x}{A}{P})}}}
 \and
-\inferrule[$\later$-$\forall$]{}
+\inferhref{$\later$-$\forall$}{rule:later-forall}{}
     {\entails{\Gamma}{\later{(\all{x}{A}{P})}}{\all{x}{A}{\later{P}}}}
 \end{mathpar}
 \caption{Derived rules for $\later$}
@@ -711,12 +711,12 @@ Consider the program $\name{add}$ from \cref{ex:guarded-recursion}. We wish to p
 \app{\name{add}}{(m + n)} =_{\Str \to \Str}
     \app{\app{\name{comp}}{(\app{\name{add}}{m})}}{(\app{\name{add}}{n})}
 \end{equation*}
-for all $m, n : \N$, where $\name{comp} = \lam{f}{B \to C}{\lam{g}{A \to B}{\lam{x}{A}{\app{f}{(\app{g}{x})}}}}$ is function composition. Since $\name{add}$ was defined as a fixed point, we will eventually need to handle a recursive call. Hence, we use Löb induction (\textsc{Löb}) to get an induction hypothesis
+for all $m, n : \N$, where $\name{comp} = \lam{f}{B \to C}{\lam{g}{A \to B}{\lam{x}{A}{\app{f}{(\app{g}{x})}}}}$ is function composition. Since $\name{add}$ was defined as a fixed point, we will eventually need to handle a recursive call. Hence, we use Löb induction (\ruleref{rule:löb}) to get an induction hypothesis
 \begin{equation*}
 \later{(\app{\name{add}}{(m + n)} =_{\Str \to \Str}
     \app{\app{\name{comp}}{(\app{\name{add}}{m})}}{(\app{\name{add}}{n})})}.
 \end{equation*}
-By function extensionality, it suffices to prove the equality once both sides are applied to an argument stream $s : \Str$. Unfolding the definition of $\name{add}$, and using the appropriate $\beta$-rules, including one application of \textsc{fix-$\beta$}, the left hand side becomes
+By function extensionality, it suffices to prove the equality once both sides are applied to an argument stream $s : \Str$. Unfolding the definition of $\name{add}$, and using the appropriate $\beta$-rules, including one application of \ruleref{rule:fix-beta}, the left hand side becomes
 \begin{equation*}
 (\app{\hd}{s} + (m + n)) \cons (\nxt{(\app{\name{add}}{(m + n)})} \ap \app{\tl}{s}).
 \end{equation*}
@@ -725,12 +725,12 @@ Similarly, after unfolding the right hand side (using that $\app{\hd}{(a \cons s
 ((\app{\hd}{s} + n) + m) \cons
     (\nxt{(\app{\name{add}}{m})} \ap (\nxt{(\app{\name{add}}{n})} \ap \app{\tl}{s})).
 \end{equation*}
-The heads of the two streams are equal (by associativity and commutativity of addition), so it suffices to prove the equality of the tails. By \textsc{$\later$-eq}, our induction hypothesis is equivalent to
+The heads of the two streams are equal (by associativity and commutativity of addition), so it suffices to prove the equality of the tails. By \ruleref{rule:later-eq}, our induction hypothesis is equivalent to
 \begin{equation*}
 \nxt{(\app{\name{add}}{(m + n)})} =_{\Later{(\Str \to \Str)}}
     \nxt{(\app{\app{\name{comp}}{(\app{\name{add}}{m})}}{(\app{\name{add}}{n})})}.
 \end{equation*}
-Now we conclude the proof using \textsc{$\ap$-next} and \textsc{$\ap$-comp}:
+Now we conclude the proof using \ruleref{rule:ap-next} and \ruleref{rule:ap-comp}:
 \begin{align*}
 \nxt{(\app{\name{add}}{(m + n)})} \ap \app{\tl}{s}
     &= \nxt{(\app{\app{\name{comp}}{(\app{\name{add}}{m})}}{(\app{\name{add}}{n})})} \ap \app{\tl}{s} \\
@@ -743,12 +743,12 @@ Now we conclude the proof using \textsc{$\ap$-next} and \textsc{$\ap$-comp}:
 
 We have seen that $\later$ commutes with the propositional connectives $\wedge$, $\vee$, and $\impl$. We are interested in establishing similar rules for the quantifiers, allowing us to move $\later$ under a quantifier. The first guess for such rules might be the following.
 \begin{mathpar}
-\inferrule[$\later$-$\exists$-comm]{}{\equiv{\Gamma}{\later{(\exi{x}{A}{P})}}{\exi{x}{A}{\later{P}}}}
+\inferhref{$\later$-$\exists$-comm}{rule:later-exists-comm}{}{\equiv{\Gamma}{\later{(\exi{x}{A}{P})}}{\exi{x}{A}{\later{P}}}}
 \and
-\inferrule[$\later$-$\forall$-comm]{}{\equiv{\Gamma}{\later{(\all{x}{A}{P})}}{\all{x}{A}{\later{P}}}}
+\inferhref{$\later$-$\forall$-comm}{rule:later-forall-comm}{}{\equiv{\Gamma}{\later{(\all{x}{A}{P})}}{\all{x}{A}{\later{P}}}}
 \end{mathpar}
 
-As the rules \textsc{$\exists$-$\later$} and \textsc{$\later$-$\forall$} (\cref{fig:derived-rules}) show, one direction of both equivalences is derivable in the system $\lang$. In both cases, however, the other direction is not semantically valid. To explain why, we first characterise logical validity in $\TOT$ in a more intuitive way, known in the literature as \emph{Kripke-Joyal semantics}~\cite{lambek:scott,maclane:moerdijk}. This characterisation is formulated in terms of a \emph{forcing relation} $\force{}{}$: for $\typed{\Gamma}{P}{\Prop}$, $n \in \N$, and $\gamma \in \sem{\Gamma}_n$, we define $\force{n}{P(\gamma)}$ iff $n \in \sem{P}_n(\gamma)$. Intuitively, $\force{n}{P(\gamma)}$ means that $P$ holds at step-index $n$, where the parameters of $P$ have been substituted with the semantic values $\gamma$. If $\Gamma$ is the empty context, we simply write $\force{n}{P}$.
+As the rules \ruleref{rule:exists-later} and \ruleref{rule:later-forall} show, one direction of both equivalences is derivable in the system $\lang$. In both cases, however, the other direction is not semantically valid. To explain why, we first characterise logical validity in $\TOT$ in a more intuitive way, known in the literature as \emph{Kripke-Joyal semantics}~\cite{lambek:scott,maclane:moerdijk}. This characterisation is formulated in terms of a \emph{forcing relation} $\force{}{}$: for $\typed{\Gamma}{P}{\Prop}$, $n \in \N$, and $\gamma \in \sem{\Gamma}_n$, we define $\force{n}{P(\gamma)}$ iff $n \in \sem{P}_n(\gamma)$. Intuitively, $\force{n}{P(\gamma)}$ means that $P$ holds at step-index $n$, where the parameters of $P$ have been substituted with the semantic values $\gamma$. If $\Gamma$ is the empty context, we simply write $\force{n}{P}$.
 \begin{prop}[Kripke-Joyal semantics] \label{prop:kripke-joyal}
 The forcing relation satisfies the following clauses:
 \begin{align*}
@@ -771,7 +771,7 @@ The forcing relation satisfies the following clauses:
 \end{align*}
 \end{prop}
 
-It is clear from the definitions that $\sementails{\Gamma}{P}{Q}$ iff for all $n \in \N$ and $\gamma \in \sem{\Gamma}_n$, $\force{n}{P(\gamma)}$ implies $\force{n}{Q(\gamma)}$. In particular, a formula $P$ holds in $\TOT$ iff $\force{n}{P(\gamma)}$ for all $n \in \N$ and $\gamma \in \sem{\Gamma}_n$. Thus, we can use \cref{prop:kripke-joyal} to prove or disprove semantic entailments by inductively calculating the meaning of logical formulas. Coming back to the rule \textsc{$\later$-$\exists$-comm} and taking $\Gamma$ to be empty, we have
+It is clear from the definitions that $\sementails{\Gamma}{P}{Q}$ iff for all $n \in \N$ and $\gamma \in \sem{\Gamma}_n$, $\force{n}{P(\gamma)}$ implies $\force{n}{Q(\gamma)}$. In particular, a formula $P$ holds in $\TOT$ iff $\force{n}{P(\gamma)}$ for all $n \in \N$ and $\gamma \in \sem{\Gamma}_n$. Thus, we can use \cref{prop:kripke-joyal} to prove or disprove semantic entailments by inductively calculating the meaning of logical formulas. Coming back to the rule \ruleref{rule:later-exists-comm} and taking $\Gamma$ to be empty, we have
 \[ \force{n+1}{\later{(\exi{x}{A}{P})}} \iff
    \exists a \in \sem{A}_n.\,\force{n}{P(a)} \]
 and
@@ -779,7 +779,7 @@ and
    \exists a \in \sem{A}_{n+1}.\,\force{n}{P(\restr{a}{n})}. \]
 We see that, semantically, the two sides quantify over different levels of $A$. Setting $A = \Later{\emptyt}$ and $P = \true$, we have $\sem{A}_0 = \{*\}$ and $\sem{A}_1 = \nul$, so the left hand side is true at step-index 1, while the right hand side is not. This shows that the left-to-right implication is not generally true.
 
-Similarly, we calculate the meaning of the two sides of \textsc{$\later$-$\forall$-comm}:
+Similarly, we calculate the meaning of the two sides of \ruleref{rule:later-forall-comm}:
 \begin{align*}
 \force{n+1}{\later{(\all{x}{A}{P})}} &\iff
   \forall m \le n, a \in \sem{A}_m.\,\force{m}{P(a)}, \\
@@ -793,12 +793,12 @@ In both cases, the asymmetry arises from the fact that the two sides quantify ov
 An object $X$ of $\TOT$ is called \emph{total} if all the restriction maps $r^X_n$ are surjective.
 \end{defn}
 
-For a total object $X$, considered as a type in $\lang$, we have $\force{n+1}{\later{(\exi{x}{X}{P})}}$ if and only if $\force{n+1}{\exi{x}{X}{\later{P}}}$, and similarly for $\forall$.  Since $\force{0}{\later{(\all{x}{X}{P})}}$ and $\force{0}{\all{x}{X}{\later{P}}}$ always hold, we get that the rule \textsc{$\later$-$\forall$-comm} is valid for total objects $X$. For \textsc{$\later$-$\exists$-comm} to hold at level 0, we need the additional assumption that $X_0$ is inhabited. For total objects $X$, this condition is equivalent to the existence of a morphism $\1 \to X$, i.e. being inhabited by a global element.
+For a total object $X$, considered as a type in $\lang$, we have $\force{n+1}{\later{(\exi{x}{X}{P})}}$ if and only if $\force{n+1}{\exi{x}{X}{\later{P}}}$, and similarly for $\forall$.  Since $\force{0}{\later{(\all{x}{X}{P})}}$ and $\force{0}{\all{x}{X}{\later{P}}}$ always hold, we get that the rule \ruleref{rule:later-forall-comm} is valid for total objects $X$. For \ruleref{rule:later-exists-comm} to hold at level 0, we need the additional assumption that $X_0$ is inhabited. For total objects $X$, this condition is equivalent to the existence of a morphism $\1 \to X$, i.e. being inhabited by a global element.
 \begin{defn} \label{def:total-inhabited-object}
 An object $X$ of $\TOT$ is called \emph{total and inhabited} if it is total and inhabited by a global element (i.e. there exists a global element of $X$).
 \end{defn}
 
-Thus, the rule \textsc{$\later$-$\exists$-comm} holds for total and inhabited $X$. It turns out that we can characterise this property in the internal logic.
+Thus, the rule \ruleref{rule:later-exists-comm} holds for total and inhabited $X$. It turns out that we can characterise this property in the internal logic.
 \begin{prop} \label{prop:total-inhabited-internal}
 An object $X$ of $\TOT$ is total and inhabited iff $\mnxt \colon X \to \Later{X}$ is internally surjective, that is, iff the formula
 \[ \name{TI}(X) := \all{y}{\Later{X}}{\exi{x}{X}{\nxt{x} =_{\Later{X}} y}} \]
@@ -812,20 +812,20 @@ Hence, $\name{TI}(X)$ holds in $\TOT$ iff all components of $\mnxt \colon X \to 
 
 We have thus shown the soundness of the following rules.
 \begin{mathpar}
-\inferrule[$\later$-$\exists$-comm-ti]
+\inferhref{$\later$-$\exists$-comm-ti}{rule:later-exists-comm-ti}
   {\valid{}{\name{TI}(A)}}
   {\equiv{\Gamma}{\later{(\exi{x}{A}{P})}}{\exi{x}{A}{\later{P}}}}
 \and
-\inferrule[$\later$-$\forall$-comm-ti]
+\inferhref{$\later$-$\forall$-comm-ti}{rule:later-forall-comm-ti}
   {\valid{}{\name{TI}(A)}}
   {\equiv{\Gamma}{\later{(\all{x}{A}{P})}}{\all{x}{A}{\later{P}}}}
 \end{mathpar}
-It would be nice if we could derive these rules in the system $\lang$. Unfortunately, this does not seem to be possible. Hence, there arises a natural question: is there a more general rule, working uniformly for all types $A$, from which \textsc{$\later$-$\exists$-comm-ti} and \textsc{$\later$-$\forall$-comm-ti} could be derived? We make two observations that will lead us to answer this question.
+It would be nice if we could derive these rules in the system $\lang$. Unfortunately, this does not seem to be possible. Hence, there arises a natural question: is there a more general rule, working uniformly for all types $A$, from which \ruleref{rule:later-exists-comm-ti} and \ruleref{rule:later-forall-comm-ti} could be derived? We make two observations that will lead us to answer this question.
 
 Firstly, as noted earlier (\cref{def:lift-later}), we can decompose the later modality as the composite $\mlater = \mlift \circ \mnxt$. This suggests that we could study the interaction of the quantifiers with $\mlift$ and $\mnxt$ separately. In fact, the homomorphism property of $\mnxt$ implies that $\mnxt$ commutes with the quantifiers. More precisely, let $\mex, \mall \colon (\pow{X}) \to \SOC$ be the morphisms from \cref{def:internal-quantifiers}, which can be defined internally as
 \[ \mex = \lam{P}{\pow{X}}{\exi{x}{X}{\app{P}{x}}},\ \text{ and }\ 
    \mall = \lam{P}{\pow{X}}{\all{x}{X}{\app{P}{x}}}. \]
-Then, by \textsc{$\ap$-next}, we have
+Then, by \ruleref{rule:ap-next}, we have
 \begin{equation} \label{eq:next-exists}
 \nxt{(\exi{x}{A}{\app{P}{x}})} = \nxt{(\app{\mex}{P})} = \nxt{\mex} \ap \nxt{P}
 \end{equation}
@@ -837,12 +837,12 @@ Secondly, recall that, semantically, the right hand side of the original rules q
 
 From these considerations, we can guess reasonable candidates for sound rules that commute $\mlift$ with a quantifier. Since the type of $\mlift$ is $\Later{\SOC} \to \SOC$, we start with a `delayed' predicate $Q : \Later{(A \to \Prop)}$, and apply the quantifier under the $\Later$. Thus, we arrive at the following rules.
 \begin{mathpar}
-\inferrule[lift-$\exists$-comm]
+\inferhref{lift-$\exists$-comm}{rule:lift-exists-comm}
   {\typed{\Gamma}{Q}{\Later{(A \to \Prop)}}}
   {\equiv{\Gamma}{\lift{(\nxt{\mex} \ap Q)}}
                  {\exi{y}{\Later{A}}{\lift{(Q \ap y)}}}}
 \and
-\inferrule[lift-$\forall$-comm]
+\inferhref{lift-$\forall$-comm}{rule:lift-forall-comm}
   {\typed{\Gamma}{Q}{\Later{(A \to \Prop)}}}
   {\equiv{\Gamma}{\lift{(\nxt{\mall} \ap Q)}}
                  {\all{y}{\Later{A}}{\lift{(Q \ap y)}}}}
@@ -865,19 +865,19 @@ The soundness of these rules can be established using the original semantics (\c
 	\arrow["\mall"', from=3-4, to=3-5]
 \end{tikzcd}\]
 
-The rules \textsc{$\later$-$\exists$-comm-ti} and \textsc{$\later$-$\forall$-comm-ti} can indeed be derived from the new rules. We show how to do this for the existential quantifier; the universal quantifier is analogous. Given $P$ and writing $\tilde{P} = \lam{x}{A}{P}$, we have
+The rules \ruleref{rule:later-exists-comm-ti} and \ruleref{rule:later-forall-comm-ti} can indeed be derived from the new rules. We show how to do this for the existential quantifier; the universal quantifier is analogous. Given $P$ and writing $\tilde{P} = \lam{x}{A}{P}$, we have
 \[ \later{(\exi{x}{A}{P})} = \lift{(\nxt{(\exi{x}{A}{\app{\tilde{P}}{x}})})} =
   \lift{(\nxt{\mex} \ap \nxt{\tilde{P}})} \]
-by \cref{eq:next-exists}. By \textsc{lift-$\exists$-comm}, this holds iff $\exi{y}{\Later{A}}{\lift{(\nxt{\tilde{P}} \ap y)}}$. Since $A$ is total and inhabited, this is equivalent to $\exi{x}{A}{\lift{(\nxt{\tilde{P}} \ap \nxt{x})}}$. But
+by \cref{eq:next-exists}. By \ruleref{rule:lift-exists-comm}, this holds iff $\exi{y}{\Later{A}}{\lift{(\nxt{\tilde{P}} \ap y)}}$. Since $A$ is total and inhabited, this is equivalent to $\exi{x}{A}{\lift{(\nxt{\tilde{P}} \ap \nxt{x})}}$. But
 \[ \lift{(\nxt{\tilde{P}} \ap \nxt{x})} = \lift{(\nxt{(\app{\tilde{P}}{x})})} =
    \later{P} \]
-using \textsc{$\ap$-next}, so we are done.
+using \ruleref{rule:ap-next}, so we are done.
 
-The generality of the new rules (\textsc{lift-$\exists$-comm} and \textsc{lift-$\forall$-comm}) indicates that $\mlift$ should be taken as the primitive logical connective, with $\later{P} = \lift{(\nxt{P})}$ being a defined connective. This claim is also supported by the necessity of $\mlift$ for defining guarded recursive predicates (\cref{ex:predicate-programs}). However, it is not yet clear what the analogues of e.g. monotonicity or Löb induction would be, or if such analogues exist. This question is further discussed in \cref{sec:conclusion}.
+The generality of the new rules (\ruleref{rule:lift-exists-comm} and \ruleref{rule:lift-forall-comm}) indicates that $\mlift$ should be taken as the primitive logical connective, with $\later{P} = \lift{(\nxt{P})}$ being a defined connective. This claim is also supported by the necessity of $\mlift$ for defining guarded recursive predicates (\cref{ex:predicate-programs}). However, it is not yet clear what the analogues of e.g. monotonicity or Löb induction would be, or if such analogues exist. This question is further discussed in \cref{sec:conclusion}.
 
 \section{Rocq formalisation} \label{sec:rocq}
 
-We have formalised the topos of trees, along with the associated structure introduced so far, in the Rocq proof assistant~\cite{rocq}. More specifically, the formalisation encompasses the basic categorical structure (\cref{sec:basic-struct}), the definitions necessary for guarded recursion (\cref{sec:guarded-rec}), and the logical components of \cref{sec:logic-definitions}. Moreover, we have verified semantically some of the inference rules of the internal logic, in particular the novel rules of \cref{sec:later-quantifiers}.
+We have formalised the topos of trees, along with the associated structure introduced so far, in the Rocq theorem prover~\cite{rocq}. More specifically, the formalisation encompasses the basic categorical structure (\cref{sec:basic-struct}), the definitions necessary for guarded recursion (\cref{sec:guarded-rec}), and the logical components of \cref{sec:logic-definitions}. Moreover, we have verified semantically some of the inference rules of the internal logic, in particular the novel rules of \cref{sec:later-quantifiers}.
 
 The formalisation does not contain the examples in this report. It is important to note that we do not define a syntax for the internal logic, as we did in \cref{sec:internal-logic-def}. Instead, we work with the semantics directly, and use combinators to construct terms. The inference rules of the logic are then stated and proved as lemmas. In other words, we use a \emph{shallow embedding}~\cite{wildmoser:2004:tphols} of the internal logic. This contrasts with a \emph{deep embedding}~\cite{wildmoser:2004:tphols} of the syntax as an inductive definition, together with an interpretation function to show soundness, as was done in \cref{def:logic-semantics}.
 
@@ -1032,9 +1032,9 @@ introduced in \cref{def:internal-heyting}, where \rocqi{Ω : Object} is the subo
 \begin{rocqc}
 Definition conj {Γ} (P Q : Γ ⟶ Ω) : Γ ⟶ Ω := conjI ∘ ⟨P, Q⟩.
 \end{rocqc}
-Here, \rocqi{⟨P, Q⟩} denotes categorical pairing. Note that \rocqi{conj} corresponds to the typing rule \textsc{conj} (\cref{fig:logic-typing-rules}): given two \emph{semantic} terms \rocqi{P} and \rocqi{Q} of type \rocqi{Ω} (i.e. propositions) in context \rocqi{Γ}, it constructs another proposition in the same context. Also note that its definition follows closely the semantics given in \cref{def:logic-semantics}.
+Here, \rocqi{⟨P, Q⟩} denotes categorical pairing. Note that \rocqi{conj} corresponds to the typing rule \ruleref{rule:conj}: given two \emph{semantic} terms \rocqi{P} and \rocqi{Q} of type \rocqi{Ω} in context \rocqi{Γ}, it constructs another proposition in the same context. Also note that its definition follows closely the semantics given in \cref{def:logic-semantics}.
 
-As another example, consider the universal quantifier, corresponding to the typing rule \textsc{forall}:
+As another example, consider the universal quantifier, corresponding to the typing rule \ruleref{rule:forall}:
 \begin{rocqc}
 allI : ∀ {X}, (X ⇒ Ω) ⟶ Ω
 Definition all {Γ} A (P : Γ × A ⟶ Ω) : Γ ⟶ Ω := allI ∘ λ(P).
@@ -1046,7 +1046,7 @@ Given the embedding of our term language into Rocq, all we have left to do in or
 Definition entails {Γ} (P Q : Γ ⟶ Ω) : Prop :=
   ∀ n γ, P n γ n → Q n γ n.
 \end{rocqc}
-The inference rules of the logic (\cref{fig:structural-logical-rules,fig:logic-equalities}) can then be proved as separate lemmas. For example, the following lemma states conjunction introduction (\textsc{$\wedge$-intro}).
+The inference rules of the logic (\cref{fig:structural-logical-rules,fig:logic-equalities}) can then be proved as separate lemmas. For example, the following lemma states conjunction introduction (\ruleref{rule:and-intro}).
 \begin{rocqc}
 Lemma conj_intro {Γ} {R P Q : Γ ⟶ Ω} :
   R ⊢ P →
@@ -1055,13 +1055,13 @@ Lemma conj_intro {Γ} {R P Q : Γ ⟶ Ω} :
 \end{rocqc}
 Perhaps a bit confusingly, we use the \rocqi{⊢} symbol for provability in the formalisation. This is because we would like to treat the shallow embedding of the internal language as a combinator calculus, so we prefer to use syntactic notations.
 
-An interesting aspect of our shallow embedding is that there are no variable names: we work with purely categorical combinators. Since terms are represented as morphisms from their context to their type, substitution can simply be implemented by precomposition. For instance, the rule \textsc{$\forall$-intro} is formalised as follows.
+An interesting aspect of our shallow embedding is that there are no variable names: we work with purely categorical combinators. Since terms are represented as morphisms from their context to their type, substitution can simply be implemented by precomposition. For instance, the rule \ruleref{rule:forall-intro} is formalised as follows.
 \begin{rocqc}
 Lemma all_intro {Γ A} (R : Γ ⟶ Ω) (P : Γ × A ⟶ Ω) :
   R ∘ π₁ ⊢ P →
   R ⊢ all A P.
 \end{rocqc}
-Here, the first projection \rocqi{π₁} on the left hand side of the premise is a weakening substitution. It is necessary to bring \rocqi{R} into the same context as \rocqi{P}, which has an additional free variable of type \rocqi{A}. Another example is the rule \textsc{$\forall$-elim} below.
+Here, the first projection \rocqi{π₁} on the left hand side of the premise is a weakening substitution. It is necessary to bring \rocqi{R} into the same context as \rocqi{P}, which has an additional free variable of type \rocqi{A}. Another example is the rule \ruleref{rule:forall-elim} below.
 \begin{rocqc}
 Lemma all_elim {Γ A} (P : Γ × A ⟶ Ω) (t : Γ ⟶ A) :
   all A P ⊢ P ∘ ⟨mid, t⟩.
@@ -1079,7 +1079,7 @@ Lemma morph_inj {X Y} {f g : X ⟶ Y} (e : morph f = morph g) : f = g.
 
 The above two considerations also apply to the other record types, namely \rocqi{Exp_obj} and \rocqi{SOC_obj}. The first component of the latter is a function with codomain \rocqi{Prop}. Thus, to prove equality of inhabitants of \rocqi{SOC_obj} (necessary for e.g. naturality proofs of logical connectives), we need to prove equality of Rocq propositions. For this, we use the \emph{propositional extensionality} axiom, stating that two propositions are equal iff they imply each other.
 
-Some might not be satisfied with our Rocq assumptions. All uses of additional axioms in our formalisation arise from the need to prove \emph{propositional equality} of various Rocq objects. A standard way to remedy this situation is to replace sets/types with \emph{setoids}~\cite{barthe:2003:jfp}, also called \emph{Bishop sets}. The main idea is to equip types with an equivalence relation, which we think of as a customised notion of equality. Then, instead of proving propositional equality of elements, we only prove that they are related by the relation corresponding to their type. Thus, by giving appropriate equivalence relations for \rocqi{/\textcolor{black}{Morphism}/}, \rocqi{Exp_obj}, and \rocqi{SOC_obj}, we can eliminate our reliance on the axioms mentioned so far.
+Some might not be satisfied with our Rocq assumptions. All uses of additional axioms in our formalisation arise from the need to prove \emph{propositional equality} of various Rocq objects. A standard way to remedy this situation is to replace types with \emph{setoids}~\cite{barthe:2003:jfp}, also called \emph{Bishop sets}. The main idea is to equip types with an equivalence relation, which we think of as a customised notion of equality. Then, instead of proving propositional equality of elements, we prove that they are related by the relation corresponding to their type. Thus, by giving appropriate equivalence relations for \rocqi{/\textcolor{black}{Morphism}/}, \rocqi{Exp_obj}, and \rocqi{SOC_obj}, we can eliminate our reliance on the axioms mentioned so far.
 
 A downside of this approach is that we would also need to show that functions preserve the respective equivalence relations, resulting in a longer and more complicated formalisation. For instance, the \rocqi{Object} type defined in \cref{sec:rocq-obj-mor} would become the following record.
 \begin{rocqc}
@@ -1093,7 +1093,7 @@ Record Object : Type :=
 \end{rocqc}
 Here, \rocqi{Equivalence (obj_eq n)} states that \rocqi{obj_eq n} is an equivalence relation. The first three fields together express that we have a family of setoids indexed by the natural numbers. The field \rocqi{restr_resp} witnesses the fact that restriction respects the equivalence relations. We would need to provide proofs of similar statements for most, if not all, of the operations, including the components of morphisms. To keep the formalisation simple, we have decided to stick with the axioms.
 
-We could get rid of the dependence on the proof-irrelevance axiom by using an \rocqi{SProp} version of the equality type in \rocqi{/\textcolor{black}{Morphism}/}, \rocqi{Exp_obj}, and \rocqi{SOC_obj}. Since we do not rely on definitional equalities between these objects, doing so would not improve the ease of formalisation. It would, however, require some boilerplate for proving various lemmas for the new equality type not present in the Rocq standard library. For these reasons, we stick with the proof-irrelevance axiom.
+We could get rid of the dependence on the proof-irrelevance axiom by using an \rocqi{SProp} version of the equality type in \rocqi{/\textcolor{black}{Morphism}/}, \rocqi{Exp_obj}, and \rocqi{SOC_obj}. Since we do not rely on definitional equalities between these objects, doing so would not improve the ease of formalisation. It would, however, require some boilerplate for proving various lemmas for the new equality type not present in the Rocq standard library. For these reasons, we decided to stick to the proof-irrelevance axiom.
 
 \section{Related work} \label{sec:related}
 
@@ -1109,11 +1109,11 @@ Bizjak et al.~\cite{bizjak:2016:fossacs} presented guarded dependent type theory
 
 \section{Conclusion and future work} \label{sec:conclusion}
 
-We have provided an in-depth exposition of the topos of trees, including how it can be used to model guarded recursive functions, as well as its internal logic. We have argued that the $\mlift$ connective should replace the $\later$ modality as a primitive connective, due to its necessity for defining guarded recursive predicates and generalizing earlier axioms involving $\later$ and quantifiers. Finally, we have formalised most constructions and rules presented in the report in the Rocq proof assistant, discussing technical insights and design choices.
+We have provided an in-depth exposition of the topos of trees, including how it can be used to model guarded recursive functions, as well as its internal logic. We have argued that the $\mlift$ connective should replace the $\later$ modality as a primitive connective, due to its necessity for defining guarded recursive predicates and generalizing earlier axioms involving $\later$ and quantifiers. Finally, we have formalised most constructions and rules presented in the report in the Rocq theorem prover, discussing technical insights and design choices.
 
-The study of the $\mlift$ connective is far from complete. If $\mlift$ is to replace the $\later$ modality, then the original rules involving $\later$ must be generalised to use $\mlift$ as well. However, it is not clear how this can be achieved. For instance, the monotonicity rule (\textsc{$\later$-mono}) should be replaced by a rule similar to the following.
+The study of the $\mlift$ connective is far from complete. If $\mlift$ is to replace the $\later$ modality, then the original rules involving $\later$ must be generalised to use $\mlift$ as well. However, it is not clear how this can be achieved. For instance, the monotonicity rule (\ruleref{rule:later-mono}) should be replaced by a rule similar to the following.
 \begin{mathpar}
-\inferrule[$\mlift$-mono]
+\inferhref{$\mlift$-mono}{rule:lift-mono}
     {\entails{\Gamma}{P}{Q}}
     {\entails{\Gamma}{\lift{P}}{\lift{Q}}}
 \end{mathpar}

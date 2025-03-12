@@ -294,7 +294,7 @@ In other words, the functor $\Later$ preserves products.
 Let
 $l_{X,Y} \colon \Later{X} \times \Later{Y} \to \Later{(X \times Y)}$ be given by
 $l_0(*, *) = *$, $l_{n+1}(x, y) = (x, y)$. This provides an inverse to
-$(\Later{\mprojl}, \Later{\mprojr})$.
+$(\Later{\mprojl}, \Later{\mprojr})$. \qedhere
 \end{proof}
 \end{prop}
 
@@ -331,7 +331,7 @@ The global element $x \colon \1 \to X$ is defined by recursion: $x_0 = f_0(*)$ a
 To see the uniqueness of the fixed point, note that if $x \colon \1 \to X$ is such that
 $f \circ \mnxt_X \circ x = x$, then $x_0 = f_0(r^{\Later{X}}_0(x_0)) = f_0(*)$ and
 $x_{n+1} = f_{n+1}(r^{\Later{X}}_{n+1}(x_{n+1})) =
-f_{n+1}(r^X_n(x_{n+1})) = f_{n+1}(x_n)$. Thus, the definition of $x$ was forced.
+f_{n+1}(r^X_n(x_{n+1})) = f_{n+1}(x_n)$. Thus, the definition of $x$ was forced. \qedhere
 \end{proof}
 \end{prop}
 We will write $\fix{f}$ for the unique fixed point of $f \colon \Later{X} \to X$. Note that the existence of such fixed points does not compromise consistency, as there is in general no morphism $\Later{X} \to X$. In particular, there is no morphism $\Later{\0} \to \0$, so the above proposition does not give us an inhabitant of the empty type.
@@ -832,7 +832,7 @@ holds in $\TOT$.
 \begin{proof}
 We have
 \[ \force{n}{\name{TI}(X)} \iff \forall m \le n, \forall y \in (\Later{X})_m, \exists x \in X_m: \mnxt_m(x) = y \]
-Hence, $\name{TI}(X)$ holds in $\TOT$ iff all components of $\mnxt \colon X \to \Later{X}$ are surjective. Since $\mnxt_{n+1} = r^X_n$, and $\mnxt_0 \colon X_0 \to \{*\}$ is surjective iff $X_0$ is inhabited, the claim follows.
+Hence, $\name{TI}(X)$ holds in $\TOT$ iff all components of $\mnxt \colon X \to \Later{X}$ are surjective. Since $\mnxt_{n+1} = r^X_n$, and $\mnxt_0 \colon X_0 \to \{*\}$ is surjective iff $X_0$ is inhabited, the claim follows. \qedhere
 \end{proof}
 \end{prop}
 

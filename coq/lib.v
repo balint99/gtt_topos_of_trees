@@ -4,15 +4,14 @@ From Coq.Logic Require Export StrictProp ProofIrrelevance
 Export PeanoNat.
 
 Global Unset Primitive Projections.
-Global Set Cumulative StrictProp.
 
 Tactic Notation "funext" simple_intropattern(p) :=
   let x := fresh in extensionality x; destruct x as p.
 Tactic Notation "funext" ident(x) := extensionality x.
-Ltac propext := apply propositional_extensionality.
+Ltac propext := apply propositional_extensionality; split.
 
 Definition compose_assoc {A B C D} (f : C → D) (g : B → C) (h : A → B)
-  : f ∘ (g ∘ h) = (f ∘ g) ∘ h := eq_refl.
+  : (f ∘ g) ∘ h = f ∘ (g ∘ h) := eq_refl.
 
 Notation "‖ A ‖" := (Squash A) (at level 10, format "‖ A ‖").
 
@@ -107,19 +106,13 @@ Proof.
   - apply (IH (λ m H, P (S m) (Sle_n_S H))).
 Qed.
 
-Local Definition sprop_irrel {A : SProp} (x y : A) : x = y := eq_refl.
-Local Hint Resolve sprop_irrel : core.
-(* Report the bug *)
 Lemma Sle_rect_le_S : ∀ n m P x f H,
   Sle_rect n (S m) P x f (Sle_S H) = f m H (Sle_rect n m P x f H).
 Proof.
   induction n as [| n IH]; intros m P x f H; simpl.
-  - by replace H with (Sle_0_n m).
+  - reflexivity.
   - destruct m as [| m]; simpl.
     + destruct (Sle_S_0 n H).
-    + specialize (IH m (λ m H, P (S m) (Sle_n_S H))
-                  x (λ m H, f (S m) (Sle_n_S H)) (Sle_S_n H)); simpl in IH.
-      replace (Sle_S (Sle_S_n H)) with (Sle_S_n (Sle_S H)) in IH.
-      replace (Sle_n_S (Sle_S_n H)) with H in IH.
-      all: done.
+    + apply (IH m (λ m H, P (S m) (Sle_n_S H))
+                  x (λ m H, f (S m) (Sle_n_S H)) (Sle_S_n H)).
 Qed.

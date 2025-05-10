@@ -158,6 +158,10 @@
     {\entails{\Gamma}{P}{Q}}
     {\entails{\Gamma}{\later{P}}{\later{Q}}}
 \and
+\inferhref{$\later$-elim}{rule:later-elim}
+    {\valid{}{\later{P}}}
+    {\valid{}{P}}
+\and
 \inferhref{löb}{rule:löb2}
     {\entails{\Gamma}{\later{P}}{P}}
     {\valid{\Gamma}{P}}
@@ -170,9 +174,6 @@
 \and
 \inferhref{$\impl$-$\later$}{rule:impl-later2}{}
     {\entails{\Gamma}{\later{P} \impl \later{Q}}{\later{(P \impl Q)}}}
-\and
-\inferhref{$\later$-eq}{rule:later-eq2}{}
-    {\equiv{\Gamma}{\later{(t =_A u)}}{\nxt{t} =_{\Later{A}} \nxt{u}}}
 \end{mathpar}
 \caption{Structural and logical rules for $\lang$}
 \label{fig:structural-logical-rules}
@@ -192,22 +193,18 @@
     {\equals[A]{\Gamma}{t}{u}}
     {\equals[A]{\Gamma}{u}{t}}
 \\
-\inferhref{eq-subst}{rule:eq-subst}
-    {\typed{\Gamma, x : A}{t}{B} \and \equals[A]{\Gamma}{u}{v}}
-    {\equals[B]{\Gamma}{\subst{t}{x}{u}}{\subst{t}{x}{v}}}
-\and
 \inferhref{eq-prop}{rule:eq-prop}
-    {\equals[\Prop]{\Gamma}{P}{Q}}
-    {\entails{\Gamma}{P}{Q}}
+    {}
+    {\entails{\Gamma}{P =_{\Prop} Q \wedge P}{Q}}
 \and
 \inferhref{propext}{rule:propext}
-    {\entails{\Gamma}{P}{Q} \and \entails{\Gamma}{Q}{P}}
-    {\equals[\Prop]{\Gamma}{P}{Q}}
-\\
+    {}
+    {\entails{\Gamma}{(P \impl Q) \wedge (Q \impl P)}{P =_{\Prop} Q}}
+\and
 \inferhref{$\unitt$-$\eta$}{rule:top-eta}
     {\typed{\Gamma}{t}{\unitt}}
     {\equals[\unitt]{\Gamma}{t}{\unit}}
-\and
+\\
 \inferhref{$\times$-$\beta$-1}{rule:prod-beta-1}
     {\typed{\Gamma}{t}{A} \and \typed{\Gamma}{u}{B}}
     {\equals[A]{\Gamma}{\projl{\pair{t}{u}}}{t}}
@@ -256,6 +253,9 @@
     {\typed{\Gamma, x : \Later{A}}{t}{A} \and \typed{\Gamma}{z}{A} \and
         \equals{\Gamma}{z}{\subst{t}{x}{\nxt{z}}}}
     {\equals[A]{\Gamma}{z}{\rec{x}{\Later{A}}{t}}}
+\\
+\inferhref{$\later$-eq}{rule:later-eq2}{}
+    {\equiv{\Gamma}{\later{(t =_A u)}}{\nxt{t} =_{\Later{A}} \nxt{u}}}
 \end{mathpar}
 \caption{Equality rules in $\lang$. $\name{comp} : (B \to C) \to (A \to B) \to A \to C$ is function composition. Congruence cases are omitted.}
 \label{fig:logic-equalities}

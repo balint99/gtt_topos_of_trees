@@ -186,8 +186,8 @@ Proof.
   induction x as [| x IH]; simpl in *.
   - by do 2 eapply equal_f_dep in e1.
   - etransitivity.
-    { by do 2 eapply equal_f_dep in e2. }
-    simpl; by f_equal.
+    1: by do 2 eapply equal_f_dep in e2.
+    simpl. by f_equal.
 Qed.
 
 Definition Prod (X Y : Object) : Object :=
@@ -195,7 +195,7 @@ Definition Prod (X Y : Object) : Object :=
    ; restr n := prod_map (restr n) (restr n)
    |}%type.
 
-Infix "×" := Prod (at level 60, right associativity).
+Infix "×" := Prod (at level 61, left associativity).
 
 Program Definition proj1 {X Y} : X × Y ⟶ X := ⟦λ n, fst⟧.
 Next Obligation. done. Qed.
@@ -229,14 +229,48 @@ Proof.
     do 2 eapply equal_f_dep in e1, e2; by f_equal.
 Qed.
 
-Notation "f ×ₘ g" := ⟨f ∘ π₁, g ∘ π₂⟩ (at level 60, right associativity).
+Lemma mProd_proj {X Y} : ⟨π₁, π₂⟩ = 𝟷{X × Y}.
+Proof. symmetry; apply mProd_unique; apply mcomp_idr. Qed.
+
+Lemma mProd_pre {W X Y Z} {f : Z ⟶ X} {g : Z ⟶ Y} {h : W ⟶ Z} :
+  ⟨f, g⟩ ∘ h = ⟨f ∘ h, g ∘ h⟩.
+Proof.
+  apply mProd_unique.
+  - by rewrite <-mcomp_ass, proj1_mProd.
+  - by rewrite <-mcomp_ass, proj2_mProd.
+Qed.
+
+Definition Prod_mor {X1 X2 Y1 Y2} (f1 : X1 ⟶ Y1) (f2 : X2 ⟶ Y2) 
+  : X1 × X2 ⟶ Y1 × Y2 := ⟨f1 ∘ π₁, f2 ∘ π₂⟩.
+
+Notation "f ×ₘ g" := (Prod_mor f g) (at level 60, right associativity).
+
+Lemma mProd_post {X1 X2 Y1 Y2 Z}
+  {f1 : X1 ⟶ Y1} {f2 : X2 ⟶ Y2} {g : Z ⟶ X1} {h : Z ⟶ X2} :
+  (f1 ×ₘ f2) ∘ ⟨g, h⟩ = ⟨f1 ∘ g, f2 ∘ h⟩.
+Proof.
+  unfold Prod_mor. rewrite mProd_pre.
+  by rewrite !mcomp_ass, proj1_mProd, proj2_mProd.
+Qed.
+
+Lemma Prod_comp {X1 X2 Y1 Y2 Z1 Z2}
+  (f1 : Y1 ⟶ Z1) (f2 : Y2 ⟶ Z2) (g1 : X1 ⟶ Y1) (g2 : X2 ⟶ Y2) :
+  f1 ∘ g1 ×ₘ f2 ∘ g2 = (f1 ×ₘ f2) ∘ (g1 ×ₘ g2).
+Proof.
+  symmetry; unfold Prod_mor at 2 3.
+  rewrite !mcomp_ass; apply mProd_post.
+Qed.
+
+Lemma Prod_comp_l {W X Y Z} (f : Y ⟶ Z) (g : X ⟶ Y) :
+  f ∘ g ×ₘ 𝟷{W} = (f ×ₘ 𝟷) ∘ (g ×ₘ 𝟷).
+Proof. rewrite <-(mcomp_idl 𝟷) at 1. apply Prod_comp. Qed.
 
 Definition Sum (X Y : Object) : Object :=
   {| obj n := X n + Y n
    ; restr n := sum_map (restr n) (restr n)
    |}%type.
 
-Infix "∔" := Sum (at level 70, right associativity).
+Infix "∔" := Sum (at level 71, left associativity).
 
 Program Definition inj1 {X Y} : X ⟶ X ∔ Y := ⟦λ n, inl⟧.
 Next Obligation. done. Qed.
@@ -256,10 +290,10 @@ Notation "'κ₁'" := inj1.
 Notation "'κ₂'" := inj2.
 Notation "[ f , g ]" := (mSum f g) (at level 0, format "[ f ,  g ]").
 
-Lemma inj1_mSum {X Y Z} (f : X ⟶ Z) (g : Y ⟶ Z) : [f, g] ∘ κ₁ = f.
+Lemma mSum_inj1 {X Y Z} (f : X ⟶ Z) (g : Y ⟶ Z) : [f, g] ∘ κ₁ = f.
 Proof. apply morph_inj; reflexivity. Qed.
 
-Lemma inj2_mSum {X Y Z} (f : X ⟶ Z) (g : Y ⟶ Z) : [f, g] ∘ κ₂ = g.
+Lemma mSum_inj2 {X Y Z} (f : X ⟶ Z) (g : Y ⟶ Z) : [f, g] ∘ κ₂ = g.
 Proof. apply morph_inj; reflexivity. Qed.
 
 Lemma mSum_unique {X Y Z} {f : X ⟶ Z} {g : Y ⟶ Z} {h : X ∔ Y ⟶ Z}
@@ -269,6 +303,40 @@ Proof.
     apply morph_inj; funext n; funext [x | y]; simpl.
     - by do 2 eapply equal_f_dep in e1.
     - by do 2 eapply equal_f_dep in e2.
+Qed.
+
+Program Definition Prod_Sum_distr_l {X Y Z} : X × (Y ∔ Z) ⟶ X × Y ∔ X × Z :=
+  ⟦λ n t, match t.2 with
+          | inl y => inl (t.1, y)
+          | inr z => inr (t.1, z)
+          end⟧.
+Next Obligation. by intros X Y Z n [x [y | z]]. Qed.
+
+Definition Prod_Sum_distr_l_inv {X Y Z} : X × Y ∔ X × Z ⟶ X × (Y ∔ Z) :=
+  [𝟷 ×ₘ κ₁, 𝟷 ×ₘ κ₂].
+
+Lemma Prod_Sum_distr_l_1 {X Y Z} :
+  Prod_Sum_distr_l ∘ Prod_Sum_distr_l_inv = 𝟷{X × Y ∔ X × Z}.
+Proof. by apply morph_inj; funext n; funext [[x y] | [x z]]. Qed.
+
+Lemma Prod_Sum_distr_l_2 {X Y Z} :
+  Prod_Sum_distr_l_inv ∘ Prod_Sum_distr_l = 𝟷{X × (Y ∔ Z)}.
+Proof. by apply morph_inj; funext n; funext [x [y | z]]. Qed.
+
+Lemma Prod_Sum_distr_l_inj1 {X Y Z} :
+  Prod_Sum_distr_l (Z := Z) ∘ (𝟷 ×ₘ κ₁) = inj1 (X := X × Y).
+Proof.
+  rewrite <-(mcomp_idl (inj1 (X := X × Y))), <-Prod_Sum_distr_l_1.
+  rewrite mcomp_ass; f_equal; unfold Prod_Sum_distr_l_inv.
+  symmetry; apply mSum_inj1.
+Qed.
+
+Lemma Prod_Sum_distr_l_inj2 {X Y Z} :
+  Prod_Sum_distr_l (Z := Z) ∘ (𝟷 ×ₘ κ₂) = inj2 (X := X × Y).
+Proof.
+  rewrite <-(mcomp_idl (inj2 (X := X × Y))), <-Prod_Sum_distr_l_1.
+  rewrite mcomp_ass; f_equal; unfold Prod_Sum_distr_l_inv.
+  symmetry; apply mSum_inj2.
 Qed.
 
 Record Exp_obj (X Y : Object) (n : nat) : Type :=
@@ -354,6 +422,15 @@ Proof.
   by rewrite morph_restrTo, Exp_restrTo.
 Qed.
 
+Lemma transpose_pre {W X Y Z} {f : Z × X ⟶ Y} {g : W ⟶ Z} :
+  λ(f) ∘ g = λ(f ∘ (g ×ₘ 𝟷)).
+Proof.
+  apply transpose_unique.
+  rewrite Prod_comp_l.
+  rewrite <-mcomp_ass; f_equal.
+  apply ev_transpose.
+Qed.
+
 Definition Later_obj (X : Object) (n : nat) : Type :=
   match n with
   | 0 => ()
@@ -402,39 +479,40 @@ Proof.
   - symmetry; apply (morph_natural f).
 Qed.
 
-Definition Later_One_distr : ▶𝟙 ⟶ 𝟙 := mOne.
-Definition Later_One_conv : 𝟙 ⟶ ▶𝟙 := next.
-
-Lemma Later_One_distr_conv : Later_One_distr ∘ Later_One_conv = 𝟷.
-Proof. by apply morph_inj; funext n; funext []. Qed.
-
-Lemma Later_One_conv_distr : Later_One_conv ∘ Later_One_distr = 𝟷.
-Proof. by apply morph_inj; funext [| n]; funext []. Qed.
-
 Definition Later_Prod_distr {X Y} : ▶(X × Y) ⟶ ▶X × ▶Y := ⟨▶ₘ π₁, ▶ₘ π₂⟩.
 
 Lemma Later_Prod_distr_natural {X X' Y Y'} (f : X ⟶ X') (g : Y ⟶ Y') :
   Later_Prod_distr ∘ (▶ₘ (f ×ₘ g)) = (▶ₘ f ×ₘ ▶ₘ g) ∘ Later_Prod_distr.
-Proof. by apply morph_inj; funext [| n]. Qed.
+Proof.
+  unfold Later_Prod_distr.
+  rewrite mProd_pre, mProd_post.
+  rewrite <-!Later_morph_comp.
+  by unfold Prod_mor; rewrite proj1_mProd, proj2_mProd.
+Qed.
 
-Program Definition Later_Prod_conv {X Y} : ▶X × ▶Y ⟶ ▶(X × Y) :=
+Program Definition Later_Prod_distr_inv {X Y} : ▶X × ▶Y ⟶ ▶(X × Y) :=
   ⟦nat_rect _ (const ()) (λ n _, id)⟧.
 Next Obligation. by intros X Y [| n]. Qed.
 
-Lemma Later_Prod_conv_natural {X X' Y Y'} (f : X ⟶ X') (g : Y ⟶ Y') :
-  (▶ₘ (f ×ₘ g)) ∘ Later_Prod_conv = Later_Prod_conv ∘ (▶ₘ f ×ₘ ▶ₘ g).
-Proof. by apply morph_inj; funext [| n]. Qed.
-
-Lemma Later_Prod_distr_conv {X Y} :
-  Later_Prod_distr ∘ Later_Prod_conv = 𝟷{▶X × ▶Y}.
+Lemma Later_Prod_distr_1 {X Y} :
+  Later_Prod_distr ∘ Later_Prod_distr_inv = 𝟷{▶X × ▶Y}.
 Proof. by apply morph_inj; funext [| n]; funext [x y]; try destruct x, y. Qed.
 
-Lemma Later_Prod_conv_distr {X Y} :
-  Later_Prod_conv ∘ Later_Prod_distr = 𝟷{▶(X × Y)}.
+Lemma Later_Prod_distr_2 {X Y} :
+  Later_Prod_distr_inv ∘ Later_Prod_distr = 𝟷{▶(X × Y)}.
 Proof. by apply morph_inj; funext [| n]; funext []. Qed.
 
-Definition Later_Exp_distr {X Y} : ▶(X ⇒ Y) ⟶ ▶X ⇒ ▶Y :=
-  λ(▶ₘ ev ∘ Later_Prod_conv).
+Lemma Later_Prod_distr_inv_next {X Y} :
+  Later_Prod_distr_inv ∘ (next ×ₘ next) = next (X := X × Y).
+Proof.
+  rewrite <-(mcomp_idl (next (X := X × Y))), <-Later_Prod_distr_2.
+  rewrite mcomp_ass; f_equal; unfold Later_Prod_distr.
+  rewrite mProd_pre, <-!next_natural.
+  by unfold Prod_mor.
+Qed.
+
+Definition J {X Y} : ▶(X ⇒ Y) ⟶ ▶X ⇒ ▶Y :=
+  λ(▶ₘ ev ∘ Later_Prod_distr_inv).
 
 Program Definition mfix {X} (f : ▶X ⟶ X) : 𝟙 ⟶ X :=
   ⟦λ n _, nat_rect _ (f 0 ()) (λ n, f (S n)) n⟧.
@@ -466,7 +544,7 @@ Qed.
 
 Definition fixI {X} : (▶X ⇒ X) ⟶ X :=
   let f : ▶((▶X ⇒ X) ⇒ X) × (▶X ⇒ X) ⟶ X :=
-        ev ∘ ⟨π₂, ev ∘ (Later_Exp_distr ×ₘ next)⟩
+        ev ∘ ⟨π₂, ev ∘ (J ×ₘ next)⟩
   in ev ∘ ⟨μ(λ(f)) ∘ mOne, 𝟷⟩.
 
 Record SOC_obj (n : nat) :=
@@ -668,6 +746,34 @@ Definition laterI : Ω ⟶ Ω := liftI ∘ next.
 
 (***** Internal logic *****)
 
+Definition v0 {Γ A} : Γ × A ⟶ A := π₂.
+Definition v1 {Γ A B} : Γ × A × B ⟶ A := π₂ ∘ π₁.
+Definition v2 {Γ A B C} : Γ × A × B × C ⟶ A := π₂ ∘ π₁ ∘ π₁.
+
+Definition fst {Γ A B} (t : Γ ⟶ A × B) : Γ ⟶ A := π₁ ∘ t.
+Definition snd {Γ A B} (t : Γ ⟶ A × B) : Γ ⟶ B := π₂ ∘ t.
+Definition abort {Γ A} (t : Γ ⟶ 𝟘) : Γ ⟶ A := mZero ∘ t.
+Definition inl {Γ A B} (t : Γ ⟶ A) : Γ ⟶ A ∔ B := κ₁ ∘ t.
+Definition inr {Γ A B} (t : Γ ⟶ B) : Γ ⟶ A ∔ B := κ₂ ∘ t.
+Definition case {Γ A B C} (t : Γ ⟶ A ∔ B) (u : Γ × A ⟶ C) (v : Γ × B ⟶ C)
+  : Γ ⟶ C := [u, v] ∘ Prod_Sum_distr_l ∘ ⟨𝟷, t⟩.
+Definition app {Γ A B} (t : Γ ⟶ A ⇒ B) (u : Γ ⟶ A) : Γ ⟶ B := ev ∘ ⟨t, u⟩.
+Definition nxt {Γ A} (t : Γ ⟶ A) : Γ ⟶ ▶A := next ∘ t.
+Definition ap {Γ A B} (t : Γ ⟶ ▶(A ⇒ B)) (u : Γ ⟶ ▶A) : Γ ⟶ ▶B :=
+  ev ∘ (J ×ₘ 𝟷) ∘ ⟨t, u⟩.
+Definition gfix {Γ A} (t : Γ × ▶A ⟶ A) : Γ ⟶ A := fixI ∘ λ(t).
+
+Notation "'tt'" := mOne.
+Notation "λ[ A ] t" := (transpose (X := A) t)
+  (at level 95, t at level 95, format "λ[ A ]  t").
+Infix "·" := app (at level 40, left associativity).  
+Infix "⊛" := ap (at level 50, left associativity).
+Notation "μ[ A ] t" := (gfix (A := A) t)
+  (at level 95, t at level 95, format "μ[ A ]  t").
+
+Definition comp {Γ A B C} : Γ ⟶ (B ⇒ C) ⇒ (A ⇒ B) ⇒ A ⇒ C :=
+  λ[B ⇒ C] λ[A ⇒ B] λ[A] v2 · (v1 · v0).
+
 Definition true {Γ} : Γ ⟶ Ω := trueI ∘ mOne.
 Definition false {Γ} : Γ ⟶ Ω := falseI ∘ mOne.
 Definition eq {Γ A} (t u : Γ ⟶ A) : Γ ⟶ Ω := eqI ∘ ⟨t, u⟩.
@@ -690,6 +796,26 @@ Notation "∀[ A ] P" := (all A P)
 Notation "∃[ A ] P" := (exist A P)
   (at level 95, P at level 95, format "∃[ A ]  P"). 
 Notation "▷ P" := (later P) (at level 20, right associativity, format "▷ P").
+
+Lemma all_subst {Λ Γ A} (P : Γ × A ⟶ Ω) (σ : Λ ⟶ Γ) :
+  (∀[A] P) ∘ σ = ∀[A] P ∘ (σ ×ₘ 𝟷).
+Proof.
+  unfold all.
+  rewrite mcomp_ass; f_equal.
+  apply transpose_pre.
+Qed.
+
+Lemma exist_subst {Λ Γ A} (P : Γ × A ⟶ Ω) (σ : Λ ⟶ Γ) :
+  (∃[A] P) ∘ σ = ∃[A] P ∘ (σ ×ₘ 𝟷).
+Proof.
+  unfold exist.
+  rewrite mcomp_ass; f_equal.
+  apply transpose_pre.
+Qed.
+
+Lemma later_subst {Λ Γ} (P : Γ ⟶ Ω) (σ : Λ ⟶ Γ) :
+  ▷P ∘ σ = ▷(P ∘ σ).
+Proof. unfold later. apply mcomp_ass. Qed.
 
 Definition entails {Γ} (P Q : Γ ⟶ Ω) : Prop :=
   ∀ n γ, P n γ n → Q n γ n.
@@ -817,7 +943,7 @@ Proof.
 Qed.
 
 Lemma later_elim (P : 𝟙 ⟶ Ω) :
-  ⊤ ⊢ ▷ P →
+  ⊤ ⊢ ▷P →
   ⊤ ⊢ P.
 Proof.
   intros H n [] _.
@@ -867,6 +993,11 @@ Lemma eq_sym {Γ A} (t u : Γ ⟶ A) :
   t ≡ u ⊢ u ≡ t.
 Proof. by unfold entails. Qed.
 
+Lemma eq_eq {Γ A} (t u : Γ ⟶ A) :
+  t = u →
+  ⊤ ⊢ t ≡ u.
+Proof. intros ->; apply eq_refl. Qed.
+
 Lemma eq_prop {Γ} (P Q : Γ ⟶ Ω) :
   P ≡ Q ⋏ P ⊢ Q.
 Proof.
@@ -885,6 +1016,113 @@ Proof.
   - apply H2, (Sle_S_n (Spr2 j)).
 Qed.
 
+Lemma One_eta {Γ} {t : Γ ⟶ 𝟙} :
+  ⊤ ⊢ t ≡ tt.
+Proof. apply eq_eq, mOne_unique. Qed.
+
+Lemma Prod_beta_1 {Γ A B} {t : Γ ⟶ A} {u : Γ ⟶ B} :
+  ⊤ ⊢ fst ⟨t, u⟩ ≡ t.
+Proof. apply eq_eq; unfold fst; apply proj1_mProd. Qed.
+
+Lemma Prod_beta_2 {Γ A B} {t : Γ ⟶ A} {u : Γ ⟶ B} :
+  ⊤ ⊢ snd ⟨t, u⟩ ≡ u.
+Proof. apply eq_eq; unfold snd; apply proj2_mProd. Qed.
+
+Lemma Prod_eta {Γ A B} {t : Γ ⟶ A × B} :
+  ⊤ ⊢ ⟨fst t, snd t⟩ ≡ t.
+Proof. apply eq_eq; unfold fst, snd; symmetry; by apply mProd_unique. Qed.
+
+Lemma Sum_beta_1 {Γ A B C} {t : Γ ⟶ A} {u : Γ × A ⟶ C} {v : Γ × B ⟶ C} :
+  ⊤ ⊢ case (inl t) u v ≡ u ∘ ⟨𝟷, t⟩.
+Proof.
+  apply eq_eq; unfold case, inl.
+  rewrite <-(mcomp_idl 𝟷) at 1; rewrite <-mProd_post.
+  rewrite <-mcomp_ass, (mcomp_ass [u, v]).
+  by rewrite Prod_Sum_distr_l_inj1, mSum_inj1.
+Qed.
+
+Lemma Sum_beta_2 {Γ A B C} {t : Γ ⟶ B} {u : Γ × A ⟶ C} {v : Γ × B ⟶ C} :
+  ⊤ ⊢ case (inr t) u v ≡ v ∘ ⟨𝟷, t⟩.
+Proof.
+  apply eq_eq; unfold case, inr.
+  rewrite <-(mcomp_idl 𝟷) at 1; rewrite <-mProd_post.
+  rewrite <-mcomp_ass, (mcomp_ass [u, v]).
+  by rewrite Prod_Sum_distr_l_inj2, mSum_inj2.
+Qed.
+
+Lemma Fun_beta {Γ A B} {t : Γ × A ⟶ B} {u : Γ ⟶ A} :
+  ⊤ ⊢ (λ[A] t) · u ≡ t ∘ ⟨𝟷, u⟩.
+Proof.
+    apply eq_eq; unfold app.
+    rewrite <-(mcomp_idr (λ[A] t)), <-(mcomp_idl u) at 1.
+    rewrite <-mProd_post, <-mcomp_ass.
+    f_equal; apply ev_transpose.
+Qed.
+
+Lemma Fun_eta {Γ A B} {t : Γ ⟶ A ⇒ B} :
+  ⊤ ⊢ (λ[A] t ∘ π₁ · π₂) ≡ t.
+Proof.
+  apply eq_eq; unfold app.
+  symmetry; apply transpose_unique. f_equal.
+  rewrite <-(mcomp_idr (t ×ₘ 𝟷)), <-mProd_proj.
+  by rewrite mProd_post, mcomp_idl.
+Qed.
+
+Lemma ap_next {Γ A B} {t : Γ ⟶ A ⇒ B} {u : Γ ⟶ A} :
+  ⊤ ⊢ nxt t ⊛ nxt u ≡ nxt (t · u).
+Proof. 
+  apply eq_eq; unfold ap, app, nxt.
+  unfold J; rewrite ev_transpose, <-mProd_post.
+  rewrite <-!mcomp_ass; f_equal.
+  rewrite mcomp_ass, Later_Prod_distr_inv_next.
+  symmetry; apply next_natural.
+Qed.
+
+Lemma ap_comp {Γ A B C} (t : Γ ⟶ ▶(B ⇒ C)) (u : Γ ⟶ ▶(A ⇒ B)) (v : Γ ⟶ ▶A) :
+  ⊤ ⊢ nxt comp ⊛ t ⊛ u ⊛ v ≡ t ⊛ (u ⊛ v).
+Proof.
+  apply eq_eq; unfold ap, nxt, J; rewrite !ev_transpose.
+  apply morph_inj; funext [| n]; funext x; simpl.
+  - reflexivity.
+  - by rewrite !restrTo_n; simpl.
+Qed.
+
+Lemma fix_beta {Γ A} (t : Γ × ▶A ⟶ A) :
+  ⊤ ⊢ (μ[A] t) ≡ t ∘ ⟨𝟷, nxt (μ[A] t)⟩.
+Proof.
+(*
+f = e . (p2, e . (J x next))
+
+fix = e . (|\f . !, 1)
+
+|\f = \f . next . |\f
+  = \(e . (p2, e . (J x next))) . next . |\f
+  = \(e . (p2, e . (J x 1) . (1 x next)) . (next . |\f x 1))
+  = \(e . (p2, |>e . s . (next x next) . (|\f x 1)))
+  = \(e . (p2, |>e . next . (|\f x 1)))
+  = \(e . (p2, next . e . (|\f x 1)))
+
+----------------------------------------------------------------
+
+t : G x |>A -> A
+
+TP: fix . \t = t . (1, next . fix . \t)
+
+fix . \t
+  = e . (|\f . !, 1) . \t
+  = e . (|\f x 1) . (!, \t)
+  = e . (p2, next . e . (|\f x 1)) . (!, \t)
+  = e . (\t, next . e . (|\f . !, \t))
+  = e . (\t x 1) . (1, next . e . (|\f . !, 1) . \t)
+  = t . (1, next . fix . \t)
+*)
+Admitted.
+
+Lemma fix_eta {Γ A} (t : Γ × ▶A ⟶ A) (u : Γ ⟶ A) :
+  u ≡ t ∘ ⟨𝟷, nxt u⟩ ⊢ u ≡ (μ[A] t).
+Proof.
+Admitted.
+
 Lemma later_eq {Γ A} (t u : Γ ⟶ A) :
   ▷(t ≡ u) ⊢ next ∘ t ≡ next ∘ u.
 Proof.
@@ -897,31 +1135,11 @@ Qed.
 Lemma later_eq_inv {Γ A} (t u : Γ ⟶ A) :
   next ∘ t ≡ next ∘ u ⊢ ▷(t ≡ u).
 Proof.
-  intros n x H; simpl in *.
-  rewrite !restrTo_n in H. destruct n as [| n]; simpl in *.
+  intros n x He; simpl in *.
+  rewrite !restrTo_n in He. destruct n as [| n]; simpl in *.
   - done.
-  - by rewrite !restr_as_restrTo in H.
+  - by rewrite !restr_as_restrTo in He.
 Qed.
-
-Lemma all_subst {Λ Γ A} (P : Γ × A ⟶ Ω) (σ : Λ ⟶ Γ) :
-  (∀[A] P) ∘ σ = ∀[A] P ∘ (σ ×ₘ 𝟷).
-Proof.
-  apply morph_inj; funext n; funext x; apply SOC_pred_inj; funext i; simpl.
-  propext.
-  - intros H j. rewrite morph_restrTo. apply H.
-  - intros H j. specialize (H j). by rewrite morph_restrTo in H.
-Qed.
-
-Lemma exist_subst {Λ Γ A} (P : Γ × A ⟶ Ω) (σ : Λ ⟶ Γ) :
-  (∃[A] P) ∘ σ = ∃[A] P ∘ (σ ×ₘ 𝟷).
-Proof.
-  apply morph_inj; funext n; funext x; apply SOC_pred_inj; funext i; simpl.
-  by rewrite morph_restrTo.
-Qed.
-
-Lemma later_subst {Λ Γ} (P : Γ ⟶ Ω) (σ : Λ ⟶ Γ) :
-  ▷P ∘ σ = ▷(P ∘ σ).
-Proof. by apply morph_inj. Qed.
 
 Opaque true false eq conj disj impl all exist lift later entails.
 
@@ -1116,11 +1334,6 @@ Lemma later_impl_elim {Γ} (P Q : Γ ⟶ Ω) :
   ▷(P ⊃ Q) ⋏ ▷P ⊢ ▷Q.
 Proof. apply impl_elim', later_impl. Qed.
 
-Lemma eq_eq {Γ A} (t u : Γ ⟶ A) :
-  t = u →
-  ⊤ ⊢ t ≡ u.
-Proof. intros ->; apply eq_refl. Qed.
-
 Lemma eq_prop' {Γ} (P Q : Γ ⟶ Ω) :
   ⊤ ⊢ P ≡ Q →
   P ⊢ Q.
@@ -1144,12 +1357,14 @@ Proof.
   - apply propext.
 Qed.
 
-Lemma pred_wk_app {Γ A} (P : Γ × A ⟶ Ω) :
-  P ∘ (π₁ ×ₘ 𝟷) ∘ ⟨𝟷, π₂⟩ = P.
+Lemma wk_app {Γ A B} (t : Γ × A ⟶ B) :
+  t ∘ (π₁ ×ₘ 𝟷) ∘ ⟨𝟷, π₂⟩ = t.
 Proof.
-  rewrite <-(mcomp_idr P) at 2.
+  rewrite <-(mcomp_idr t) at 2.
   rewrite mcomp_ass; f_equal.
-Admitted.
+  rewrite mProd_post, mcomp_idl, mcomp_idr.
+  apply mProd_proj.
+Qed.
 
 Lemma later_all {Γ A} (P : Γ × A ⟶ Ω) :
   ▷(∀[A] P) ⊢ ∀[A] ▷P.
@@ -1159,11 +1374,11 @@ Proof.
   apply later_mono.
   rewrite all_subst.
   eapply entails_trans.
-  { apply (all_elim _ π₂). }
-  apply eq_prop', eq_eq, pred_wk_app.
+  1: apply (all_elim _ π₂).
+  apply eq_prop', eq_eq, wk_app.
 Qed.
 
-Lemma later_exist_inv {Γ A} (P : Γ × A ⟶ Ω) :
+Lemma exist_later {Γ A} (P : Γ × A ⟶ Ω) :
   ∃[A] ▷P ⊢ ▷(∃[A] P).
 Proof.
   apply exist_elim.
@@ -1171,8 +1386,8 @@ Proof.
   apply later_mono.
   rewrite exist_subst.
   eapply entails_trans.
-  2:{ apply (exist_intro _ π₂). }
-  apply eq_prop', eq_eq; symmetry; apply pred_wk_app.
+  2: apply (exist_intro _ π₂).
+  apply eq_prop', eq_eq; symmetry; apply wk_app.
 Qed.
 
 Lemma later_strong_loeb {Γ} (P : Γ ⟶ Ω) :

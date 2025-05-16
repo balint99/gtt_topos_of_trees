@@ -186,12 +186,12 @@
     {\equals[A]{\Gamma}{t}{t}}
 \and
 \inferhref{eq-trans}{rule:eq-trans}
-    {\equals[A]{\Gamma}{t}{u} \and \equals[A]{\Gamma}{u}{v}}
-    {\equals[A]{\Gamma}{t}{v}}
+    {\typed{\Gamma}{t}{A} \and \typed{\Gamma}{u}{A} \and \typed{\Gamma}{v}{A}}
+    {\entails{\Gamma}{t =_A u \wedge u =_A v}{t =_A v}}
 \and
 \inferhref{eq-sym}{rule:eq-sym}
-    {\equals[A]{\Gamma}{t}{u}}
-    {\equals[A]{\Gamma}{u}{t}}
+    {\typed{\Gamma}{t}{A} \and \typed{\Gamma}{u}{A}}
+    {\entails{\Gamma}{t =_A u}{u =_A t}}
 \\
 \inferhref{eq-prop}{rule:eq-prop}
     {}
@@ -233,30 +233,29 @@
 \and
 \inferhref{$\to$-$\eta$}{rule:fun-eta}
     {\typed{\Gamma}{t}{A \to B} \and (x : A) \notin \Gamma}
-    {\equals[A \to B]{\Gamma}{\lam{x}{A}{\app{t}{x}}}{t}}
+    {\equals[A \to B]{\Gamma}{(\lam{x}{A}{\app{t}{x}})}{t}}
 \and
 \inferhref{$\ap$-next}{rule:ap-next2}
     {\typed{\Gamma}{t}{A \to B} \and \typed{\Gamma}{u}{A}}
     {\equals[\Later{B}]{\Gamma}{\nxt{t} \ap \nxt{u}}{\nxt{(\app{t}{u})}}}
 \and
 \inferhref{$\ap$-comp}{rule:ap-comp2}
-    {\typed{\Gamma}{f}{\Later{(B \to C)}} \and \typed{\Gamma}{g}{\Later{(A \to B)}} 
-        \and \typed{\Gamma}{t}{\Later{A}}}
-    {\equals[\Later{C}]{\Gamma}{f \ap (g \ap t)}{\nxt{\name{comp}} \ap f \ap g \ap t}}
+    {\typed{\Gamma}{t}{\Later{(B \to C)}} \and \typed{\Gamma}{u}{\Later{(A \to B)}} 
+        \and \typed{\Gamma}{v}{\Later{A}}}
+    {\equals[\Later{C}]{\Gamma}{\nxt{\name{comp}} \ap t \ap u \ap v}{t \ap (u \ap v)}}
 \and
 \inferhref{fix-$\beta$}{rule:fix-beta2}
     {\typed{\Gamma, x : \Later{A}}{t}{A}}
-    {\equals[A]{\Gamma}{\rec{x}{\Later{A}}{t}}
+    {\equals[A]{\Gamma}{(\rec{x}{\Later{A}}{t})}
         {\subst{t}{x}{\nxt{(\rec{x}{\Later{A}}{t})}}}}
 \and
 \inferhref{fix-$\eta$}{rule:fix-eta}
-    {\typed{\Gamma, x : \Later{A}}{t}{A} \and \typed{\Gamma}{z}{A} \and
-        \equals{\Gamma}{z}{\subst{t}{x}{\nxt{z}}}}
-    {\equals[A]{\Gamma}{z}{\rec{x}{\Later{A}}{t}}}
+    {\typed{\Gamma, x : \Later{A}}{t}{A} \and \typed{\Gamma}{u}{A}}
+    {\entails{\Gamma}{u =_A \subst{t}{x}{\nxt{u}}}{u =_A (\rec{x}{\Later{A}}{t})}}
 \\
 \inferhref{$\later$-eq}{rule:later-eq2}{}
     {\equiv{\Gamma}{\later{(t =_A u)}}{\nxt{t} =_{\Later{A}} \nxt{u}}}
 \end{mathpar}
-\caption{Equality rules in $\lang$. $\name{comp} : (B \to C) \to (A \to B) \to A \to C$ is function composition. Congruence cases are omitted.}
+\caption{Equality rules in $\lang$. $\name{comp} : (B \to C) \to (A \to B) \to A \to C$ is function composition: $\name{comp} = \lam{f}{B \to C}{\lam{g}{A \to B}{\lam{x}{A}{\app{f}{(\app{g}{x})}}}}$. Congruence cases are omitted.}
 \label{fig:logic-equalities}
 \end{figure}

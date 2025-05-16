@@ -599,9 +599,9 @@ Besides logical rules, we also have the familiar $\beta \eta$-laws for functions
     {\equals[\Later{B}]{\Gamma}{\nxt{t} \ap \nxt{u}}{\nxt{(\app{t}{u})}}}
 \and
 \inferhref{$\ap$-comp}{rule:ap-comp}
-    {\typed{\Gamma}{f}{\Later{(B \to C)}} \and \typed{\Gamma}{g}{\Later{(A \to B)}} \and
-     \typed{\Gamma}{t}{\Later{A}}}
-    {\equals[\Later{C}]{\Gamma}{f \ap (g \ap t)}{\nxt{\name{comp}} \ap f \ap g \ap t}}
+    {\typed{\Gamma}{t}{\Later{(B \to C)}} \and \typed{\Gamma}{u}{\Later{(A \to B)}} \and
+     \typed{\Gamma}{v}{\Later{A}}}
+    {\equals[\Later{C}]{\Gamma}{\nxt{\name{comp}} \ap t \ap u \ap v}{t \ap (u \ap v)}}
 \and
 \inferhref{fix-$\beta$}{rule:fix-beta}
     {\typed{\conext{\Gamma}{x}{\Later{A}}}{t}{A}}

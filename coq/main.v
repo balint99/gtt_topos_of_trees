@@ -240,8 +240,8 @@ Proof.
   - by rewrite <-mcomp_ass, proj2_mProd.
 Qed.
 
-Definition Prod_mor {X1 X2 Y1 Y2} (f1 : X1 ⟶ Y1) (f2 : X2 ⟶ Y2) 
-  : X1 × X2 ⟶ Y1 × Y2 := ⟨f1 ∘ π₁, f2 ∘ π₂⟩.
+Definition Prod_mor {X1 X2 Y1 Y2} (f1 : X1 ⟶ Y1) (f2 : X2 ⟶ Y2) :
+  X1 × X2 ⟶ Y1 × Y2 := ⟨f1 ∘ π₁, f2 ∘ π₂⟩.
 
 Notation "f ×ₘ g" := (Prod_mor f g) (at level 60, right associativity).
 
@@ -431,6 +431,36 @@ Proof.
   apply ev_transpose.
 Qed.
 
+Definition mor_to_exp {X Y} (f : X ⟶ Y) : 𝟙 ⟶ X ⇒ Y :=
+  λ(f ∘ π₂).
+
+Definition exp_to_mor {X Y} (f : 𝟙 ⟶ X ⇒ Y) : X ⟶ Y :=
+  ev ∘ (f ×ₘ 𝟷) ∘ ⟨mOne, 𝟷⟩.
+
+Notation "ƛ( f )" := (mor_to_exp f) (at level 0, format "ƛ( f )").
+Notation "υ( f )" := (exp_to_mor f) (at level 0, format "υ( f )").
+
+Lemma exp_to_mor_to_exp {X Y} (f : X ⟶ Y) :
+  υ(ƛ(f)) = f.
+Proof.
+  unfold mor_to_exp, exp_to_mor.
+  rewrite ev_transpose.
+  rewrite mcomp_ass, proj2_mProd.
+  apply mcomp_idr.
+Qed.
+
+Lemma mor_to_exp_to_mor {X Y} (f : 𝟙 ⟶ X ⇒ Y) :
+  ƛ(υ(f)) = f.
+Proof.
+  unfold mor_to_exp, exp_to_mor.
+  symmetry; apply transpose_unique.
+  symmetry; rewrite <-(mcomp_idr (ev ∘ (f ×ₘ 𝟷))) at 2.
+  rewrite mcomp_ass; f_equal.
+  rewrite mProd_pre, mcomp_idl.
+  rewrite (mOne_unique (mOne ∘ π₂)), <-(mOne_unique π₁).
+  apply mProd_proj.
+Qed.
+ 
 Definition Later_obj (X : Object) (n : nat) : Type :=
   match n with
   | 0 => ()
@@ -541,6 +571,11 @@ Proof.
   - reflexivity.
   - f_equal. rewrite <-(morph_natural h). apply IH.
 Qed.
+
+Definition mfixp {X Y} (f : Y × ▶X ⟶ X) : Y ⟶ X :=
+  let g : ▶(Y ⇒ X) ⟶ Y ⇒ X :=
+        λ(f ∘ ⟨π₂, ev ∘ (J ×ₘ next)⟩)
+  in υ(μ(g)).
 
 Definition fixI {X} : (▶X ⇒ X) ⟶ X :=
   let f : ▶((▶X ⇒ X) ⇒ X) × (▶X ⇒ X) ⟶ X :=
@@ -1118,9 +1153,60 @@ fix . \t
 *)
 Admitted.
 
+(*
+t : Γ × ▶A ⟶ A
+u, v : Γ ⟶ A
+TP: u = v
+TP: λ(u ∘ π₂) = λ(v ∘ π₂)
+g : ▶(Γ ⇒ A) ⟶ Γ ⇒ A
+g = λ(t ∘ ⟨π₂, ev ∘ (J ×ₘ next)⟩)
+
+TP: 1. λ(u ∘ π₂) = μ(g)
+    2. λ(v ∘ π₂) = μ(g)
+TP: 1. g ∘ next ∘ λ(u ∘ π₂) = λ(u ∘ π₂)
+    2. g ∘ next ∘ λ(v ∘ π₂) = λ(v ∘ π₂)
+TP: 1. ev ∘ (g ∘ next ∘ λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩ = u
+    2. ev ∘ (g ∘ next ∘ λ(v ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩ = v
+
+ev ∘ (g ∘ next ∘ λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩
+  = ev ∘ (g ×ₘ 𝟷) ∘ (next ×ₘ 𝟷) ∘ (λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩
+  = t ∘ ⟨π₂, ev ∘ (J ×ₘ next)⟩ ∘ (next ×ₘ 𝟷) ∘ (λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩
+  = t ∘ ⟨𝟷, ev ∘ (J ×ₘ 𝟷) ∘ (next ×ₘ next) ∘ (λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩⟩
+  = t ∘ ⟨𝟷, ▶ev ∘ s ∘ (next ×ₘ next) ∘ (λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩⟩
+  = t ∘ ⟨𝟷, ▶ev ∘ next ∘ (λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩⟩
+  = t ∘ ⟨𝟷, next ∘ ev ∘ (λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩⟩
+  = t ∘ ⟨𝟷, next ∘ u ∘ π₂ ∘ ⟨!, 𝟷⟩⟩
+  = t ∘ ⟨𝟷, next ∘ u⟩
+
+  TP: 1. t ∘ ⟨1, next ∘ u⟩ = u
+      2. t ∘ ⟨𝟷, next ∘ v⟩ = v
+*)
+
 Lemma fix_eta {Γ A} (t : Γ × ▶A ⟶ A) (u : Γ ⟶ A) :
   u ≡ t ∘ ⟨𝟷, nxt u⟩ ⊢ u ≡ (μ[A] t).
 Proof.
+(*
+f = e . (p2, e . (J x next))
+
+fixI = e . (|\f . !, 1)
+
+|\f = \f . next . |\f
+  = \(e . (p2, e . (J x next))) . next . |\f
+  = \(e . (p2, e . (J x 1) . (1 x next)) . (next . |\f x 1))
+  = \(e . (p2, |>e . s . (next x next) . (|\f x 1)))
+  = \(e . (p2, |>e . next . (|\f x 1)))
+  = \(e . (p2, next . e . (|\f x 1)))
+
+----------------------------------------------------------------
+
+t : Γ × ▶A ⟶ A
+u : Γ ⟶ A
+u = t ∘ ⟨𝟷, nxt u⟩
+
+TP: u = μ[A] t = fixI ∘ λ(t)
+TP: 1. t ∘ ⟨1, next ∘ u⟩ = u
+    2. t ∘ ⟨𝟷, next ∘ fixI ∘ λ(t)⟩ = fixI ∘ λ(t)
+*)
 Admitted.
 
 Lemma later_eq {Γ A} (t u : Γ ⟶ A) :

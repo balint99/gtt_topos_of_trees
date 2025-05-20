@@ -142,7 +142,9 @@ Notation "'𝟙'" := One.
 Program Definition mOne {X} : X ⟶ 𝟙 := ⟦λ n, const ()⟧.
 Next Obligation. done. Qed.
 
-Lemma mOne_unique {X} (h : X ⟶ 𝟙) : h = mOne.
+Notation "'!'" := mOne.
+
+Lemma mOne_unique {X} (h : X ⟶ 𝟙) : h = !.
 Proof.
   apply morph_inj; funext n; funext x.
   destruct (h n x); reflexivity.
@@ -154,7 +156,9 @@ Notation "'𝟘'" := Zero.
 Program Definition mZero {X} : 𝟘 ⟶ X := ⟦λ n, Empty_set_rect _⟧.
 Next Obligation. intros X n []. Qed.
 
-Lemma mZero_unique {X} (h : 𝟘 ⟶ X) : h = mZero.
+Notation "'¡'" := mZero.
+
+Lemma mZero_unique {X} (h : 𝟘 ⟶ X) : h = ¡.
 Proof. apply morph_inj; funext n; funext []. Qed.
 
 Definition Nat : Object := Δ nat.
@@ -232,7 +236,7 @@ Qed.
 Lemma mProd_proj {X Y} : ⟨π₁, π₂⟩ = 𝟷{X × Y}.
 Proof. symmetry; apply mProd_unique; apply mcomp_idr. Qed.
 
-Lemma mProd_pre {W X Y Z} {f : Z ⟶ X} {g : Z ⟶ Y} {h : W ⟶ Z} :
+Lemma mProd_pre {W X Y Z} (f : Z ⟶ X) (g : Z ⟶ Y) (h : W ⟶ Z) :
   ⟨f, g⟩ ∘ h = ⟨f ∘ h, g ∘ h⟩.
 Proof.
   apply mProd_unique.
@@ -245,8 +249,16 @@ Definition Prod_mor {X1 X2 Y1 Y2} (f1 : X1 ⟶ Y1) (f2 : X2 ⟶ Y2) :
 
 Notation "f ×ₘ g" := (Prod_mor f g) (at level 60, right associativity).
 
+Lemma proj1_Prod_mor {X1 X2 Y1 Y2} (f1 : X1 ⟶ Y1) (f2 : X2 ⟶ Y2) :
+  π₁ ∘ (f1 ×ₘ f2) = f1 ∘ π₁.
+Proof. unfold Prod_mor; apply proj1_mProd. Qed.
+
+Lemma proj2_Prod_mor {X1 X2 Y1 Y2} (f1 : X1 ⟶ Y1) (f2 : X2 ⟶ Y2) :
+  π₂ ∘ (f1 ×ₘ f2) = f2 ∘ π₂.
+Proof. unfold Prod_mor; apply proj2_mProd. Qed.
+
 Lemma mProd_post {X1 X2 Y1 Y2 Z}
-  {f1 : X1 ⟶ Y1} {f2 : X2 ⟶ Y2} {g : Z ⟶ X1} {h : Z ⟶ X2} :
+  (f1 : X1 ⟶ Y1) (f2 : X2 ⟶ Y2) (g : Z ⟶ X1) (h : Z ⟶ X2) :
   (f1 ×ₘ f2) ∘ ⟨g, h⟩ = ⟨f1 ∘ g, f2 ∘ h⟩.
 Proof.
   unfold Prod_mor. rewrite mProd_pre.
@@ -263,7 +275,15 @@ Qed.
 
 Lemma Prod_comp_l {W X Y Z} (f : Y ⟶ Z) (g : X ⟶ Y) :
   f ∘ g ×ₘ 𝟷{W} = (f ×ₘ 𝟷) ∘ (g ×ₘ 𝟷).
-Proof. rewrite <-(mcomp_idl 𝟷) at 1. apply Prod_comp. Qed.
+Proof. rewrite <-(mcomp_idl 𝟷) at 1; apply Prod_comp. Qed.
+
+Lemma One_unit_l_1 {X} :
+  ⟨!, 𝟷{X}⟩ ∘ π₂ = 𝟷.
+Proof.
+  rewrite mProd_pre, mcomp_idl.
+  rewrite (mOne_unique (! ∘ π₂)), <-(mOne_unique π₁).
+  apply mProd_proj.
+Qed.
 
 Definition Sum (X Y : Object) : Object :=
   {| obj n := X n + Y n
@@ -422,7 +442,11 @@ Proof.
   by rewrite morph_restrTo, Exp_restrTo.
 Qed.
 
-Lemma transpose_pre {W X Y Z} {f : Z × X ⟶ Y} {g : W ⟶ Z} :
+Lemma transpose_ev {X Y Z} {f : Z ⟶ X ⇒ Y} :
+  λ(ev ∘ (f ×ₘ 𝟷)) = f.
+Proof. by symmetry; apply transpose_unique. Qed.
+
+Lemma transpose_pre {W X Y Z} (f : Z × X ⟶ Y) (g : W ⟶ Z) :
   λ(f) ∘ g = λ(f ∘ (g ×ₘ 𝟷)).
 Proof.
   apply transpose_unique.
@@ -435,7 +459,7 @@ Definition mor_to_exp {X Y} (f : X ⟶ Y) : 𝟙 ⟶ X ⇒ Y :=
   λ(f ∘ π₂).
 
 Definition exp_to_mor {X Y} (f : 𝟙 ⟶ X ⇒ Y) : X ⟶ Y :=
-  ev ∘ (f ×ₘ 𝟷) ∘ ⟨mOne, 𝟷⟩.
+  ev ∘ (f ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩.
 
 Notation "ƛ( f )" := (mor_to_exp f) (at level 0, format "ƛ( f )").
 Notation "υ( f )" := (exp_to_mor f) (at level 0, format "υ( f )").
@@ -453,12 +477,8 @@ Lemma mor_to_exp_to_mor {X Y} (f : 𝟙 ⟶ X ⇒ Y) :
   ƛ(υ(f)) = f.
 Proof.
   unfold mor_to_exp, exp_to_mor.
-  symmetry; apply transpose_unique.
-  symmetry; rewrite <-(mcomp_idr (ev ∘ (f ×ₘ 𝟷))) at 2.
-  rewrite mcomp_ass; f_equal.
-  rewrite mProd_pre, mcomp_idl.
-  rewrite (mOne_unique (mOne ∘ π₂)), <-(mOne_unique π₁).
-  apply mProd_proj.
+  rewrite mcomp_ass, One_unit_l_1, mcomp_idr.
+  apply transpose_ev.
 Qed.
  
 Definition Later_obj (X : Object) (n : nat) : Type :=
@@ -517,7 +537,7 @@ Proof.
   unfold Later_Prod_distr.
   rewrite mProd_pre, mProd_post.
   rewrite <-!Later_morph_comp.
-  by unfold Prod_mor; rewrite proj1_mProd, proj2_mProd.
+  by rewrite proj1_Prod_mor, proj2_Prod_mor.
 Qed.
 
 Program Definition Later_Prod_distr_inv {X Y} : ▶X × ▶Y ⟶ ▶(X × Y) :=
@@ -537,8 +557,7 @@ Lemma Later_Prod_distr_inv_next {X Y} :
 Proof.
   rewrite <-(mcomp_idl (next (X := X × Y))), <-Later_Prod_distr_2.
   rewrite mcomp_ass; f_equal; unfold Later_Prod_distr.
-  rewrite mProd_pre, <-!next_natural.
-  by unfold Prod_mor.
+  by rewrite mProd_pre, <-!next_natural.
 Qed.
 
 Definition J {X Y} : ▶(X ⇒ Y) ⟶ ▶X ⇒ ▶Y :=
@@ -577,10 +596,68 @@ Definition mfixp {X Y} (f : Y × ▶X ⟶ X) : Y ⟶ X :=
         λ(f ∘ ⟨π₂, ev ∘ (J ×ₘ next)⟩)
   in υ(μ(g)).
 
+Notation "μp( f )" := (mfixp f) (at level 0, format "μp( f )").
+
+Lemma mfixp_fix {X Y} (f : Y × ▶X ⟶ X) :
+  f ∘ ⟨𝟷, next ∘ μp(f)⟩ = μp(f).
+Proof.
+  unfold mfixp; set (g := λ(f ∘ ⟨π₂, ev ∘ (J ×ₘ next)⟩)).
+  rewrite <-(exp_to_mor_to_exp (f ∘ _)); f_equal.
+  unfold mor_to_exp. rewrite mcomp_ass, mProd_pre, mcomp_idl.
+  unfold exp_to_mor. rewrite !mcomp_ass; rewrite One_unit_l_1, mcomp_idr.
+  symmetry; rewrite <-mfix_fix at 1.
+  unfold g at 1. rewrite mcomp_ass, transpose_pre; f_equal.
+  rewrite mcomp_ass; f_equal.
+  rewrite mProd_pre, proj2_Prod_mor, mcomp_idl; f_equal.
+  rewrite Prod_comp_l, <-!mcomp_ass; f_equal.
+  rewrite <-(mcomp_idr J), <-(mcomp_idl next) at 1; rewrite Prod_comp.
+  rewrite <-mcomp_ass; unfold J; rewrite ev_transpose.
+  rewrite !mcomp_ass, <-Prod_comp, mcomp_idl, mcomp_idr.
+  rewrite Later_Prod_distr_inv_next.
+  symmetry; apply next_natural.
+Qed.
+
+Lemma mfixp_unique {X Y} {f : Y × ▶X ⟶ X} {h : Y ⟶ X}
+  (e : f ∘ ⟨𝟷, next ∘ h⟩ = h) : h = μp(f).
+Proof.
+  unfold mfixp; set (g := λ(f ∘ ⟨π₂, ev ∘ (J ×ₘ next)⟩)).
+  rewrite <-(exp_to_mor_to_exp h); f_equal.
+  apply mfix_unique.
+  unfold g, mor_to_exp. rewrite mcomp_ass, transpose_pre; f_equal.
+  rewrite mcomp_ass, mProd_pre, proj2_Prod_mor, mcomp_idl.
+  rewrite <-e at 2.
+  rewrite (mcomp_ass f), mProd_pre, mcomp_idl. do 2 f_equal.
+  rewrite <-(mcomp_idr J), <-(mcomp_idl next) at 1; rewrite Prod_comp.
+  rewrite <-mcomp_ass; unfold J; rewrite ev_transpose.
+  rewrite Prod_comp_l, !mcomp_ass, <-(mcomp_ass (𝟷 ×ₘ next)). 
+  rewrite <-Prod_comp, mcomp_idl, mcomp_idr.
+  rewrite <-(mcomp_ass Later_Prod_distr_inv), Later_Prod_distr_inv_next.
+  rewrite <-mcomp_ass, <-next_natural.
+  by rewrite mcomp_ass, ev_transpose.
+Qed.
+
 Definition fixI {X} : (▶X ⇒ X) ⟶ X :=
-  let f : ▶((▶X ⇒ X) ⇒ X) × (▶X ⇒ X) ⟶ X :=
+  let g : ▶((▶X ⇒ X) ⇒ X) × (▶X ⇒ X) ⟶ X :=
         ev ∘ ⟨π₂, ev ∘ (J ×ₘ next)⟩
-  in ev ∘ ⟨μ(λ(f)) ∘ mOne, 𝟷⟩.
+  in ev ∘ ⟨μ(λ(g)) ∘ !, 𝟷⟩.
+
+Lemma fixI_as_mfixp {X} : @fixI X = μp(ev).
+Proof.
+  unfold fixI, mfixp; set (g := ev ∘ ⟨π₂, ev ∘ (J ×ₘ next)⟩).
+  unfold exp_to_mor. rewrite mcomp_ass; f_equal.
+  by rewrite mProd_post, mcomp_idr.
+Qed.
+
+Lemma mfixp_as_fixI {Y X} (f : Y × ▶X ⟶ X) :
+  μp(f) = fixI ∘ λ(f).
+Proof.
+  rewrite fixI_as_mfixp.
+  symmetry; apply mfixp_unique.
+  rewrite <-mfixp_fix at 2.
+  rewrite mcomp_ass, mProd_pre, mcomp_idl.
+  rewrite <-(ev_transpose f) at 1.
+  by rewrite !mcomp_ass, mProd_post, mcomp_idl, mcomp_idr.
+Qed.
 
 Record SOC_obj (n : nat) :=
   { SOC_pred :> [0..n] → Prop
@@ -661,7 +738,7 @@ Program Definition msub {X} (P : X ⟶ Ω) : Σ P ⟶ X :=
   ⟦λ n, proj1_sig⟧.
 Next Obligation. done. Qed.
 
-Lemma msub_true {X} (P : X ⟶ Ω) : P ∘ msub P = trueI ∘ mOne.
+Lemma msub_true {X} (P : X ⟶ Ω) : P ∘ msub P = trueI ∘ !.
 Proof.
   apply morph_inj; funext n; funext [x Px].
   apply SOC_pred_inj; funext i; simpl.
@@ -672,7 +749,7 @@ Proof.
 Qed.
 
 Program Definition restr_cod {X Y} {P : X ⟶ Ω} (f : Y ⟶ X)
-  (H : P ∘ f = trueI ∘ mOne) : Y ⟶ Σ P :=
+  (H : P ∘ f = trueI ∘ !) : Y ⟶ Σ P :=
   ⟦λ n y, (f n y ↾ _)%stdpp⟧.
 Next Obligation.
   intros * H n y; simpl.
@@ -687,11 +764,11 @@ Next Obligation.
 Qed.
 
 Lemma msub_restr_cod {X Y} {P : X ⟶ Ω} {f : Y ⟶ X}
-  (H : P ∘ f = trueI ∘ mOne) : msub P ∘ restr_cod f H = f.
+  (H : P ∘ f = trueI ∘ !) : msub P ∘ restr_cod f H = f.
 Proof. by apply morph_inj. Qed.
 
 Lemma restr_cod_unique {X Y} {P : X ⟶ Ω} {f : Y ⟶ X} {h : Y ⟶ Σ P}
-  (e : msub P ∘ h = f) : { H : P ∘ f = trueI ∘ mOne | h = restr_cod f H }.
+  (e : msub P ∘ h = f) : { H : P ∘ f = trueI ∘ ! | h = restr_cod f H }.
 Proof.
   eexists ?[H].
   [H]: {
@@ -787,7 +864,7 @@ Definition v2 {Γ A B C} : Γ × A × B × C ⟶ A := π₂ ∘ π₁ ∘ π₁.
 
 Definition fst {Γ A B} (t : Γ ⟶ A × B) : Γ ⟶ A := π₁ ∘ t.
 Definition snd {Γ A B} (t : Γ ⟶ A × B) : Γ ⟶ B := π₂ ∘ t.
-Definition abort {Γ A} (t : Γ ⟶ 𝟘) : Γ ⟶ A := mZero ∘ t.
+Definition abort {Γ A} (t : Γ ⟶ 𝟘) : Γ ⟶ A := ¡ ∘ t.
 Definition inl {Γ A B} (t : Γ ⟶ A) : Γ ⟶ A ∔ B := κ₁ ∘ t.
 Definition inr {Γ A B} (t : Γ ⟶ B) : Γ ⟶ A ∔ B := κ₂ ∘ t.
 Definition case {Γ A B C} (t : Γ ⟶ A ∔ B) (u : Γ × A ⟶ C) (v : Γ × B ⟶ C)
@@ -798,7 +875,7 @@ Definition ap {Γ A B} (t : Γ ⟶ ▶(A ⇒ B)) (u : Γ ⟶ ▶A) : Γ ⟶ ▶B
   ev ∘ (J ×ₘ 𝟷) ∘ ⟨t, u⟩.
 Definition gfix {Γ A} (t : Γ × ▶A ⟶ A) : Γ ⟶ A := fixI ∘ λ(t).
 
-Notation "'tt'" := mOne.
+Notation "'tt'" := !.
 Notation "λ[ A ] t" := (transpose (X := A) t)
   (at level 95, t at level 95, format "λ[ A ]  t").
 Infix "·" := app (at level 40, left associativity).  
@@ -809,8 +886,8 @@ Notation "μ[ A ] t" := (gfix (A := A) t)
 Definition comp {Γ A B C} : Γ ⟶ (B ⇒ C) ⇒ (A ⇒ B) ⇒ A ⇒ C :=
   λ[B ⇒ C] λ[A ⇒ B] λ[A] v2 · (v1 · v0).
 
-Definition true {Γ} : Γ ⟶ Ω := trueI ∘ mOne.
-Definition false {Γ} : Γ ⟶ Ω := falseI ∘ mOne.
+Definition true {Γ} : Γ ⟶ Ω := trueI ∘ !.
+Definition false {Γ} : Γ ⟶ Ω := falseI ∘ !.
 Definition eq {Γ A} (t u : Γ ⟶ A) : Γ ⟶ Ω := eqI ∘ ⟨t, u⟩.
 Definition conj {Γ} (P Q : Γ ⟶ Ω) : Γ ⟶ Ω := conjI ∘ ⟨P, Q⟩.
 Definition disj {Γ} (P Q : Γ ⟶ Ω) : Γ ⟶ Ω := disjI ∘ ⟨P, Q⟩.
@@ -1125,88 +1202,13 @@ Qed.
 Lemma fix_beta {Γ A} (t : Γ × ▶A ⟶ A) :
   ⊤ ⊢ (μ[A] t) ≡ t ∘ ⟨𝟷, nxt (μ[A] t)⟩.
 Proof.
-(*
-f = e . (p2, e . (J x next))
-
-fix = e . (|\f . !, 1)
-
-|\f = \f . next . |\f
-  = \(e . (p2, e . (J x next))) . next . |\f
-  = \(e . (p2, e . (J x 1) . (1 x next)) . (next . |\f x 1))
-  = \(e . (p2, |>e . s . (next x next) . (|\f x 1)))
-  = \(e . (p2, |>e . next . (|\f x 1)))
-  = \(e . (p2, next . e . (|\f x 1)))
-
-----------------------------------------------------------------
-
-t : G x |>A -> A
-
-TP: fix . \t = t . (1, next . fix . \t)
-
-fix . \t
-  = e . (|\f . !, 1) . \t
-  = e . (|\f x 1) . (!, \t)
-  = e . (p2, next . e . (|\f x 1)) . (!, \t)
-  = e . (\t, next . e . (|\f . !, \t))
-  = e . (\t x 1) . (1, next . e . (|\f . !, 1) . \t)
-  = t . (1, next . fix . \t)
-*)
-Admitted.
-
-(*
-t : Γ × ▶A ⟶ A
-u, v : Γ ⟶ A
-TP: u = v
-TP: λ(u ∘ π₂) = λ(v ∘ π₂)
-g : ▶(Γ ⇒ A) ⟶ Γ ⇒ A
-g = λ(t ∘ ⟨π₂, ev ∘ (J ×ₘ next)⟩)
-
-TP: 1. λ(u ∘ π₂) = μ(g)
-    2. λ(v ∘ π₂) = μ(g)
-TP: 1. g ∘ next ∘ λ(u ∘ π₂) = λ(u ∘ π₂)
-    2. g ∘ next ∘ λ(v ∘ π₂) = λ(v ∘ π₂)
-TP: 1. ev ∘ (g ∘ next ∘ λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩ = u
-    2. ev ∘ (g ∘ next ∘ λ(v ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩ = v
-
-ev ∘ (g ∘ next ∘ λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩
-  = ev ∘ (g ×ₘ 𝟷) ∘ (next ×ₘ 𝟷) ∘ (λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩
-  = t ∘ ⟨π₂, ev ∘ (J ×ₘ next)⟩ ∘ (next ×ₘ 𝟷) ∘ (λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩
-  = t ∘ ⟨𝟷, ev ∘ (J ×ₘ 𝟷) ∘ (next ×ₘ next) ∘ (λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩⟩
-  = t ∘ ⟨𝟷, ▶ev ∘ s ∘ (next ×ₘ next) ∘ (λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩⟩
-  = t ∘ ⟨𝟷, ▶ev ∘ next ∘ (λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩⟩
-  = t ∘ ⟨𝟷, next ∘ ev ∘ (λ(u ∘ π₂) ×ₘ 𝟷) ∘ ⟨!, 𝟷⟩⟩
-  = t ∘ ⟨𝟷, next ∘ u ∘ π₂ ∘ ⟨!, 𝟷⟩⟩
-  = t ∘ ⟨𝟷, next ∘ u⟩
-
-  TP: 1. t ∘ ⟨1, next ∘ u⟩ = u
-      2. t ∘ ⟨𝟷, next ∘ v⟩ = v
-*)
+  apply eq_eq; unfold gfix, nxt.
+  rewrite <-mfixp_as_fixI. symmetry; apply mfixp_fix.
+Qed.
 
 Lemma fix_eta {Γ A} (t : Γ × ▶A ⟶ A) (u : Γ ⟶ A) :
   u ≡ t ∘ ⟨𝟷, nxt u⟩ ⊢ u ≡ (μ[A] t).
 Proof.
-(*
-f = e . (p2, e . (J x next))
-
-fixI = e . (|\f . !, 1)
-
-|\f = \f . next . |\f
-  = \(e . (p2, e . (J x next))) . next . |\f
-  = \(e . (p2, e . (J x 1) . (1 x next)) . (next . |\f x 1))
-  = \(e . (p2, |>e . s . (next x next) . (|\f x 1)))
-  = \(e . (p2, |>e . next . (|\f x 1)))
-  = \(e . (p2, next . e . (|\f x 1)))
-
-----------------------------------------------------------------
-
-t : Γ × ▶A ⟶ A
-u : Γ ⟶ A
-u = t ∘ ⟨𝟷, nxt u⟩
-
-TP: u = μ[A] t = fixI ∘ λ(t)
-TP: 1. t ∘ ⟨1, next ∘ u⟩ = u
-    2. t ∘ ⟨𝟷, next ∘ fixI ∘ λ(t)⟩ = fixI ∘ λ(t)
-*)
 Admitted.
 
 Lemma later_eq {Γ A} (t u : Γ ⟶ A) :

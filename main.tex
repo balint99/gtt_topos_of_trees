@@ -337,8 +337,8 @@ $\fix{f} \colon \1 \to \oStr$ represents the constant stream with value 0.
 Note that the construction of \cref{prop:fixpoint} is external, meaning that the assignment of the fixed point $\fix{f}$ to the morphism $f$ happens in the metalogic instead of being an operation in $\TOT$. Thus, it does not correspond to a term of type ($\expt{\Later{X}}{X}) \to X$ in lambda calculus. It turns out, however, that we can \emph{define} such a term using this fixed point operator and other existing structure.
 \begin{defn} \label{def:fix}
 The morphism $\mor{fix}_X \colon (\expt{\Later{X}}{X}) \to X$ is defined as follows:
-\[ \mor{fix}_X = \ev \circ \mprod{\fix{(\curry{f})} \circ \mterm}{\id}, \]
-where $f$ is the middle horizontal composite in the diagram
+\[ \mor{fix}_X = \ev \circ \mprod{\fix{(\curry{g})} \circ \mterm}{\id}, \]
+where $g$ is the middle horizontal composite in the diagram
 % https://q.uiver.app/?q=WzAsNixbMCwxLCJcXExhdGVyeyhcXGV4cHR7KFxcZXhwdHtcXExhdGVye1h9fXtYfSl9e1h9KX0gXFx0aW1lcyAoXFxleHB0e1xcTGF0ZXJ7WH19e1h9KSJdLFswLDIsIihcXGV4cHR7XFxMYXRlcnsoXFxleHB0e1xcTGF0ZXJ7WH19e1h9KX19e1xcTGF0ZXJ7WH19KSBcXHRpbWVzIFxcTGF0ZXJ7KFxcZXhwdHtcXExhdGVye1h9fXtYfSl9Il0sWzEsMiwiXFxMYXRlcntYfSJdLFsxLDAsIlxcZXhwdHtcXExhdGVye1h9fXtYfSJdLFsxLDEsIihcXGV4cHR7XFxMYXRlcntYfX17WH0pIFxcdGltZXMgXFxMYXRlcntYfSJdLFszLDEsIlgiXSxbMSwyLCJcXGV2IiwyXSxbMCwxLCJKIFxcdGltZXMgXFxtb3J7bmV4dH0iLDJdLFswLDMsIlxccGlfMiJdLFswLDQsIiIsMix7InN0eWxlIjp7ImJvZHkiOnsibmFtZSI6ImRhc2hlZCJ9fX1dLFs0LDUsIlxcZXYiXSxbNCwyXSxbNCwzXV0=
 \[\begin{tikzcd}
 	& {\expt{\Later{X}}{X}} \\
@@ -353,13 +353,13 @@ where $f$ is the middle horizontal composite in the diagram
 	\arrow[from=2-2, to=1-2]
 \end{tikzcd}\]
 That is,
-\[ f = \ev \circ \mprod{\mprojr}{\ev \circ (J \times \mnxt)} \]
+\[ g = \ev \circ \mprod{\mprojr}{\ev \circ (J \times \mnxt)} \]
 \end{defn}
 
 If we write $\rec{x}{\Later{X}}{t}$ for the fixed point of a term $t$ of type $X$ with one free variable $x$ of type $\Later{X}$, then the above definition can be expressed as the program
 \[ \name{fix}(f) =
-    \app{(\rec{g}{\Later{((\Later{X} \to X) \to X)}}{
-        \lam{f}{\Later{X} \to X}{\app{f}{(g \ap \nxt{f})}}})} f. \]
+    \app{(\rec{h}{\Later{((\Later{X} \to X) \to X)}}{
+        \lam{f}{\Later{X} \to X}{\app{f}{(h \ap \nxt{f})}}})} f. \]
 To make notation easier, we adopt the fixed point operator of \cref{def:fix} as a primitive in our informal programs, so that we can take fixed points of functions with parameters. Thus, if $\typed{\conext{\Gamma}{x}{\Later{X}}}{t}{X}$,
 then $\typed{\Gamma}{\rec{x}{\Later{X}}{t}}{X}$ is interpreted as
 $\mor{fix}_X \circ \curry{t}$ (see \cref{def:logic-semantics}).
@@ -591,7 +591,7 @@ A typing context is a finite list of distinct typed variables, written as $x_1 :
 The entailment relation of $\lang$ is given by a judgment $\entails{\Gamma}{P}{Q}$, where $\Gamma$ is a typing context and $\typed{\Gamma}{P, Q}{\Prop}$. This expresses that we can prove $Q$ from the hypothesis $P$. We write $\valid{\Gamma}{P}$ for $\entails{\Gamma}{\true}{P}$, and $\equiv{\Gamma}{P}{Q}$ to mean $\entails{\Gamma}{P}{Q}$ and $\entails{\Gamma}{Q}{P}$. It includes standard structural rules, equality rules, and logical rules for the propositional connectives and quantifiers. The complete set of inference rules can be found in \cref{fig:structural-logical-rules,fig:logic-equalities} in the appendix.
 \end{defn}
 
-Besides logical rules, we also have the familiar $\beta \eta$-laws for functions, products, and sums. These are complemented by equalities concerning the new type former $\Later$ and its associated constructs, some of which are shown in \cref{fig:Later-rules}. The first two equations are the homomorphism and composition laws for applicative functors~\cite{mcbride:2008:jfp}, while the third one establishes that $\rec{x}{\Later{A}}{t}$ is indeed a fixed point of $t$. There is also an $\eta$ rule for fixed points expressing uniqueness; see the appendix.
+Besides logical rules, we also have the familiar $\beta \eta$-laws for functions, products, and sums. These are complemented by equalities concerning the new type former $\Later$ and its associated constructs, some of which are shown in \cref{fig:Later-rules}. The first two equations are the homomorphism and composition laws for applicative functors~\cite{mcbride:2008:jfp}, while the third one establishes that $\rec{x}{\Later{A}}{t}$ is indeed a fixed point of $t$.
 \begin{figure}
 \begin{mathpar}
 \inferhref{$\ap$-next}{rule:ap-next}
@@ -644,7 +644,8 @@ It is worth mentioning that $\lang$ also contains an inference rule correspondin
 
 From the basic inference rules of $\lang$, we can derive further sound reasoning principles. Some of these are presented in \cref{fig:derived-rules}.
 The rules commuting $\later$ with the various connectives can easily be proved using the monotonicity of $\later$ and the introduction and elimination principles of the connectives.
-The proof of \ruleref{rule:strong-löb} is less trivial, but it closely resembles the construction of the internal fixed point operator of \cref{def:fix} from the external one.
+The proof of \ruleref{rule:strong-löb} is less trivial, but it closely resembles the construction of the internal fixed point operator of \cref{def:fix} from the external one. Finally, we can use \ruleref{rule:strong-löb} to prove uniqueness of fixpoints (\ruleref{rule:fix-eta}).
+
 \begin{figure}
 \begin{mathpar}
 \inferhref{strong-löb}{rule:strong-löb}{}{\entails{\Gamma}{\later{P} \impl P}{P}}
@@ -663,8 +664,12 @@ The proof of \ruleref{rule:strong-löb} is less trivial, but it closely resemble
 \and
 \inferhref{$\later$-$\forall$}{rule:later-forall}{}
     {\entails{\Gamma}{\later{(\all{x}{A}{P})}}{\all{x}{A}{\later{P}}}}
+\and
+\inferhref{fix-$\eta$}{rule:fix-eta}
+    {\typed{\Gamma, x : \Later{A}}{t}{A} \and \typed{\Gamma}{u}{A}}
+    {\entails{\Gamma}{u =_A \subst{t}{x}{\nxt{u}}}{u =_A (\rec{x}{\Later{A}}{t})}}
 \end{mathpar}
-\caption{Derived rules for $\later$}
+\caption{Derived rules in $\lang$}
 \label{fig:derived-rules}
 \end{figure}
 

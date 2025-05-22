@@ -249,10 +249,6 @@
     {\equals[A]{\Gamma}{(\rec{x}{\Later{A}}{t})}
         {\subst{t}{x}{\nxt{(\rec{x}{\Later{A}}{t})}}}}
 \and
-\inferhref{fix-$\eta$}{rule:fix-eta}
-    {\typed{\Gamma, x : \Later{A}}{t}{A} \and \typed{\Gamma}{u}{A}}
-    {\entails{\Gamma}{u =_A \subst{t}{x}{\nxt{u}}}{u =_A (\rec{x}{\Later{A}}{t})}}
-\\
 \inferhref{$\later$-eq}{rule:later-eq2}{}
     {\equiv{\Gamma}{\later{(t =_A u)}}{\nxt{t} =_{\Later{A}} \nxt{u}}}
 \end{mathpar}

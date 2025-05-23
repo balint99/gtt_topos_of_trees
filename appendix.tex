@@ -102,18 +102,10 @@
     {\entails{\Gamma}{P}{Q} \and \entails{\Gamma}{Q}{R}}
     {\entails{\Gamma}{P}{R}}
 \and
-\inferhref{wk}{rule:wk}
-    {\entails{\Gamma}{P}{Q}}
-    {\entails{\Gamma, x : A}{P}{Q}}
-\and
-\inferhref{subst}{rule:subst}
-    {\entails{\Gamma, x : A}{P}{Q} \and \typed{\Gamma}{t}{A}}
-    {\entails{\Gamma}{\subst{P}{x}{t}}{\subst{Q}{x}{t}}}
-\\
 \inferhref{$\true$-intro}{rule:true-intro}{}{\entails{\Gamma}{P}{\true}}
 \and
 \inferhref{$\false$-elim}{rule:false-elim}{}{\entails{\Gamma}{\false}{P}}
-\and
+\\
 \inferhref{$\wedge$-intro}{rule:and-intro}
     {\entails{\Gamma}{R}{P} \and \entails{\Gamma}{R}{Q}}
     {\entails{\Gamma}{R}{P \wedge Q}}

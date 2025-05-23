@@ -858,10 +858,6 @@ Definition laterI : Ω ⟶ Ω := liftI ∘ next.
 
 (***** Internal logic *****)
 
-Definition v0 {Γ A} : Γ × A ⟶ A := π₂.
-Definition v1 {Γ A B} : Γ × A × B ⟶ A := π₂ ∘ π₁.
-Definition v2 {Γ A B C} : Γ × A × B × C ⟶ A := π₂ ∘ π₁ ∘ π₁.
-
 Definition fst {Γ A B} (t : Γ ⟶ A × B) : Γ ⟶ A := π₁ ∘ t.
 Definition snd {Γ A B} (t : Γ ⟶ A × B) : Γ ⟶ B := π₂ ∘ t.
 Definition abort {Γ A} (t : Γ ⟶ 𝟘) : Γ ⟶ A := ¡ ∘ t.
@@ -904,6 +900,17 @@ Notation "∃[ A ] P" := (exist A P)
   (at level 95, P at level 95, format "∃[ A ]  P"). 
 Notation "▷ P" := (later P) (at level 20, right associativity, format "▷ P").
 
+Definition v0 {Γ A} : Γ × A ⟶ A := π₂.
+Definition v1 {Γ A B} : Γ × A × B ⟶ A := π₂ ∘ π₁.
+Definition v2 {Γ A B C} : Γ × A × B × C ⟶ A := π₂ ∘ π₁ ∘ π₁.
+
+Definition tm_wk {Γ A B} (t : Γ ⟶ A) : Γ × B ⟶ A := t ∘ π₁.
+Definition tm_subst {Γ A B} (t : Γ × A ⟶ B) (u : Γ ⟶ A) : Γ ⟶ B := t ∘ ⟨𝟷, u⟩.
+
+Notation "t ↓" := (tm_wk t) (at level 31, left associativity, format "t ↓").
+Notation "t [{ u }]" := (tm_subst t u)
+  (at level 31, left associativity, format "t [{ u }]").
+
 Definition comp {Γ A B C} : Γ ⟶ (B ⇒ C) ⇒ (A ⇒ B) ⇒ A ⇒ C :=
   λ[B ⇒ C] λ[A ⇒ B] λ[A] v2 · (v1 · v0).
 
@@ -942,7 +949,7 @@ Lemma trans {Γ} (P Q R : Γ ⟶ Ω) :
   P ⊢ R.
 Proof. unfold entails; eauto. Qed.
 
-Lemma subst {Λ Γ} (σ : Λ ⟶ Γ) (P Q : Γ ⟶ Ω) :
+Lemma subst {Σ Γ} (σ : Σ ⟶ Γ) (P Q : Γ ⟶ Ω) :
   P ⊢ Q →
   P ∘ σ ⊢ Q ∘ σ.
 Proof. intros H n x; apply H. Qed.
@@ -1000,7 +1007,7 @@ Lemma impl_elim {Γ} {P Q : Γ ⟶ Ω} :
 Proof. by intros n x [H Px]; apply H. Qed.
 
 Lemma all_intro {Γ A} (R : Γ ⟶ Ω) (P : Γ × A ⟶ Ω) :
-  R ∘ π₁ ⊢ P →
+  R↓ ⊢ P →
   R ⊢ ∀[A] P.
 Proof.
   intros H n x Rx j Hj a; simpl.
@@ -1010,7 +1017,7 @@ Proof.
 Qed.
 
 Lemma all_elim {Γ A} (P : Γ × A ⟶ Ω) (t : Γ ⟶ A) :
-  ∀[A] P ⊢ P ∘ ⟨𝟷, t⟩.
+  ∀[A] P ⊢ P[{t}].
 Proof.
   intros n x H; simpl in *.
   rewrite <-(restrTo_n x) at 1.
@@ -1018,14 +1025,14 @@ Proof.
 Qed.
 
 Lemma exist_intro {Γ A} (P : Γ × A ⟶ Ω) (t : Γ ⟶ A) :
-  P ∘ ⟨𝟷, t⟩ ⊢ ∃[A] P.
+  P[{t}] ⊢ ∃[A] P.
 Proof.
   intros n x Px; simpl in *.
   rewrite restrTo_n. by exists (t n x).
 Qed.
 
 Lemma exist_elim {Γ A} (P : Γ × A ⟶ Ω) (Q : Γ ⟶ Ω) :
-  P ⊢ Q ∘ π₁ →
+  P ⊢ Q↓ →
   ∃[A] P ⊢ Q.
 Proof.
   intros H n x [a Pa]; simpl in *.
@@ -1091,9 +1098,23 @@ Proof.
     by apply (H (Sle_n_S Hj)).
 Qed.
 
+Lemma meq_eq {Γ A} (t u : Γ ⟶ A) :
+  t = u →
+  ⊤ ⊢ t ≡ u.
+Proof. by intros <-. Qed.
+
+Lemma eq_meq {Γ A} (t u : Γ ⟶ A) :
+  ⊤ ⊢ t ≡ u →
+  t = u.
+Proof.
+  intros H; apply morph_inj; funext n; funext x.
+  specialize (H n x I); simpl in H.
+  by rewrite !restrTo_n in H.
+Qed.
+
 Lemma eq_refl {Γ A} (t : Γ ⟶ A) :
   ⊤ ⊢ t ≡ t.
-Proof. done. Qed.
+Proof. by apply meq_eq. Qed.
 
 Lemma eq_trans {Γ A} (t u v : Γ ⟶ A) :
   t ≡ u ⋏ u ≡ v ⊢ t ≡ v.
@@ -1103,18 +1124,192 @@ Lemma eq_sym {Γ A} (t u : Γ ⟶ A) :
   t ≡ u ⊢ u ≡ t.
 Proof. by unfold entails. Qed.
 
-Lemma meq_eq {Γ A} (t u : Γ ⟶ A) :
-  t = u →
-  ⊤ ⊢ t ≡ u.
-Proof. intros <-; apply eq_refl. Qed.
-
-Lemma eq_meq {Γ A} (t u : Γ ⟶ A) :
-  ⊤ ⊢ t ≡ u →
-  t = u.
+Lemma cong_sub {Σ Γ A} (t : Γ ⟶ A) (σ σ' : Σ ⟶ Γ) :
+  σ ≡ σ' ⊢ t ∘ σ ≡ t ∘ σ'.
 Proof.
-  intros H; apply morph_inj; funext n; funext x.
-  specialize (H n x I); simpl in H.
+  intros n x H; simpl in *.
+  rewrite !restrTo_n in *.
+  by f_equal.
+Qed.
+
+Lemma cong_pair {Γ A B} (t t' : Γ ⟶ A) (u u' : Γ ⟶ B) :
+  t ≡ t' ⋏ u ≡ u' ⊢ ⟨t, u⟩ ≡ ⟨t', u'⟩.
+Proof.
+  intros n x H; simpl in *; destruct H as [H1 H2].
+  rewrite !restrTo_n in *.
+  by f_equal.
+Qed.
+
+Lemma cong_proj1 {Γ A B} (t t' : Γ ⟶ A × B) :
+  t ≡ t' ⊢ fst t ≡ fst t'.
+Proof.
+  intros n x H; simpl in *.
+  rewrite !restrTo_n in *.
+  by f_equal.
+Qed.
+
+Lemma cong_proj2 {Γ A B} (t t' : Γ ⟶ A × B) :
+  t ≡ t' ⊢ snd t ≡ snd t'.
+Proof.
+  intros n x H; simpl in *.
+  rewrite !restrTo_n in *.
+  by f_equal.
+Qed.
+
+Lemma cong_abort {Γ A} (t t' : Γ ⟶ 𝟘) :
+  t ≡ t' ⊢ abort (A := A) t ≡ abort t'.
+Proof.
+  intros n x H; simpl in *.
+  rewrite !restrTo_n in *.
+  by f_equal.
+Qed.
+
+Lemma cong_inj1 {Γ A B} (t t' : Γ ⟶ A) :
+  t ≡ t' ⊢ inl (B := B) t ≡ inl t'.
+Proof.
+  intros n x H; simpl in *.
+  rewrite !restrTo_n in *.
+  by f_equal.
+Qed.
+
+Lemma cong_inj2 {Γ A B} (t t' : Γ ⟶ B) :
+  t ≡ t' ⊢ inr (A := A) t ≡ inr t'.
+Proof.
+  intros n x H; simpl in *.
+  rewrite !restrTo_n in *.
+  by f_equal.
+Qed.
+
+Lemma cong_case {Γ A B C} (P : Γ ⟶ Ω) (t t' : Γ ⟶ A ∔ B)
+  (u u' : Γ × A ⟶ C) (v v' : Γ × B ⟶ C) :
+  t ≡ t' ⋏ (∀[A] u ≡ u') ⋏ (∀[B] v ≡ v') ⊢ case t u v ≡ case t' u' v'.
+Proof.
+  intros n x H; simpl in *; destruct H as [H1 [H2 H3]].
+  rewrite !restrTo_n in *.
+  rewrite <-H1; destruct (t n x) as [a | b]; simpl.
+  - specialize (H2 n (Sle_n _) a). by rewrite !restrTo_n in H2.
+  - specialize (H3 n (Sle_n _) b). by rewrite !restrTo_n in H3.
+Qed.
+
+Lemma cong_lam {Γ A B} (t t' : Γ × A ⟶ B) :
+  ∀[A] t ≡ t' ⊢ (λ[A] t) ≡ (λ[A] t').
+Proof.
+  intros n x H; simpl in *.
+  rewrite !restrTo_n.
+  apply Exp_morph_inj; funext i; funext a; simpl.
+  specialize (H i (Sle_S_n (Spr2 i)) a).
   by rewrite !restrTo_n in H.
+Qed.
+
+Lemma cong_app {Γ A B} (t t' : Γ ⟶ A ⇒ B) (u u' : Γ ⟶ A) :
+  t ≡ t' ⋏ u ≡ u' ⊢ t · u ≡ t' · u'.
+Proof.
+  intros n x H; simpl in *; destruct H as [H1 H2].
+  rewrite !restrTo_n in *.
+  by f_equal.
+Qed.
+
+Lemma cong_next {Γ A} (t t' : Γ ⟶ A) :
+  t ≡ t' ⊢ nxt t ≡ nxt t'.
+Proof.
+  intros n x H; simpl in *.
+  rewrite !restrTo_n in *.
+  by f_equal.
+Qed.
+
+Lemma cong_ap {Γ A B} (t t' : Γ ⟶ ▶(A ⇒ B)) (u u' : Γ ⟶ ▶A) :
+  t ≡ t' ⋏ u ≡ u' ⊢ t ⊛ u ≡ t' ⊛ u'.
+Proof.
+  intros n x H; simpl in *; destruct H as [H1 H2].
+  rewrite !restrTo_n in *.
+  by do 3 f_equal.
+Qed.
+
+Lemma cong_rec {Γ A} (t t' : Γ × ▶A ⟶ A) :
+  ∀[▶A] t ≡ t' ⊢ (μ[A] t) ≡ (μ[A] t').
+Proof.
+  intros n x H; simpl in *.
+  rewrite !restrTo_n.
+  f_equal; apply Exp_morph_inj; funext i; funext a; simpl.
+  specialize (H i (Sle_S_n (Spr2 i)) a).
+  by rewrite !restrTo_n in H.
+Qed.
+
+Lemma cong_eq {Γ A} (t t' u u' : Γ ⟶ A) :
+  t ≡ t' ⋏ u ≡ u' ⊢ (t ≡ u) ≡ (t' ≡ u').
+Proof.
+  intros n x H; simpl in *; destruct H as [H1 H2].
+  rewrite !restrTo_n in *.
+  apply SOC_pred_inj; funext i; simpl.
+  by f_equal; f_equal.
+Qed.
+
+Lemma cong_conj {Γ} (P P' Q Q' : Γ ⟶ Ω) :
+  P ≡ P' ⋏ Q ≡ Q' ⊢ (P ⋏ Q) ≡ (P' ⋏ Q').
+Proof.
+  intros n x H; simpl in *; destruct H as [H1 H2].
+  rewrite !restrTo_n in *.
+  apply SOC_pred_inj; funext i; simpl.
+  by f_equal; f_equal.
+Qed.
+
+Lemma cong_disj {Γ} (P P' Q Q' : Γ ⟶ Ω) :
+  P ≡ P' ⋏ Q ≡ Q' ⊢ (P ⋎ Q) ≡ (P' ⋎ Q').
+Proof.
+  intros n x H; simpl in *; destruct H as [H1 H2].
+  rewrite !restrTo_n in *.
+  apply SOC_pred_inj; funext i; simpl.
+  by f_equal; f_equal.
+Qed.
+
+Lemma cong_impl {Γ} (P P' Q Q' : Γ ⟶ Ω) :
+  P ≡ P' ⋏ Q ≡ Q' ⊢ (P ⊃ Q) ≡ (P' ⊃ Q').
+Proof.
+  intros n x H; simpl in *; destruct H as [H1 H2].
+  rewrite !restrTo_n in *.
+  apply SOC_pred_inj; funext i; funext j.
+  apply (f_equal2 (λ A B, A → B)); [reflexivity | ].
+  by apply (f_equal2 (λ A B, A → B)); f_equal.
+Qed.
+
+Lemma cong_all {Γ A} (P P' : Γ × A ⟶ Ω) :
+  ∀[A] P ≡ P' ⊢ (∀[A] P) ≡ (∀[A] P').
+Proof.
+  intros n x H; simpl in *.
+  rewrite !restrTo_n.
+  apply SOC_pred_inj; funext i; funext j.
+  apply (f_equal2 (λ A B, A → B)); [reflexivity | ]; funext a.
+  specialize (H j (Sle_S_n (Spr2 j)) a).
+  by rewrite !restrTo_n in H; f_equal.
+Qed.
+
+Lemma cong_ex {Γ A} (P P' : Γ × A ⟶ Ω) :
+  ∀[A] P ≡ P' ⊢ (∃[A] P) ≡ (∃[A] P').
+Proof.
+  intros n x H; simpl in *.
+  rewrite !restrTo_n.
+  apply SOC_pred_inj; funext i; simpl.
+  apply (f_equal (λ Q, ∃ a : A i, Q a)); funext a.
+  specialize (H i (Sle_S_n (Spr2 i)) a).
+  by rewrite !restrTo_n in H; f_equal.
+Qed.
+
+Lemma cong_lift {Γ} (P P' : Γ ⟶ ▶Ω) :
+  P ≡ P' ⊢ lift P ≡ lift P'.
+Proof.
+  intros n x H; simpl in *.
+  rewrite !restrTo_n in *.
+  by f_equal.
+Qed.
+
+Lemma cong_later {Γ} (P P' : Γ ⟶ Ω) :
+  P ≡ P' ⊢ ▷P ≡ ▷P'.
+Proof.
+  unfold later, laterI.
+  rewrite !mcomp_ass.
+  eapply trans.
+  - apply cong_next.
+  - apply cong_lift.
 Qed.
 
 Lemma eq_prop {Γ} (P Q : Γ ⟶ Ω) :
@@ -1152,36 +1347,36 @@ Lemma Prod_eta {Γ A B} {t : Γ ⟶ A × B} :
 Proof. apply meq_eq; unfold fst, snd; symmetry; by apply mProd_unique. Qed.
 
 Lemma Sum_beta_1 {Γ A B C} {t : Γ ⟶ A} {u : Γ × A ⟶ C} {v : Γ × B ⟶ C} :
-  ⊤ ⊢ case (inl t) u v ≡ u ∘ ⟨𝟷, t⟩.
+  ⊤ ⊢ case (inl t) u v ≡ u[{t}].
 Proof.
-  apply meq_eq; unfold case, inl.
+  apply meq_eq; unfold case, inl, tm_subst.
   rewrite <-(mcomp_idl 𝟷) at 1; rewrite <-mProd_post.
   rewrite <-mcomp_ass, (mcomp_ass [u, v]).
   by rewrite Prod_Sum_distr_l_inj1, mSum_inj1.
 Qed.
 
 Lemma Sum_beta_2 {Γ A B C} {t : Γ ⟶ B} {u : Γ × A ⟶ C} {v : Γ × B ⟶ C} :
-  ⊤ ⊢ case (inr t) u v ≡ v ∘ ⟨𝟷, t⟩.
+  ⊤ ⊢ case (inr t) u v ≡ v[{t}].
 Proof.
-  apply meq_eq; unfold case, inr.
+  apply meq_eq; unfold case, inr, tm_subst.
   rewrite <-(mcomp_idl 𝟷) at 1; rewrite <-mProd_post.
   rewrite <-mcomp_ass, (mcomp_ass [u, v]).
   by rewrite Prod_Sum_distr_l_inj2, mSum_inj2.
 Qed.
 
 Lemma Fun_beta {Γ A B} {t : Γ × A ⟶ B} {u : Γ ⟶ A} :
-  ⊤ ⊢ (λ[A] t) · u ≡ t ∘ ⟨𝟷, u⟩.
+  ⊤ ⊢ (λ[A] t) · u ≡ t[{u}].
 Proof.
-    apply meq_eq; unfold app.
+    apply meq_eq; unfold app, tm_subst.
     rewrite <-(mcomp_idr (λ[A] t)), <-(mcomp_idl u) at 1.
     rewrite <-mProd_post, <-mcomp_ass.
     f_equal; apply ev_transpose.
 Qed.
 
 Lemma Fun_eta {Γ A B} {t : Γ ⟶ A ⇒ B} :
-  ⊤ ⊢ (λ[A] t ∘ π₁ · v0) ≡ t.
+  ⊤ ⊢ (λ[A] t↓ · v0) ≡ t.
 Proof.
-  apply meq_eq; unfold app.
+  apply meq_eq; unfold app, tm_wk, v0.
   symmetry; apply transpose_unique. f_equal.
   rewrite <-(mcomp_idr (t ×ₘ 𝟷)), <-mProd_proj.
   by rewrite mProd_post, mcomp_idl.
@@ -1207,7 +1402,7 @@ Proof.
 Qed.
 
 Lemma fix_beta {Γ A} (t : Γ × ▶A ⟶ A) :
-  ⊤ ⊢ (μ[A] t) ≡ t ∘ ⟨𝟷, nxt (μ[A] t)⟩.
+  ⊤ ⊢ (μ[A] t) ≡ t[{nxt (μ[A] t)}].
 Proof.
   (*
   apply eq_eq; unfold gfix, nxt.
@@ -1419,11 +1614,11 @@ Qed.
 
 Lemma all_elim' {Γ A} (P : Γ × A ⟶ Ω) (t : Γ ⟶ A) (R : Γ ⟶ Ω) :
   R ⊢ ∀[A] P →
-  R ⊢ P ∘ ⟨𝟷, t⟩.
+  R ⊢ P[{t}].
 Proof. eauto using trans. Qed.
 
 Lemma exist_intro' {Γ A} (P : Γ × A ⟶ Ω) (t : Γ ⟶ A) (R : Γ ⟶ Ω) :
-  R ⊢ P ∘ ⟨𝟷, t⟩ →
+  R ⊢ P[{t}] →
   R ⊢ ∃[A] P.
 Proof. eauto using trans. Qed.
 
@@ -1484,7 +1679,7 @@ Lemma later_all {Γ A} (P : Γ × A ⟶ Ω) :
   ▷(∀[A] P) ⊢ ∀[A] ▷P.
 Proof.
   apply all_intro.
-  rewrite later_subst.
+  unfold tm_wk; rewrite later_subst.
   apply later_mono.
   rewrite all_subst.
   eapply trans.
@@ -1496,7 +1691,7 @@ Lemma exist_later {Γ A} (P : Γ × A ⟶ Ω) :
   ∃[A] ▷P ⊢ ▷(∃[A] P).
 Proof.
   apply exist_elim.
-  rewrite later_subst.
+  unfold tm_wk; rewrite later_subst.
   apply later_mono.
   rewrite exist_subst.
   eapply trans.
@@ -1520,6 +1715,6 @@ Proof.
 Qed.
 
 Lemma fix_eta {Γ A} (t : Γ × ▶A ⟶ A) (u : Γ ⟶ A) :
-  u ≡ t ∘ ⟨𝟷, nxt u⟩ ⊢ u ≡ (μ[A] t).
+  u ≡ t[{nxt u}] ⊢ u ≡ (μ[A] t).
 Proof.
 Admitted.

@@ -42,7 +42,7 @@ Proof. destruct H; squash; apply le_n_S; assumption. Qed.
 Lemma Sle_S_n {n m} (H : S n ⪯ S m) : n ⪯ m.
 Proof. destruct H; squash; apply le_S_n; assumption. Qed.
 
-Lemma Sle_S_0 n : S n ⪯ 0 → sEmpty.
+Lemma Sle_S_0 {n} : S n ⪯ 0 → sEmpty.
 Proof. intros [[]%Nat.nle_succ_0]. Qed.
 
 Lemma Sle_trans {n m p} (H1 : n ⪯ m) (H2 : m ⪯ p) : n ⪯ p.
@@ -90,7 +90,7 @@ Fixpoint Sle_rect n m :
       end
   | S n => λ P x f,
       match m with
-      | 0 => λ H, sEmpty_rect (λ _, P 0 H) (Sle_S_0 n H)
+      | 0 => λ H, sEmpty_rect (λ _, P 0 H) (Sle_S_0 H)
       | S m => λ H, Sle_rect n m (λ m H, P (S m) (Sle_n_S H))
                              x (λ m H, f (S m) (Sle_n_S H)) (Sle_S_n H)
       end
@@ -112,7 +112,7 @@ Proof.
   induction n as [| n IH]; intros m P x f H; simpl.
   - reflexivity.
   - destruct m as [| m]; simpl.
-    + destruct (Sle_S_0 n H).
+    + destruct (Sle_S_0 H).
     + apply (IH m (λ m H, P (S m) (Sle_n_S H))
                   x (λ m H, f (S m) (Sle_n_S H)) (Sle_S_n H)).
 Qed.

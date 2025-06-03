@@ -273,6 +273,23 @@ Proof.
   rewrite !mcomp_ass; apply mProd_post.
 Qed.
 
+Lemma Prod_restr' {X Y : Object} {m n} (H : n ⪯ m) (x : X m) (y : Y m) :
+  restr' (X := X × Y) H (x, y) = (restr' H x, restr' H y).
+Proof.
+  apply (Sle_rect n m
+    (λ m H, ∀ (x : X m) (y : Y m),
+      restr' (X := X × Y) H (x, y) = (restr' H x, restr' H y)));
+    clear m H x y.
+  - by rewrite !restr'_le_n.
+  - intros m H IH x y.
+    rewrite !restr'_le_S; simpl.
+    apply IH.
+Qed.
+
+Lemma Prod_restrTo {X Y : Object} {n} (x : X n) (y : Y n) (i : [0..n]) :
+  restrTo (X := X × Y) i (x, y) = (x ↾ i, y ↾ i).
+Proof. apply Prod_restr'. Qed.
+
 Definition Sum (X Y : Object) : Object :=
   {| obj n := X n + Y n
    ; restr n := sum_map (restr n) (restr n)
@@ -383,13 +400,13 @@ Proof.
   apply (Sle_rect n m
     (λ m H, ∀ f : (X ⇒ Y) m, restr' H f i = f (FW' i (Sle_n_S H))));
     clear m H f.
-  - intros f; by rewrite restr'_le_n.
+  - by rewrite restr'_le_n.
   - intros m H IH f.
     rewrite restr'_le_S; simpl.
     apply IH.
 Qed.
 
-Lemma Exp_restrTo {X Y n} (f : (X ⇒ Y) n) {i : [0..n] } (j : [0..i]) :
+Lemma Exp_restrTo {X Y n} (f : (X ⇒ Y) n) (i : [0..n]) (j : [0..i]) :
   (f ↾ i) j = f (FF j).
 Proof. apply Exp_restr'. Qed.
 
@@ -458,6 +475,26 @@ Definition Later (X : Object) : Object :=
    |}.
 
 Notation "▶ X" := (Later X) (at level 20, right associativity, format "▶ X").
+
+Lemma Later_restr' {X : Object} {m n} (H : n ⪯ m) (x : X m) :
+  restr' (X := ▶X) (Sle_n_S H) x = restr' H x.
+Proof.
+  apply (Sle_rect n m
+    (λ m H, ∀ x : X m, restr' (X := ▶X) (Sle_n_S H) x = restr' H x));
+    clear m H x.
+  - replace (restr' (X := ▶X) (Sle_n_S (Sle_n n)))
+       with (restr' (X := ▶X) (Sle_n (S n))) by done.
+    by rewrite !restr'_le_n.
+  - intros m H IH x.
+    replace (restr' (X := ▶X) (Sle_n_S (Sle_S H)))
+       with (restr' (X := ▶X) (Sle_S (Sle_n_S H))) by done.
+    rewrite !restr'_le_S.
+    apply IH.
+Qed.
+
+Lemma Later_restrTo {X : Object} {n} (x : X n) (i : [0..n]) :
+  restrTo (X := ▶X) (FS i) x = x ↾ i.
+Proof. apply (Later_restr' _). Qed.
 
 Program Definition Later_morph {X Y : Object} (f : X ⟶ Y) : ▶X ⟶ ▶Y :=
   ⟦nat_rect _ id (λ n _, f n)⟧.
@@ -602,12 +639,13 @@ Proof.
   apply (Sle_rect n m
     (λ m H, ∀ P : Ω m, restr' H P i = P (FW' i (Sle_n_S H))));
     clear m H P.
-  - intros P; by rewrite restr'_le_n.
+  - by rewrite restr'_le_n.
   - intros m H IH P.
-    rewrite restr'_le_S; simpl. apply IH.
+    rewrite restr'_le_S; simpl.
+    apply IH.
 Qed.
 
-Lemma SOC_restrTo {n} (P : Ω n) {i : [0..n] } (j : [0..i]) :
+Lemma SOC_restrTo {n} (P : Ω n) (i : [0..n]) (j : [0..i]) :
   (P ↾ i) j = P (FF j).
 Proof. apply SOC_restr'. Qed.
 
@@ -746,7 +784,7 @@ Next Obligation.
 Qed.
 Next Obligation.
   intros [| n] P; apply SOC_pred_inj; funext [[| i] Hi]; simpl; try done.
-  destruct (Sle_S_0 i (Sle_S_n Hi)).
+  destruct (Sle_S_0 (Sle_S_n Hi)).
 Qed.
 
 Definition laterI : Ω ⟶ Ω := liftI ∘ next.
@@ -771,7 +809,7 @@ Definition eq {Γ A} (t u : Γ ⟶ A) : Γ ⟶ Ω := eqI ∘ ⟨t, u⟩.
 Definition conj {Γ} (P Q : Γ ⟶ Ω) : Γ ⟶ Ω := conjI ∘ ⟨P, Q⟩.
 Definition disj {Γ} (P Q : Γ ⟶ Ω) : Γ ⟶ Ω := disjI ∘ ⟨P, Q⟩.
 Definition impl {Γ} (P Q : Γ ⟶ Ω) : Γ ⟶ Ω := implI ∘ ⟨P, Q⟩.
-Definition all {Γ} A (P : Γ × A ⟶ Ω) : Γ ⟶ Ω := allI ∘ λ(P).
+Definition forAll {Γ} A (P : Γ × A ⟶ Ω) : Γ ⟶ Ω := allI ∘ λ(P).
 Definition exist {Γ} A (P : Γ × A ⟶ Ω) : Γ ⟶ Ω := existI ∘ λ(P).
 Definition lift {Γ} (P : Γ ⟶ ▶Ω) : Γ ⟶ Ω := liftI ∘ P.
 Definition later {Γ} (P : Γ ⟶ Ω) : Γ ⟶ Ω := laterI ∘ P.
@@ -789,7 +827,7 @@ Notation "'⊥'" := false.
 Infix "⋏" := conj (at level 80, right associativity).
 Infix "⋎" := disj (at level 85, right associativity).
 Infix "⊃" := impl (at level 90, right associativity).
-Notation "∀[ A ] P" := (all A P)
+Notation "∀[ A ] P" := (forAll A P)
   (at level 95, P at level 95, format "∀[ A ]  P").
 Notation "∃[ A ] P" := (exist A P)
   (at level 95, P at level 95, format "∃[ A ]  P"). 
@@ -809,10 +847,15 @@ Notation "t [{ u }]" := (tm_subst t u)
 Definition comp {Γ A B C} : Γ ⟶ (B ⇒ C) ⇒ (A ⇒ B) ⇒ A ⇒ C :=
   λ[B ⇒ C] λ[A ⇒ B] λ[A] v2 · (v1 · v0).
 
+Definition all {Γ A} : Γ ⟶ (A ⇒ Ω) ⇒ Ω :=
+  λ[A ⇒ Ω] ∀[A] v1 · v0.
+Definition ex {Γ A} : Γ ⟶ (A ⇒ Ω) ⇒ Ω :=
+  λ[A ⇒ Ω] ∃[A] v1 · v0.
+
 Lemma all_subst {Λ Γ A} (P : Γ × A ⟶ Ω) (σ : Λ ⟶ Γ) :
   (∀[A] P) ∘ σ = ∀[A] P ∘ (σ ×ₘ 𝟷).
 Proof.
-  unfold all.
+  unfold forAll.
   rewrite mcomp_ass; f_equal.
   apply transpose_pre.
 Qed.
@@ -1341,8 +1384,55 @@ Proof.
   - by rewrite !restr_as_restrTo in He.
 Qed.
 
+Lemma lift_all {Γ A} (Q : Γ ⟶ ▶(A ⇒ Ω)) :
+  lift (nxt all ⊛ Q) ⊢ ∀[▶A] lift (Q↓ ⊛ v0).
+Proof.
+  intros [| n] x H; simpl in *.
+  - intros [[| j] ?] Hj; [done | destruct (Sle_S_0 Hj)].
+  - rewrite restrTo_n in H; simpl in H.
+    intros [[| j] ?] Hj a; simpl in *; [done | ].
+    rewrite restrTo_n, (morph_restrTo Q ⦅S j⦆).
+    rewrite (Later_restrTo _ ⦅j, Hj⦆).
+    specialize (H ⦅j, Hj⦆ (Sle_S_n Hj) a).
+    by rewrite @Prod_restrTo in H; simpl in H.
+Qed.
+
+Lemma all_lift {Γ A} (Q : Γ ⟶ ▶(A ⇒ Ω)) :
+  ∀[▶A] lift (Q↓ ⊛ v0) ⊢ lift (nxt all ⊛ Q).
+Proof.
+  intros [| n] x H; simpl in *.
+  - done.
+  - rewrite restrTo_n; simpl.
+    intros j Hj a; rewrite @Prod_restrTo; simpl.
+    specialize (H (FS j) (Spr2 j) a); simpl in H.
+    rewrite restrTo_n, (morph_restrTo Q ⦅S j⦆) in H.
+    by rewrite (Later_restrTo _ j) in H.
+Qed.
+
+Lemma lift_exist {Γ A} (Q : Γ ⟶ ▶(A ⇒ Ω)) :
+  lift (nxt ex ⊛ Q) ⊢ ∃[▶A] lift (Q↓ ⊛ v0).
+Proof.
+  intros [| n] x H; simpl in *.
+  - done.
+  - replace ⦅n⦆ with (nat_to_fin n) in H by done.
+    rewrite restrTo_n in H; simpl in H.
+    rewrite restrTo_n in H; simpl in H.
+    by rewrite !restrTo_n.
+Qed.
+
+Lemma exists_lift {Γ A} (Q : Γ ⟶ ▶(A ⇒ Ω)) :
+  ∃[▶A] lift (Q↓ ⊛ v0) ⊢ lift (nxt ex ⊛ Q).
+Proof.
+  intros [| n] x H; simpl in *.
+  - done.
+  - replace ⦅n⦆ with (nat_to_fin n) by done.
+    rewrite restrTo_n; simpl.
+    rewrite restrTo_n; simpl.
+    by rewrite !restrTo_n in H.
+Qed.
+
 Opaque fst snd abort inl inr case app nxt ap gfix
-       true false eq conj disj impl all exist lift later entails.
+       true false eq conj disj impl forAll exist lift later entails.
 
 Global Hint Resolve refl : core.
 Global Hint Resolve true_intro : core.

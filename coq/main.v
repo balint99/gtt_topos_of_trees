@@ -852,6 +852,10 @@ Definition all {Γ A} : Γ ⟶ (A ⇒ Ω) ⇒ Ω :=
 Definition ex {Γ A} : Γ ⟶ (A ⇒ Ω) ⇒ Ω :=
   λ[A ⇒ Ω] ∃[A] v1 · v0.
 
+Lemma later_as_lift {Γ} (P : Γ ⟶ Ω) :
+  ▷P = lift (nxt P).
+Proof. unfold later, laterI, lift, nxt. apply mcomp_ass. Qed.
+
 Lemma all_subst {Λ Γ A} (P : Γ × A ⟶ Ω) (σ : Λ ⟶ Γ) :
   (∀[A] P) ∘ σ = ∀[A] P ∘ (σ ×ₘ 𝟷).
 Proof.
@@ -1414,20 +1418,18 @@ Lemma lift_exist {Γ A} (Q : Γ ⟶ ▶(A ⇒ Ω)) :
 Proof.
   intros [| n] x H; simpl in *.
   - done.
-  - replace ⦅n⦆ with (nat_to_fin n) in H by done.
-    rewrite restrTo_n in H; simpl in H.
-    rewrite restrTo_n in H; simpl in H.
+  - rewrite restrTo_n in H; simpl in H.
+    rewrite @restrTo_n in H; simpl in H.
     by rewrite !restrTo_n.
 Qed.
 
-Lemma exists_lift {Γ A} (Q : Γ ⟶ ▶(A ⇒ Ω)) :
+Lemma exist_lift {Γ A} (Q : Γ ⟶ ▶(A ⇒ Ω)) :
   ∃[▶A] lift (Q↓ ⊛ v0) ⊢ lift (nxt ex ⊛ Q).
 Proof.
   intros [| n] x H; simpl in *.
   - done.
-  - replace ⦅n⦆ with (nat_to_fin n) by done.
-    rewrite restrTo_n; simpl.
-    rewrite restrTo_n; simpl.
+  - rewrite restrTo_n; simpl.
+    rewrite @restrTo_n; simpl.
     by rewrite !restrTo_n in H.
 Qed.
 
@@ -1967,3 +1969,14 @@ Lemma fix_eta' {Γ A} (R : Γ ⟶ Ω) (t : Γ × ▶A ⟶ A) (u : Γ ⟶ A) :
   R ⊢ u ≡ t[{nxt u}] →
   R ⊢ u ≡ (μ[A] t).
 Proof. eauto using trans, fix_eta. Qed.
+
+Definition TI (A : Object) {Γ} : Γ ⟶ Ω :=
+  ∀[▶A] ∃[A] nxt v0 ≡ v1.
+
+Lemma all_later {Γ A} (P : Γ × A ⟶ Ω) :
+  TI A ⋏ (∀[A] ▷P) ⊢ ▷(∀[A] P).
+Admitted.
+
+Lemma later_exist {Γ A} (P : Γ × A ⟶ Ω) :
+  TI A ⋏ ▷(∃[A] P) ⊢ ∃[A] ▷P.
+Admitted.
